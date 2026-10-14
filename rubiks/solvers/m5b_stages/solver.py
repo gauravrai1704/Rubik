@@ -1,0 +1,122 @@
+"""Method 5B solver: learned search inside reduction stages (technical basis, Section 9).
+
+For each stage in :func:`plan_stages`, run the shared beam search with the stage's
+summed heuristic until the stage goal holds. A stage that fails is retried with a 4×
+wider beam, up to ``max_width``. Per-stage lengths and widths are reported in ``info``.
+"""
+from __future__ import annotations
+
+import time
+
+import numpy as np
+
+from ...engine.moves import canonicalize
+from ...search.beam import BeamConfig, BeamSearch, subset_goal
+from ...search.macros import default_macros
+from ..base import Budget, Solver, SolveResult, register
+from .cluster_models import ModelBank
+from .stages import StageHeuristic, plan_stages
+
+
+@register("m5b_stages")
+class StagedSolver(Solver):
+    def __init__(self, puzzle, budget: Budget | None = None, width: int = 256, max_width: int = 16384,
+                 stage_steps: int | None = None, keep_weight: float = 1.0, tier: str = "device",
+                 packed: bool = True, chunk: int = 2048, bank: ModelBank | None = None,
+                 macros: bool | None = None, future_weight: float = 0.0, heuristic_factory=None, **plan_kwargs):
+        super().__init__(puzzle, budget)
+        self.width, self.max_width = width, max_width
+        self.stage_steps = stage_steps or (40 if puzzle.kind == "square" else 60)
+        self.keep_weight = keep_weight
+        self.device = self.budget.device
+        self.tier, self.packed, self.chunk = tier, packed, chunk
+        self.bank = bank or ModelBank(device=self.device, allow_missing=heuristic_factory is not None)
+        self.stages = plan_stages(puzzle, **plan_kwargs)
+        # macro actions (commutators) on by default: they remove the heuristic's hills
+        use_macros = True if macros is None else macros
+        self.actions = default_macros(puzzle) if use_macros else []
+        self.future_weight = future_weight
+        # heuristic_factory(puzzle, [(cluster, weight), ...]) -> callable; default: per-cluster bank.
+        # Method 5A plugs its cluster-token model in here (technical basis, Section 8.5).
+        self.heuristic_factory = heuristic_factory
+        self._heuristics: dict[int, StageHeuristic] = {}
+
+    def _stage_setup(self, i: int):
+        """Actions that touch this stage's targets, and the heuristic over clusters they move.
+
+        Moves that never touch a target cannot make progress on it; leaving them out cuts
+        the branching factor from O(N²) macros to a handful. Protected clusters that no
+        allowed action touches stay constant, so they are left out of the heuristic too."""
+        if i in self._heuristics:
+            return self._heuristics[i]
+        P = self.puzzle
+        targets = np.concatenate([c.stickers for c in self.stages[i].targets])
+        tset = set(int(x) for x in targets)
+
+        def touches(perm: np.ndarray, stickers) -> bool:
+            st = np.asarray(sorted(stickers))
+            return bool(np.any(perm[st] != st))
+
+        singles = [m for m in range(len(P.moves)) if touches(P.move_perms[m], tset)]
+        macros = []
+        for a in self.actions:
+            q = np.arange(P.num_stickers)
+            for m in a:
+                q = q[P.move_perms[m]]
+            if touches(q, tset):
+                macros.append(a)
+        moved = set()
+        for m in singles:
+            moved |= set(np.nonzero(P.move_perms[m] != np.arange(P.num_stickers))[0].tolist())
+        rel = lambda c: bool(moved & set(int(x) for x in c.stickers))  # noqa: E731
+        weighted = [(c, self.keep_weight) for s in self.stages[:i] for c in s.targets if rel(c)]
+        weighted += [(c, 1.0) for c in self.stages[i].targets]
+        if self.future_weight > 0:
+            weighted += [(c, self.future_weight) for s in self.stages[i + 1 :] for c in s.targets if rel(c)]
+        if self.heuristic_factory is not None:
+            h = self.heuristic_factory(P, weighted)
+        else:
+            h = StageHeuristic(P, weighted, self.bank, self.device)
+        self._heuristics[i] = (h, singles, macros)
+        return self._heuristics[i]
+
+    def solve(self, state: np.ndarray) -> SolveResult:
+        P = self.puzzle
+        t0 = time.time()
+        deadline = t0 + self.budget.wall_time_s
+        cur = np.asarray(state).copy()
+        all_moves, info = [], {"stages": []}
+        expanded, peak_gpu, peak_host = 0, 0.0, 0.0
+        for i, stage in enumerate(self.stages):
+            stickers = np.concatenate([c.stickers for s in self.stages[: i + 1] for c in s.targets])
+            if np.array_equal(cur[stickers], P.solved[stickers]):
+                info["stages"].append({"stage": stage.name, "moves": 0, "width": 0})
+                continue
+            goal = subset_goal(P, stickers, self.device)
+            h, singles, macros = self._stage_setup(i)
+            width = self.width
+            res = None
+            while width <= self.max_width:
+                remaining = deadline - time.time()
+                if remaining <= 0:
+                    break
+                cfg = BeamConfig(width=width, max_steps=self.stage_steps, device=self.device, tier=self.tier,
+                                 packed=self.packed, chunk=self.chunk, time_limit_s=remaining)
+                res = BeamSearch(P, h, cfg, move_subset=singles, actions=macros).solve(cur, goal)
+                expanded += res.expanded
+                peak_gpu, peak_host = max(peak_gpu, res.peak_gpu_mb), max(peak_host, res.peak_host_mb)
+                if res.found:
+                    break
+                if width * 4 > self.max_width:
+                    break
+                width *= 4
+            if res is None or not res.found:
+                info["failed_stage"] = stage.name
+                info["stages"].append({"stage": stage.name, "moves": None, "width": width})
+                break
+            cur = P.apply(cur, res.moves)
+            all_moves += res.moves
+            info["stages"].append({"stage": stage.name, "moves": len(res.moves), "width": width})
+        moves = canonicalize(all_moves)
+        return SolveResult(moves=moves, wall_time_s=time.time() - t0, nodes_expanded=expanded,
+                           peak_gpu_mb=peak_gpu, peak_host_mb=peak_host, info=info)

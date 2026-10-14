@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.venv/
+# generated — regenerate with `python -m rubiks.bench make`
+data/
+results/
+# large checkpoints: share via release assets / drive, not git (small ones are fine)
+checkpoints/**/*.pt
+!checkpoints/**/README.md
+*.beam
