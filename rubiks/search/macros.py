@@ -53,9 +53,56 @@ def cube_macros(puzzle: PuzzleSpec, inner_only: bool = True) -> list[list[int]]:
     return out
 
 
+def cube_center_macros(puzzle: PuzzleSpec) -> list[list[int]]:
+    """Pure center commutators [A, B C B'] = A B C B' A' B C' B' (e.g. r U l' U' r' U l U').
+
+    A: inner-slice quarter turn (axis a, layer k); B: outer face quarter turn on another axis;
+    C: inner-slice quarter turn on axis a at layer k or N-1-k. Each candidate is checked
+    and kept only if it moves center stickers alone (corners, edges and wings untouched)."""
+    import numpy as np
+
+    from ..engine.orbits import clusters
+
+    N = puzzle.N
+    if N < 4:
+        return []
+    idx = puzzle.move_index
+    S = puzzle.num_stickers
+    center = np.zeros(S, dtype=bool)
+    for c in clusters(puzzle):
+        if c.kind.startswith("center_") and c.kind != "center_fixed":
+            center[c.stickers] = True
+    faces = [(ax, l) for ax in range(3) for l in (0, N - 1)]
+    out, seen = [], set()
+    for a in range(3):
+        for k in range(1, N - 1):
+            if N % 2 == 1 and k == N // 2:
+                continue  # middle slice moves middle edges
+            for ta in (1, 3):
+                A, Ai = idx[Move(a, k, ta)], idx[Move(a, k, 4 - ta)]
+                for fa, fl in faces:
+                    if fa == a:
+                        continue
+                    for tb in (1, 3):
+                        Bm, Bi = idx[Move(fa, fl, tb)], idx[Move(fa, fl, 4 - tb)]
+                        for j in sorted({k, N - 1 - k}):
+                            for tc in (1, 3):
+                                C, Ci = idx[Move(a, j, tc)], idx[Move(a, j, 4 - tc)]
+                                seq = [A, Bm, C, Bi, Ai, Bm, Ci, Bi]
+                                q = np.arange(S)
+                                for m in seq:
+                                    q = q[puzzle.move_perms[m]]
+                                moved = q != np.arange(S)
+                                key = q.tobytes()
+                                if moved.any() and not moved[~center].any() and key not in seen:
+                                    seen.add(key)
+                                    out.append(seq)
+    return out
+
+
 def default_macros(puzzle: PuzzleSpec) -> list[list[int]]:
     if puzzle.kind == "square":
         return square_macros(puzzle)
     if puzzle.kind == "cube":
-        return cube_macros(puzzle)
+        return cube_macros(puzzle) + cube_center_macros(puzzle)
     return []

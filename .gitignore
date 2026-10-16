@@ -7,7 +7,7 @@ __pycache__/
 # generated — regenerate with `python -m rubiks.bench make`
 data/
 results/
-# large checkpoints: share via release assets / drive, not git (small ones are fine)
-checkpoints/**/*.pt
-!checkpoints/**/README.md
+# Method 5A checkpoints are large: share via release assets / team drive.
+# Method 5B cluster MLPs are ~1 MB each and are committed so cubes work out of the box.
+checkpoints/m5a/*.pt
 *.beam

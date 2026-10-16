@@ -58,12 +58,13 @@ class ProjectionTable:
 
 
 def bfs_projection(
-    gen_perms: np.ndarray, solved: np.ndarray, base: int = 6, cap: int = 2_000_000
+    gen_perms: np.ndarray, solved: np.ndarray, base: int = 6, cap: int = 2_000_000, chunk: int = 20_000
 ) -> ProjectionTable | None:
     """Breadth-first search of a projected puzzle from its solved pattern.
 
     ``gen_perms`` (G, K): new = state[gen_perms[g]]. Returns None if the reachable set is
-    larger than ``cap`` or cannot be encoded in 62 bits."""
+    larger than ``cap`` or cannot be encoded in 62 bits. The frontier is expanded in chunks
+    so memory stays at O(chunk · G · K)."""
     K = len(solved)
     if not can_encode(K, base):
         return None
@@ -71,16 +72,23 @@ def bfs_projection(
     seen_codes = [encode(start, base)]
     seen_dist = [np.zeros(1, dtype=np.int16)]
     seen_sorted = np.sort(seen_codes[0])
-    frontier = start
+    frontier = start.astype(np.int8)
     depth = 0
     total = 1
     while len(frontier):
         depth += 1
-        kids = frontier[:, gen_perms].reshape(-1, K)  # (n*G, K)
-        codes = encode(kids, base)
+        level_codes, level_states = [], []
+        for a in range(0, len(frontier), chunk):
+            kids = frontier[a : a + chunk][:, gen_perms].reshape(-1, K)  # (c*G, K)
+            codes = encode(kids, base)
+            codes, first = np.unique(codes, return_index=True)
+            new = ~np.isin(codes, seen_sorted)
+            level_codes.append(codes[new])
+            level_states.append(kids[first[new]])
+        codes = np.concatenate(level_codes)
+        kids = np.concatenate(level_states)
         codes, first = np.unique(codes, return_index=True)
-        new = ~np.isin(codes, seen_sorted, assume_unique=False)
-        codes, kids = codes[new], kids[first[new]]
+        kids = kids[first]
         if len(codes) == 0:
             break
         total += len(codes)

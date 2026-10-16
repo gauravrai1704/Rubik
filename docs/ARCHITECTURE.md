@@ -30,21 +30,27 @@ How the code maps to the technical basis, and the design decisions made while bu
 * **Macro actions** (`rubiks/search/macros.py`): commutators / conjugates offered as single
   steps. A summed per-cluster heuristic has hills (fix one cluster = break then restore
   others); a macro turns the hill into one downhill step. Square: `c r c r`, `r c r`, `c r c`
-  for every row/column pair (Demaine Lemmas 2–4). Cube: `X Y X' Y'` with Y an outer face turn.
+  for every row/column pair (Demaine Lemmas 2–4). Cube: `X Y X' Y'` (inner slice X, face Y;
+  never moves corners) and pure-center commutators `[A, B C B']` such as `r U l' U' r' U l U'`,
+  each generated and then *verified* to move only center stickers.
 * **Q*-style scoring:** a heuristic with `score_children(parents) -> (c, A)` is used to score
   all children of a parent in one pass (5A's move head).
 
 ## Method 5B (Section 9)
 * Per-cluster heuristics keyed by signature. Exact BFS tables when the projected puzzle has at
   most 1.5M states — every Square cluster and the 3×3×3 fixed centers. Otherwise a small ResMLP
-  trained on random walks of the projected puzzle (`train.py`), reused for every N.
+  trained on random walks of the projected puzzle (`train.py`), reused for every N, combined by
+  `max` with **coarse exact tables**: the projection with one opposite-colour pair mapped to 1
+  and the rest to 0 (corners 2,187 states, middle edges 126,720, every center type 735,471).
+  These are admissible abstraction heuristics; they are cached in `checkpoints/m5b/tables/`.
+* Split stages: wing and center clusters are solved `pieces_per_stage` pieces (default 6) at a
+  time; every stage adds `exact_weight` × (goal stickers not yet solved) to its heuristic.
 * Stage goal is exact: targets plus every earlier cluster at their solved stickers.
 * Each stage only searches actions that touch its targets, and its heuristic only includes
   protected clusters those actions can move. This took the 20×20 Square from > 300 s to ~50 s.
 * Default orders: Square = frame → edges → crosses → interiors (Demaine). Cube = `edges_first`
   (fixed centers → corners → middle edges → wings → centers), or `order="reduction"`.
-* Status: Square solves 100% of random states tested for N = 3–20 on CPU. Cube is limited by
-  how well the cluster MLPs are trained; see `docs/STATUS.md`.
+* Measured status is in `docs/STATUS.md`.
 
 ## Method 5A (Section 8)
 * `Tokenizer`: one token per cluster; content projected by a linear map per cluster type
