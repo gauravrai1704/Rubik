@@ -24,7 +24,8 @@ class StagedSolver(Solver):
                  stage_steps: int | None = None, keep_weight: float = 1.0, tier: str = "device",
                  packed: bool = True, chunk: int = 2048, bank: ModelBank | None = None,
                  macros: bool | None = None, future_weight: float = 0.0, heuristic_factory=None,
-                 exact_weight: float = 0.5, exact_cap: int = 100_000, **plan_kwargs):
+                 exact_weight: float = 0.5, exact_cap: int = 100_000, center_macros_only: bool = True,
+                 **plan_kwargs):
         super().__init__(puzzle, budget)
         self.width, self.max_width = width, max_width
         self.stage_steps = stage_steps or (40 if puzzle.kind == "square" else 60)
@@ -39,6 +40,10 @@ class StagedSolver(Solver):
         self.future_weight = future_weight
         self.exact_weight = exact_weight
         self.exact_cap = exact_cap
+        # center stages after every edge/corner is solved: search only pure-center commutators,
+        # which keep all earlier work by construction (verified in search.macros)
+        self.center_macros_only = center_macros_only and puzzle.kind == "cube"
+        self._center_macros = None
         # heuristic_factory(puzzle, [(cluster, weight), ...]) -> callable; default: per-cluster bank.
         # Method 5A plugs its cluster-token model in here (technical basis, Section 8.5).
         self.heuristic_factory = heuristic_factory
@@ -61,16 +66,26 @@ class StagedSolver(Solver):
             return bool(np.any(perm[st] != st))
 
         singles = [m for m in range(len(P.moves)) if touches(P.move_perms[m], tset)]
-        macros = []
-        for a in self.actions:
-            q = np.arange(P.num_stickers)
+        pool = self.actions
+        if self.center_macros_only and self._is_late_center_stage(i):
+            if self._center_macros is None:
+                from ...search.macros import cube_center_macros
+
+                self._center_macros = cube_center_macros(P)
+            touching = [a for a in self._center_macros if self._touches_seq(a, tset)]
+            if touching:
+                singles, pool = [], touching
+        ident = np.arange(P.num_stickers)
+        macros, moved = [], set()
+        for a in pool:
+            q = ident
             for m in a:
                 q = q[P.move_perms[m]]
             if touches(q, tset):
                 macros.append(a)
-        moved = set()
+                moved |= set(np.nonzero(q != ident)[0].tolist())
         for m in singles:
-            moved |= set(np.nonzero(P.move_perms[m] != np.arange(P.num_stickers))[0].tolist())
+            moved |= set(np.nonzero(P.move_perms[m] != ident)[0].tolist())
         rel = lambda c: bool(moved & set(int(x) for x in c.stickers))  # noqa: E731
         weighted = [(c, self.keep_weight) for s in self.stages[:i] for c in s.targets if rel(c)]
         weighted += [(c, 1.0) for c in self.stages[i].targets]
@@ -135,6 +150,23 @@ class StagedSolver(Solver):
             else:
                 return None
         return moves
+
+    def _touches_seq(self, seq, tset) -> bool:
+        q = np.arange(self.puzzle.num_stickers)
+        for m in seq:
+            q = q[self.puzzle.move_perms[m]]
+        st = np.asarray(sorted(tset))
+        return bool(np.any(q[st] != st))
+
+    def _is_late_center_stage(self, i: int) -> bool:
+        """True if stage i targets only centers and every non-center cluster is already solved."""
+        if not all(c.kind.startswith("center_") and c.kind != "center_fixed" for c in self.stages[i].targets):
+            return False
+        done = {c.index for s in self.stages[:i] for c in s.targets}
+        from ...engine.orbits import clusters
+
+        return all(c.index in done for c in clusters(self.puzzle) if not c.kind.startswith("center_")
+                   or c.kind == "center_fixed")
 
     def _goal(self, i: int) -> np.ndarray:
         return np.unique(np.concatenate([s.goal_stickers() for s in self.stages[: i + 1]]))
