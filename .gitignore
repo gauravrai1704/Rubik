@@ -7,7 +7,7 @@ __pycache__/
 # generated — regenerate with `python -m rubiks.bench make`
 data/
 results/
-# Method 5A checkpoints are large: share via release assets / team drive.
-# Method 5B cluster MLPs are ~1 MB each and are committed so cubes work out of the box.
-checkpoints/m5a/*.pt
+# Large checkpoints (> ~5 MB, e.g. GPU-trained 5A models): share via release assets / team drive
+# and name them *.large.pt. Small ones (5B cluster MLPs, the CPU 5A Square model) are committed.
+checkpoints/**/*.large.pt
 *.beam

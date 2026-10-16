@@ -12,12 +12,16 @@ style of CayleyPy (NeurIPS 2025). The full spec is the technical basis document
 | 2 | Reduction + Kociemba two-phase | Sunaina | `rubiks/solvers/m2_reduction` | scaffold + spec |
 | 3 | Demaine parallel cluster algorithm | Kashvi | `rubiks/solvers/m3_demaine` | scaffold + spec |
 | 4 | CayleyPy reproduction | Shaurya | `rubiks/solvers/m4_cayleypy` | scaffold + spec |
-| 5A | Cluster-token transformer, one model for all N | Gaurav | `rubiks/solvers/m5a_tokens` | implemented; needs GPU training |
-| 5B | Learned search inside reduction stages | Gaurav | `rubiks/solvers/m5b_stages` | implemented; Square N=3–20 working |
+| 5A | Cluster-token transformer, one model for all N | Gaurav | `rubiks/solvers/m5a_tokens` | implemented; small CPU Square model trained, beats 5B at N ≤ 10 |
+| 5B | Learned search inside reduction stages | Gaurav | `rubiks/solvers/m5b_stages` | implemented; Square 100% at N = 3–20, cube 3–4 solved |
 | — | Engine, checker, beam search, harness | Gaurav | `rubiks/engine`, `rubiks/search`, `rubiks/bench` | implemented, tested |
 
 Each teammate's folder has a `README.md` with their spec, the engine functions to use,
-and a done-when checklist.
+and a done-when checklist. Measured results so far: [docs/STATUS.md](docs/STATUS.md).
+
+**Publish to GitHub** (once, from your machine, with `gh auth login` done):
+`bash scripts/publish_to_github.sh <your-user>/nxn-rubiks` — creates the repo, pushes `main`,
+turns on branch protection. Then invite teammates in Settings → Collaborators.
 
 ## Quick start
 
@@ -62,7 +66,8 @@ rubiks/
   solvers/     base interface + registry, one package per method
 tests/         engine, checker, beam, 5A, 5B, harness, methods 1–4 (xfail until done)
 experiments/   one script per experiment E1–E8 (Section 10.3)
-checkpoints/   trained weights (not in git; see checkpoints/README.md)
+checkpoints/   trained weights (small ones committed; see checkpoints/README.md)
+scripts/       publish_to_github.sh
 docs/          technical basis, architecture notes
 ```
 
