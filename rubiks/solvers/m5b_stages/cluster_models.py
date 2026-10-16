@@ -62,6 +62,79 @@ class TableModel:
         return torch.where(hit, self.dist[i], torch.full_like(self.dist[i], self.miss))
 
 
+class CoarseTableModel:
+    """Exact distances of a *coarsened* projection: colours mapped to a few classes (e.g.
+    "U or D" vs "anything else"). Admissible lower bound; tiny tables even when the full
+    projection is far too large (orientation of corners / middle edges, center layouts)."""
+
+    def __init__(self, table: ProjectionTable, color_map: np.ndarray, device: str = "cpu"):
+        self.inner = TableModel(table, device)
+        self.color_map = torch.as_tensor(color_map, device=self.inner.device)
+        self.kind = "coarse"
+
+    def __call__(self, x: torch.Tensor) -> torch.Tensor:
+        return self.inner(self.color_map[x.long()])
+
+
+class MaxModel:
+    """max over several heuristics (each a lower bound or an estimate)."""
+
+    def __init__(self, models):
+        self.models = [m for m in models if m is not None]
+        self.kind = "+".join(m.kind for m in self.models)
+
+    def __call__(self, x: torch.Tensor) -> torch.Tensor:
+        out = self.models[0](x).float()
+        for m in self.models[1:]:
+            out = torch.maximum(out, m(x).float())
+        return out
+
+
+# opposite-colour pairs: U/D, R/L, F/B
+COARSE_PAIRS = ((0, 3), (1, 4), (2, 5))
+COARSE_CAP = 1_500_000
+COARSE_SKIP = {"wing"}  # 48 stickers: every coarse projection is far above the cap
+TABLE_DIR = CKPT_DIR / "tables"
+_COARSE_CACHE: dict[tuple, list] = {}
+
+
+def _disk_table(name: str, build):
+    """Load a ProjectionTable from checkpoints/m5b/tables/<name>.npz, or build and save it."""
+    path = TABLE_DIR / f"{name}.npz"
+    if path.exists():
+        z = np.load(path)
+        return ProjectionTable(codes=z["codes"], dist=z["dist"], base=int(z["base"]), K=int(z["K"]))
+    t = build()
+    if t is not None:
+        TABLE_DIR.mkdir(parents=True, exist_ok=True)
+        np.savez_compressed(path, codes=t.codes, dist=t.dist, base=t.base, K=t.K)
+    return t
+
+
+def coarse_tables(cluster: Orbit) -> list[tuple[ProjectionTable, np.ndarray]]:
+    """For each opposite-colour pair, BFS the projection with that pair -> 1, others -> 0."""
+    key = (cluster.signature,)
+    if key in _COARSE_CACHE:
+        return _COARSE_CACHE[key]
+    out = []
+    if cluster.kind in COARSE_SKIP:
+        _COARSE_CACHE[key] = out
+        return out
+    for a, b in COARSE_PAIRS:
+        cmap = np.zeros(6, dtype=np.int64)
+        cmap[[a, b]] = 1
+        solved = cmap[cluster.solved.astype(np.int64)]
+        if solved.min() == solved.max():
+            continue
+        t = _disk_table(f"{cluster.kind}_{cluster.signature}_coarse{a}{b}",
+                        lambda: cached_table((cluster.signature, "coarse", a, b), cluster.gen_perms, solved,
+                                             base=2, cap=COARSE_CAP))
+        if t is not None:
+            out.append((t, cmap))
+    _COARSE_CACHE[key] = out
+    return out
+
+
 class ClusterMLP(nn.Module):
     """One-hot cluster colours -> estimated distance (ResMLP, as in CayleyPy, smaller)."""
 
@@ -175,8 +248,10 @@ def load_mlp(signature: str, kind: str, device: str = "cpu", root: Path = CKPT_D
 class ModelBank:
     """Gives every cluster of a puzzle its heuristic, shared by signature."""
 
-    def __init__(self, device: str = "cpu", root: Path = CKPT_DIR, allow_missing: bool = False):
-        self.device, self.root, self.allow_missing = device, root, allow_missing
+    def __init__(self, device: str = "cpu", root: Path = CKPT_DIR, allow_missing: bool = False,
+                 coarse: bool = True):
+        """``coarse``: combine each MLP with exact coarse tables by max (ablation: off)."""
+        self.device, self.root, self.allow_missing, self.coarse = device, root, allow_missing, coarse
         self._cache: dict[str, object] = {}
 
     def get(self, cluster: Orbit):
@@ -187,13 +262,14 @@ class ModelBank:
         if t is not None:
             model = TableModel(t, self.device)
         else:
-            model = load_mlp(sig, cluster.kind, self.device, self.root)
-            if model is None:
-                if not self.allow_missing:
-                    raise FileNotFoundError(
-                        f"no trained model for {cluster.kind} cluster (signature {sig}). Train it with:\n"
-                        f"  python -m rubiks.solvers.m5b_stages.train --puzzle cube --N <N>")
-                model = None
+            mlp = load_mlp(sig, cluster.kind, self.device, self.root)
+            if mlp is None and not self.allow_missing:
+                raise FileNotFoundError(
+                    f"no trained model for {cluster.kind} cluster (signature {sig}). Train it with:\n"
+                    f"  python -m rubiks.solvers.m5b_stages.train --puzzle cube --N <N>")
+            coarse = [CoarseTableModel(tb, cm, self.device) for tb, cm in coarse_tables(cluster)] if self.coarse else []
+            parts = ([mlp] if mlp is not None else []) + coarse
+            model = MaxModel(parts) if len(parts) > 1 else (parts[0] if parts else None)
         self._cache[sig] = model
         return model
 

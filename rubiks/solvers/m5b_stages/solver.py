@@ -20,10 +20,11 @@ from .stages import StageHeuristic, plan_stages
 
 @register("m5b_stages")
 class StagedSolver(Solver):
-    def __init__(self, puzzle, budget: Budget | None = None, width: int = 256, max_width: int = 16384,
+    def __init__(self, puzzle, budget: Budget | None = None, width: int = 256, max_width: int = 8192,
                  stage_steps: int | None = None, keep_weight: float = 1.0, tier: str = "device",
                  packed: bool = True, chunk: int = 2048, bank: ModelBank | None = None,
-                 macros: bool | None = None, future_weight: float = 0.0, heuristic_factory=None, **plan_kwargs):
+                 macros: bool | None = None, future_weight: float = 0.0, heuristic_factory=None,
+                 exact_weight: float = 0.5, **plan_kwargs):
         super().__init__(puzzle, budget)
         self.width, self.max_width = width, max_width
         self.stage_steps = stage_steps or (40 if puzzle.kind == "square" else 60)
@@ -36,6 +37,7 @@ class StagedSolver(Solver):
         use_macros = True if macros is None else macros
         self.actions = default_macros(puzzle) if use_macros else []
         self.future_weight = future_weight
+        self.exact_weight = exact_weight
         # heuristic_factory(puzzle, [(cluster, weight), ...]) -> callable; default: per-cluster bank.
         # Method 5A plugs its cluster-token model in here (technical basis, Section 8.5).
         self.heuristic_factory = heuristic_factory
@@ -50,7 +52,7 @@ class StagedSolver(Solver):
         if i in self._heuristics:
             return self._heuristics[i]
         P = self.puzzle
-        targets = np.concatenate([c.stickers for c in self.stages[i].targets])
+        targets = self.stages[i].goal_stickers()
         tset = set(int(x) for x in targets)
 
         def touches(perm: np.ndarray, stickers) -> bool:
@@ -76,9 +78,13 @@ class StagedSolver(Solver):
         if self.heuristic_factory is not None:
             h = self.heuristic_factory(P, weighted)
         else:
-            h = StageHeuristic(P, weighted, self.bank, self.device)
+            h = StageHeuristic(P, weighted, self.bank, self.device,
+                               exact_stickers=self._goal(i), exact_weight=self.exact_weight)
         self._heuristics[i] = (h, singles, macros)
         return self._heuristics[i]
+
+    def _goal(self, i: int) -> np.ndarray:
+        return np.unique(np.concatenate([s.goal_stickers() for s in self.stages[: i + 1]]))
 
     def solve(self, state: np.ndarray) -> SolveResult:
         P = self.puzzle
@@ -88,7 +94,7 @@ class StagedSolver(Solver):
         all_moves, info = [], {"stages": []}
         expanded, peak_gpu, peak_host = 0, 0.0, 0.0
         for i, stage in enumerate(self.stages):
-            stickers = np.concatenate([c.stickers for s in self.stages[: i + 1] for c in s.targets])
+            stickers = self._goal(i)
             if np.array_equal(cur[stickers], P.solved[stickers]):
                 info["stages"].append({"stage": stage.name, "moves": 0, "width": 0})
                 continue
