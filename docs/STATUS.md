@@ -1,14 +1,14 @@
 # Status (2026-10-16)
 
-Summary: Method 5B solves 100% of random states tested for the Square (N = 3–20) and the
-Cube (N = 3–10; 15 and 20 in progress). Method 5A beats 5B on solution length at the Square
+Summary: Method 5B solves 100% of random states tested for the Square (N = 3–20, 64 states)
+and the Cube (N = 3–8, 10, 15, 20; 16 states). Method 5A beats 5B on solution length at the Square
 sizes tested, including unseen N = 10. Solutions are still long; see each section.
 
 All numbers come from the harness or the evaluation scripts on a 2-core CPU, no GPU.
 Random states = long random canonical walks (Section 3.4). HTM after canonicalisation.
 
 ## Method 5B: Rubik's Square, N = 3–20 — complete
-`results/m5b_stages/square_random.jsonl` (width 128, widening to 2048; 900 s budget):
+`docs/results/m5b_square_random.jsonl` (width 128, widening to 2048; 900 s budget):
 
 | N | n | solved | HTM mean ± 95% CI | HTM / (N²/ln N) | mean time (s) |
 |---|---|---|---|---|---|
@@ -35,8 +35,8 @@ The normalised length still rises with N, so these solutions grow faster than N�
 solves interior clusters a few at a time and does not yet batch them the way Demaine's
 Lemma 4 does. That is the gap Method 3 (and a learned batching policy) should close.
 
-## Method 5B: Cube, N = 3–10 — complete (15 and 20 running)
-`results/m5b_stages/cube_random.jsonl` (2 random states per N, width 512, widening per stage):
+## Method 5B: Cube, N = 3–20 — complete
+`docs/results/m5b_cube_random*.jsonl` (2 random states per N for N ≤ 10, 1 for 15 and 20; width 512, widening per stage):
 
 | N | n | solved | HTM mean ± 95% CI | QTM mean | HTM / (N²/ln N) | mean time (s) |
 |---|---|---|---|---|---|---|
@@ -47,6 +47,8 @@ Lemma 4 does. That is the gap Method 3 (and a learned batching policy) should cl
 | 7 | 2 | 100% | 1045.0 ± 33.3 | 1049.5 | 41.50 | 161 |
 | 8 | 2 | 100% | 1510.5 ± 120.5 | 1515.0 | 49.08 | 269 |
 | 10 | 2 | 100% | 2260.5 ± 22.5 | 2270.5 | 52.05 | 530 |
+| 15 | 1 | 100% | 5280 | 5292 | 63.2 | 1,875 |
+| 20 | 1 | 100% | 9904 | 9916 | 74.2 | 4,760 |
 
 What made the cube work (each step measured on the failing cases):
 1. Edges-first stage order (corners → middle edges → wings → centers), split into 6-piece stages.
@@ -56,8 +58,11 @@ What made the cube work (each step measured on the failing cases):
    verified to move only centers: 5×5×5 centers went from budget-limited to < 5 s per stage.
 4. Per-stage width ceiling scaled by action count (width × actions ≤ 1.2M).
 
-**Solution length is the weak point.** These are 5–50× longer than good NxN solvers (a
-reduction solver does a 4×4×4 in ~60 moves; the 3×3×3 optimum averages ~18). The stage
+**Solution length is the weak point.** These are several times longer than good NxN solvers:
+the 3×3×3 optimum averages ~18 HTM; for scale, the KMCoders Kaggle Santa 2023 write-up
+reports a 33×33×33 in 4,719 moves (their move metric may differ from our HTM), about half our
+20×20×20 count. HTM / (N²/ln N) still rises with N, so
+5B does not yet reach Demaine's growth rate on the cube. The stage
 structure trades length for reliability: every 6-piece stage pays for commutators
 (4–8 moves each) and keeps earlier work intact. The paper needs this to fall a lot.
 Ranked by expected effect:
