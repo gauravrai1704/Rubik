@@ -105,3 +105,12 @@ def test_square_frame_is_solved_exactly(N, rng):
     mv = S._solve_exact(s, table, singles)
     g = S._goal(0)
     assert np.array_equal(P.apply(s, mv)[g], P.solved[g])
+
+
+def test_late_center_stages_use_only_pure_macros():
+    P = cube(5)
+    S = StagedSolver(P, Budget(wall_time_s=60))
+    late = [i for i in range(len(S.stages)) if S._is_late_center_stage(i)]
+    assert late, "edges-first order should end with center stages"
+    _, singles, macros = S._stage_setup(late[0])
+    assert singles == [] and len(macros) > 0

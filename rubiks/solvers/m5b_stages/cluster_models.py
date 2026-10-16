@@ -111,8 +111,14 @@ def _disk_table(name: str, build):
     return t
 
 
+# kinds where the finer 3-class projection (a -> 1, b -> 2, rest -> 0) is small enough:
+# corners: C(8,4) * 3^7 = 153,090 states (which corners are U / D corners, plus twist)
+THREE_CLASS_KINDS = {"corner"}
+
+
 def coarse_tables(cluster: Orbit) -> list[tuple[ProjectionTable, np.ndarray]]:
-    """For each opposite-colour pair, BFS the projection with that pair -> 1, others -> 0."""
+    """For each opposite-colour pair, BFS the projection with that pair -> 1, others -> 0
+    (or, for ``THREE_CLASS_KINDS``, a -> 1, b -> 2, others -> 0)."""
     key = (cluster.signature,)
     if key in _COARSE_CACHE:
         return _COARSE_CACHE[key]
@@ -121,14 +127,16 @@ def coarse_tables(cluster: Orbit) -> list[tuple[ProjectionTable, np.ndarray]]:
         _COARSE_CACHE[key] = out
         return out
     for a, b in COARSE_PAIRS:
+        three = cluster.kind in THREE_CLASS_KINDS
         cmap = np.zeros(6, dtype=np.int64)
-        cmap[[a, b]] = 1
+        cmap[a], cmap[b] = 1, (2 if three else 1)
         solved = cmap[cluster.solved.astype(np.int64)]
         if solved.min() == solved.max():
             continue
-        t = _disk_table(f"{cluster.kind}_{cluster.signature}_coarse{a}{b}",
-                        lambda: cached_table((cluster.signature, "coarse", a, b), cluster.gen_perms, solved,
-                                             base=2, cap=COARSE_CAP))
+        tag = "c3" if three else "coarse"
+        t = _disk_table(f"{cluster.kind}_{cluster.signature}_{tag}{a}{b}",
+                        lambda: cached_table((cluster.signature, tag, a, b), cluster.gen_perms, solved,
+                                             base=3 if three else 2, cap=COARSE_CAP))
         if t is not None:
             out.append((t, cmap))
     _COARSE_CACHE[key] = out
@@ -249,9 +257,11 @@ class ModelBank:
     """Gives every cluster of a puzzle its heuristic, shared by signature."""
 
     def __init__(self, device: str = "cpu", root: Path = CKPT_DIR, allow_missing: bool = False,
-                 coarse: bool = True):
-        """``coarse``: combine each MLP with exact coarse tables by max (ablation: off)."""
+                 coarse: bool = True, tables_only: tuple[str, ...] = ()):
+        """``coarse``: combine each MLP with exact coarse tables by max (ablation: off).
+        ``tables_only``: cluster kinds that use their coarse tables alone, without the MLP."""
         self.device, self.root, self.allow_missing, self.coarse = device, root, allow_missing, coarse
+        self.tables_only = set(tables_only)
         self._cache: dict[str, object] = {}
 
     def get(self, cluster: Orbit):
@@ -262,8 +272,8 @@ class ModelBank:
         if t is not None:
             model = TableModel(t, self.device)
         else:
-            mlp = load_mlp(sig, cluster.kind, self.device, self.root)
-            if mlp is None and not self.allow_missing:
+            mlp = None if cluster.kind in self.tables_only else load_mlp(sig, cluster.kind, self.device, self.root)
+            if mlp is None and not self.allow_missing and cluster.kind not in self.tables_only:
                 raise FileNotFoundError(
                     f"no trained model for {cluster.kind} cluster (signature {sig}). Train it with:\n"
                     f"  python -m rubiks.solvers.m5b_stages.train --puzzle cube --N <N>")
