@@ -91,3 +91,17 @@ def test_square_solves_large(N, rng):
     s = random_state(P, rng)
     r = S.solve(s)
     assert P.is_solved(P.apply(s, r.moves)), r.info
+
+
+@pytest.mark.parametrize("N", [4, 9, 19])
+def test_square_frame_is_solved_exactly(N, rng):
+    """The frame of any Square is a 3×3 Square (<= 768 states): solved by exact lookup."""
+    P = square(N)
+    S = StagedSolver(P, Budget(wall_time_s=60), width=64, max_width=64)
+    s = random_state(P, rng)
+    h, singles, _ = S._stage_setup(0)
+    table = S._exact_table(0, singles)
+    assert table is not None and len(table[2]) <= 768
+    mv = S._solve_exact(s, table, singles)
+    g = S._goal(0)
+    assert np.array_equal(P.apply(s, mv)[g], P.solved[g])

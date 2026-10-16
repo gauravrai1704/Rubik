@@ -24,7 +24,7 @@ class StagedSolver(Solver):
                  stage_steps: int | None = None, keep_weight: float = 1.0, tier: str = "device",
                  packed: bool = True, chunk: int = 2048, bank: ModelBank | None = None,
                  macros: bool | None = None, future_weight: float = 0.0, heuristic_factory=None,
-                 exact_weight: float = 0.5, **plan_kwargs):
+                 exact_weight: float = 0.5, exact_cap: int = 100_000, **plan_kwargs):
         super().__init__(puzzle, budget)
         self.width, self.max_width = width, max_width
         self.stage_steps = stage_steps or (40 if puzzle.kind == "square" else 60)
@@ -38,6 +38,7 @@ class StagedSolver(Solver):
         self.actions = default_macros(puzzle) if use_macros else []
         self.future_weight = future_weight
         self.exact_weight = exact_weight
+        self.exact_cap = exact_cap
         # heuristic_factory(puzzle, [(cluster, weight), ...]) -> callable; default: per-cluster bank.
         # Method 5A plugs its cluster-token model in here (technical basis, Section 8.5).
         self.heuristic_factory = heuristic_factory
@@ -83,6 +84,58 @@ class StagedSolver(Solver):
         self._heuristics[i] = (h, singles, macros)
         return self._heuristics[i]
 
+    def _exact_table(self, i: int, singles: list[int]):
+        """BFS distance table over this stage's goal stickers, using only the moves that touch
+        them, if that projected puzzle has at most ``exact_cap`` states (e.g. the Square frame:
+        always a 3×3 Square, at most 768 states). None otherwise."""
+        key = ("exact", i)
+        if key in self._heuristics:
+            return self._heuristics[key]
+        table = None
+        if self.exact_cap and len(singles) <= 16:
+            P = self.puzzle
+            g = self._goal(i)
+            loc = {int(s): k for k, s in enumerate(g)}
+            gp = [np.array([loc[int(x)] for x in P.move_perms[m][g]]) for m in singles]
+            start = P.solved[g]
+            seen = {start.tobytes(): 0}
+            frontier, d = [start], 0
+            while frontier and len(seen) <= self.exact_cap:
+                d += 1
+                nxt = []
+                for st in frontier:
+                    for p in gp:
+                        k = st[p]
+                        b = k.tobytes()
+                        if b not in seen:
+                            seen[b] = d
+                            nxt.append(k)
+                frontier = nxt
+            if len(seen) <= self.exact_cap:
+                table = (g, gp, seen)
+        self._heuristics[key] = table
+        return table
+
+    def _solve_exact(self, cur: np.ndarray, table, singles: list[int]):
+        """Optimal moves for the stage by greedy descent on the exact distance table."""
+        g, gp, dist = table
+        x = cur[g]
+        d = dist.get(x.tobytes())
+        if d is None:
+            return None
+        moves = []
+        while d > 0:
+            for m, p in zip(singles, gp):
+                y = x[p]
+                dy = dist.get(y.tobytes())
+                if dy is not None and dy < d:
+                    moves.append(self.puzzle.moves[m])
+                    x, d = y, dy
+                    break
+            else:
+                return None
+        return moves
+
     def _goal(self, i: int) -> np.ndarray:
         return np.unique(np.concatenate([s.goal_stickers() for s in self.stages[: i + 1]]))
 
@@ -100,6 +153,14 @@ class StagedSolver(Solver):
                 continue
             goal = subset_goal(P, stickers, self.device)
             h, singles, macros = self._stage_setup(i)
+            table = self._exact_table(i, singles)
+            if table is not None:
+                mv = self._solve_exact(cur, table, singles)
+                if mv is not None:
+                    cur = P.apply(cur, mv)
+                    all_moves += mv
+                    info["stages"].append({"stage": stage.name, "moves": len(mv), "width": "exact"})
+                    continue
             width = self.width
             res = None
             while width <= self.max_width:
