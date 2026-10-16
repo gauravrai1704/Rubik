@@ -1,5 +1,9 @@
 # Status (2026-10-16)
 
+Summary: Method 5B solves 100% of random states tested for the Square (N = 3–20) and the
+Cube (N = 3–10; 15 and 20 in progress). Method 5A beats 5B on solution length at the Square
+sizes tested, including unseen N = 10. Solutions are still long; see each section.
+
 All numbers come from the harness or the evaluation scripts on a 2-core CPU, no GPU.
 Random states = long random canonical walks (Section 3.4). HTM after canonicalisation.
 
@@ -31,18 +35,37 @@ The normalised length still rises with N, so these solutions grow faster than N�
 solves interior clusters a few at a time and does not yet batch them the way Demaine's
 Lemma 4 does. That is the gap Method 3 (and a learned batching policy) should close.
 
-## Method 5B: Cube
-Cluster MLPs trained on CPU (1,500 steps each, hidden 256) + coarse exact tables.
+## Method 5B: Cube, N = 3–10 — complete (15 and 20 running)
+`results/m5b_stages/cube_random.jsonl` (2 random states per N, width 512, widening per stage):
 
-| Cube | tried | solved | HTM mean | time per solve |
-|---|---|---|---|---|
-| 3×3×3 | 5 | 5 | 56.4 | ~40 s |
-| 4×4×4 | 4 | 4 | 289 | ~200 s (CPU shared with training) |
-| 5×5×5 | see below | | | |
+| N | n | solved | HTM mean ± 95% CI | QTM mean | HTM / (N²/ln N) | mean time (s) |
+|---|---|---|---|---|---|---|
+| 3 | 2 | 100% | 52.0 ± 15.7 | 54.5 | 6.35 | 19 |
+| 4 | 2 | 100% | 246.0 ± 27.4 | 249.5 | 21.31 | 26 |
+| 5 | 2 | 100% | 452.5 ± 2.9 | 459.0 | 29.13 | 62 |
+| 6 | 2 | 100% | 724.5 ± 110.7 | 729.5 | 36.06 | 109 |
+| 7 | 2 | 100% | 1045.0 ± 33.3 | 1049.5 | 41.50 | 161 |
+| 8 | 2 | 100% | 1510.5 ± 120.5 | 1515.0 | 49.08 | 269 |
+| 10 | 2 | 100% | 2260.5 ± 22.5 | 2270.5 | 52.05 | 530 |
 
-Lengths are far from optimal (3×3×3 optimum averages ~18 HTM). The edges-first order with
-commutator macros is reliable but verbose. Expected gains: longer GPU training of the
-cluster MLPs, wider beams, and min2phase for the 3×3×3 stage (shared with Method 2).
+What made the cube work (each step measured on the failing cases):
+1. Edges-first stage order (corners → middle edges → wings → centers), split into 6-piece stages.
+2. Coarse exact tables (opposite-colour pair; 3-class for corners, 153,090 states) combined with
+   the cluster MLPs. Corners use the tables alone: 4–15× faster than max(MLP, tables).
+3. Late center stages search only pure-center commutators [A, B C B'] (middle slice included),
+   verified to move only centers: 5×5×5 centers went from budget-limited to < 5 s per stage.
+4. Per-stage width ceiling scaled by action count (width × actions ≤ 1.2M).
+
+**Solution length is the weak point.** These are 5–50× longer than good NxN solvers (a
+reduction solver does a 4×4×4 in ~60 moves; the 3×3×3 optimum averages ~18). The stage
+structure trades length for reliability: every 6-piece stage pays for commutators
+(4–8 moves each) and keeps earlier work intact. The paper needs this to fall a lot.
+Ranked by expected effect:
+* min2phase for the final 3×3×3-equivalent part (corners + edges) instead of beam search.
+* Larger pieces per stage once the cluster MLPs are trained properly on GPU
+  (fewer, wider stages = less protection overhead), and wider beams via the host tier.
+* Method 5A's per-token costs as the stage heuristic (5A beat 5B on the Square, below).
+* Batching like Demaine Lemma 10: one commutator fixing many clusters at once.
 
 ## Method 5A: first signal
 Model: d_model 64, 2 layers, 0.2M parameters, 2,500 steps on CPU, trained on Squares 4–8 only.

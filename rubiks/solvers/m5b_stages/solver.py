@@ -25,14 +25,16 @@ class StagedSolver(Solver):
                  packed: bool = True, chunk: int = 2048, bank: ModelBank | None = None,
                  macros: bool | None = None, future_weight: float = 0.0, heuristic_factory=None,
                  exact_weight: float = 0.5, exact_cap: int = 100_000, center_macros_only: bool = True,
-                 **plan_kwargs):
+                 cheap_width_budget: int = 1_200_000, **plan_kwargs):
         super().__init__(puzzle, budget)
         self.width, self.max_width = width, max_width
         self.stage_steps = stage_steps or (40 if puzzle.kind == "square" else 60)
         self.keep_weight = keep_weight
         self.device = self.budget.device
         self.tier, self.packed, self.chunk = tier, packed, chunk
-        self.bank = bank or ModelBank(device=self.device, allow_missing=heuristic_factory is not None)
+        # corners: the exact 3-class tables alone beat max(MLP, tables) (docs/STATUS.md)
+        self.bank = bank or ModelBank(device=self.device, allow_missing=heuristic_factory is not None,
+                                      tables_only=("corner",))
         self.stages = plan_stages(puzzle, **plan_kwargs)
         # macro actions (commutators) on by default: they remove the heuristic's hills
         use_macros = True if macros is None else macros
@@ -40,6 +42,8 @@ class StagedSolver(Solver):
         self.future_weight = future_weight
         self.exact_weight = exact_weight
         self.exact_cap = exact_cap
+        # a stage with few actions may widen past max_width while width x actions <= this budget
+        self.cheap_width_budget = cheap_width_budget
         # center stages after every edge/corner is solved: search only pure-center commutators,
         # which keep all earlier work by construction (verified in search.macros)
         self.center_macros_only = center_macros_only and puzzle.kind == "cube"
@@ -195,7 +199,9 @@ class StagedSolver(Solver):
                     continue
             width = self.width
             res = None
-            while width <= self.max_width:
+            n_actions = len(singles) + len(macros)
+            stage_max = max(self.max_width, min(1 << 16, self.cheap_width_budget // max(1, n_actions)))
+            while width <= stage_max:
                 remaining = deadline - time.time()
                 if remaining <= 0:
                     break
@@ -206,7 +212,10 @@ class StagedSolver(Solver):
                 peak_gpu, peak_host = max(peak_gpu, res.peak_gpu_mb), max(peak_host, res.peak_host_mb)
                 if res.found:
                     break
-                if width * 4 > self.max_width:
+                if width * 4 > stage_max:
+                    if width < stage_max:
+                        width = stage_max
+                        continue
                     break
                 width *= 4
             if res is None or not res.found:

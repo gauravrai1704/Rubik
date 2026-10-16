@@ -13,7 +13,7 @@ style of CayleyPy (NeurIPS 2025). The full spec is the technical basis document
 | 3 | Demaine parallel cluster algorithm | Kashvi | `rubiks/solvers/m3_demaine` | scaffold + spec |
 | 4 | CayleyPy reproduction | Shaurya | `rubiks/solvers/m4_cayleypy` | scaffold + spec |
 | 5A | Cluster-token transformer, one model for all N | Gaurav | `rubiks/solvers/m5a_tokens` | implemented; small CPU Square model trained, beats 5B at N ≤ 10 |
-| 5B | Learned search inside reduction stages | Gaurav | `rubiks/solvers/m5b_stages` | implemented; Square 100% at N = 3–20, cube 3–4 solved |
+| 5B | Learned search inside reduction stages | Gaurav | `rubiks/solvers/m5b_stages` | implemented; 100% solved: Square N = 3–20, Cube N = 3–10 (long solutions) |
 | — | Engine, checker, beam search, harness | Gaurav | `rubiks/engine`, `rubiks/search`, `rubiks/bench` | implemented, tested |
 
 Each teammate's folder has a `README.md` with their spec, the engine functions to use,
