@@ -56,9 +56,11 @@ def cube_macros(puzzle: PuzzleSpec, inner_only: bool = True) -> list[list[int]]:
 def cube_center_macros(puzzle: PuzzleSpec) -> list[list[int]]:
     """Pure center commutators [A, B C B'] = A B C B' A' B C' B' (e.g. r U l' U' r' U l U').
 
-    A: inner-slice quarter turn (axis a, layer k); B: outer face quarter turn on another axis;
-    C: inner-slice quarter turn on axis a at layer k or N-1-k. Each candidate is checked
-    and kept only if it moves center stickers alone (corners, edges and wings untouched)."""
+    A: inner-slice quarter turn (axis a, any inner layer, the middle slice included — e.g.
+    [M, U r U'] for +-centers); B: outer face quarter turn on another axis; C: inner-slice
+    quarter turn on axis a at any inner layer. Each candidate is checked and kept only if
+    it moves center stickers alone (corners, edges, wings and fixed centers untouched);
+    duplicates (same permutation) are dropped."""
     import numpy as np
 
     from ..engine.orbits import clusters
@@ -76,8 +78,6 @@ def cube_center_macros(puzzle: PuzzleSpec) -> list[list[int]]:
     out, seen = [], set()
     for a in range(3):
         for k in range(1, N - 1):
-            if N % 2 == 1 and k == N // 2:
-                continue  # middle slice moves middle edges
             for ta in (1, 3):
                 A, Ai = idx[Move(a, k, ta)], idx[Move(a, k, 4 - ta)]
                 for fa, fl in faces:
@@ -85,7 +85,7 @@ def cube_center_macros(puzzle: PuzzleSpec) -> list[list[int]]:
                         continue
                     for tb in (1, 3):
                         Bm, Bi = idx[Move(fa, fl, tb)], idx[Move(fa, fl, 4 - tb)]
-                        for j in sorted({k, N - 1 - k}):
+                        for j in range(1, N - 1):
                             for tc in (1, 3):
                                 C, Ci = idx[Move(a, j, tc)], idx[Move(a, j, 4 - tc)]
                                 seq = [A, Bm, C, Bi, Ai, Bm, Ci, Bi]
