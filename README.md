@@ -12,7 +12,7 @@ style of CayleyPy (NeurIPS 2025). The full spec is the technical basis document
 | 2 | Reduction + Kociemba two-phase | Sunaina | `rubiks/solvers/m2_reduction` | scaffold + spec |
 | 3 | Demaine parallel cluster algorithm | Kashvi | `rubiks/solvers/m3_demaine` | scaffold + spec |
 | 4 | CayleyPy reproduction | Shaurya | `rubiks/solvers/m4_cayleypy` | scaffold + spec |
-| 5A | Cluster-token transformer, one model for all N | Sharanya (implemented by Gaurav) | `rubiks/solvers/m5a_tokens` | implemented; small CPU Square model trained, beats 5B at N ≤ 10 |
+| 5A | Cluster-token transformer, one model for all N | Sharanya | `rubiks/solvers/m5a_tokens` | implemented; small CPU Square model trained, beats 5B at N ≤ 10 |
 | 5B | Learned search inside reduction stages | Gaurav | `rubiks/solvers/m5b_stages` | implemented; 100% solved on Square N = 3–20 and Cube N = 3–20 (solutions still long) |
 | — | Engine, checker, beam search, harness | Gaurav | `rubiks/engine`, `rubiks/search`, `rubiks/bench` | implemented, tested |
 
