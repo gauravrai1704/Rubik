@@ -7,13 +7,32 @@ Reproduces the current ML state of the art (Chervov et al., NeurIPS 2025) inside
 ## Scope
 * Cube N = 3, 4, 5; Square N = 3..8 (one model per N).
 
-## How
-* Training data: `rubiks.engine.random_walks(perms, solved, batch, kmax, ...)` already generates non-backtracking walks on GPU; record (state, k). Max walk length 26 / 45 / 65 for N = 3 / 4 / 5.
-* Network: ResMLP — one-hot 6·6N² input, two Linear+BatchNorm+ReLU layers, residual blocks, one output predicting k. 10 layers, ~4M parameters.
-* Training: MSE, Adam lr 1e-3, 1M fresh examples per epoch, FP32 training, FP16 inference.
-* Search: use the shared `rubiks.search.beam.BeamSearch(puzzle, heuristic, BeamConfig(width=W, max_steps=200))`; your heuristic is a callable `(B, S) uint8 tensor -> (B,) float`. Report length vs W (2¹⁰ … the widest your GPU allows; use `tier='host'` for wider beams).
-* Reference code: github.com/k1242/cayleypy-cube — wrap it in our `Solver` interface so the harness re-checks every solution.
-* Optional: ensembles of independently trained agents, shortest solution wins.
+## How (implemented)
+| File | What |
+|---|---|
+| `model.py` | `ResMLP` (Fig. 1b: Linear N1 + BN + ReLU, Linear N2 + BN + ReLU, Nr residual blocks, one output), the paper's Table II sizes as `PRESETS` (`paper3` / `paper4` / `paper5` = the 4M 10-layer models), the move sets, non-backtracking walk generator, save / load |
+| `train.py` | One model per (puzzle, N): fresh walks every epoch, target k, MSE, Adam 1e-3, FP32. Writes `<out>.json` with training time, peak GPU memory, examples seen and a fit log |
+| `solver.py` | `m4_cayleypy`: shared `BeamSearch` (hash dedup, 200 steps, any memory tier), FP16 scoring on GPU, optional W-doubling retries, ensembles (shortest wins) |
+
+* **Move set (`--moves paper`).** 3×3×3: the 12 face quarter turns (DeepCubeA's QTM). 4×4×4 / 5×5×5:
+  quarter turns of every slice (Santa 2023's UQTM). Square: every flip. `R R` is legal in the search
+  (it is how QTM spells `R2`); only `R R'` and non-ascending orders of commuting moves are pruned.
+  `--moves all` trains / searches with every engine move instead.
+* **Walks.** Non-backtracking in the paper's sense: never the inverse of the previous move.
+  `kmax` = 26 / 45 / 65 for cubes 3 / 4 / 5; Squares use 5A's horizon (`m5a_tokens.train.kmax_for`).
+* **Checkpoints.** `checkpoints/m4/<puzzle><N>.pt` (committed, CPU-sized) or `<puzzle><N>.large.pt`
+  (GPU, git-ignored, preferred when present). Extra ensemble agents: `<puzzle><N>.<tag>[.large].pt`.
+
+```bash
+# paper settings (GPU): 8192 epochs x 1M = 8B examples
+python -m rubiks.solvers.m4_cayleypy.train --puzzle cube --N 3 --preset paper3 --epochs 8192 \
+    --device cuda --out checkpoints/m4/cube3.large.pt
+# everything in Section 7.3 + the length-vs-W curve
+DEVICE=cuda bash experiments/m4_cayleypy.sh
+# solve at a given width; an ensemble is a list of checkpoints
+python -m rubiks.bench run --solver m4_cayleypy --puzzle cube --N 3 --dataset random --device cuda \
+    --kw '{"width": 262144}'
+```
 
 ## Engine pieces you can use
 | Need | Use |
@@ -35,9 +54,6 @@ Reproduces the current ML state of the art (Chervov et al., NeurIPS 2025) inside
 - [ ] Training time and peak GPU memory recorded for every run.
 
 ## Workflow
-1. Branch: `git checkout -b m4-cayleypy`.
-2. Implement `solver.py` (add modules in this folder as needed).
-3. Remove the `xfail` mark for `m4_cayleypy` in `tests/test_methods_1_4.py` and make it pass.
-4. Benchmark: `python -m rubiks.bench make --puzzle square --N 3-8 --depth 20`, then
+1. Benchmark: `python -m rubiks.bench make --puzzle square --N 3-8 --depth 20`, then
    `python -m rubiks.bench run --solver m4_cayleypy --puzzle square --N 3-8 --dataset d20`.
-5. Open a PR; CI must pass and one reviewer approves.
+2. Open a PR; CI must pass and one reviewer approves.
