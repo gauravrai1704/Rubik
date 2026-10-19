@@ -1,6 +1,6 @@
-# Status (2026-10-16)
+# Status (2026-10-19)
 
-Summary: Method 5B solves 100% of random states tested for the Square (N = 3–20, 64 states)
+Summary: Method 4 (CayleyPy) is in: per-N Square models give the shortest Square solutions so far (N = 3–8). Method 5B solves 100% of random states tested for the Square (N = 3–20, 64 states)
 and the Cube (N = 3–8, 10, 15, 20; 16 states). Method 5A beats 5B on solution length at the Square
 sizes tested, including unseen N = 10. Solutions are still long; see each section.
 
@@ -92,7 +92,34 @@ Same instances as 5B (3 random states per N):
 Small samples, but in the direction the paper needs. Next: the go / no-go run on GPU
 (`experiments/go_no_go_5a.sh`, 20k steps, d_model 192) and the cube model.
 
-## Methods 1–4
+## Method 4 (CayleyPy reproduction): implemented; Square done, cube needs GPU training
+Per-N ResMLP + beam search, as in Chervov et al. (Section 7). Committed CPU models
+`checkpoints/m4/square{3..8}.pt` ("small" preset, 0.25–0.45M parameters, 4M examples for N ≤ 5 and
+10M for N = 6–8, 1–4 min each on CPU; time and fit are recorded in each `.json`).
+
+Squares, 5 random states per N, the same instances for every method (HTM; Square moves are all flips, so QTM = HTM):
+
+| N | M4 W=16 | M4 W=64 | M4 W=256 | M4 W=1024 | M4 W=4096 | 5A | 5B |
+|---|---|---|---|---|---|---|---|
+| 3 | 4.2 | 4.2 | 4.2 | 4.2 | 4.2 | — | 5.6 |
+| 4 | 6.8 | 6.4 | 6.4 | 6.4 | 6.4 | 6.4 | 12.4 |
+| 5 | 9.8 | 9.8 | 9.4 | 9.0 | 8.8 | 9.8 | 22.0 |
+| 6 | 16.0 (4/5) | 14.8 | 14.0 | 14.0 | 14.0 | 14.8 | 30.4 |
+| 7 | 17.6 | 16.0 | 15.8 | 15.4 | 15.0 | 22.7 (3/5) | 40.8 |
+| 8 | 27.3 (3/5) | 44.7 (3/5) | 24.5 (4/5) | 22.0 | 20.4 | 55.2 | 63.2 |
+
+All 100% solved unless marked. W = 4096 takes ≤ 10 s per state on CPU. Length falls with log W, as the
+paper reports, and the per-N model sets a hard bar for 5A: 5A roughly matches it on N ≤ 6 but is 2.7× longer at N = 8.
+
+**3×3×3: not reproduced yet.** The paper3 model (4.0M parameters, 10 layers, QTM moves, kmax 26) trained
+for 32M examples on CPU (77 min). That is 250× less data than the paper's 8B, and the fit is weak
+(correlation with walk depth 0.90). With it, beam search solves short scrambles (depth 6/10/14 QTM: all
+solved, at or below scramble length; depth 18: solved in 24–28) but **0 of 10 random states** at W = 256,
+1024 or 4096, and 0 of 4 at W = 16384 (900 s each). The weights are `cube3.large.pt` (16 MB, git-ignored).
+The 21.14 QTM check needs the GPU run: `DEVICE=cuda bash experiments/m4_cayleypy.sh`
+(8192 epochs × 1M, then W up to 2¹⁸; `--kw '{"tier": "host"}'` for wider).
+
+## Methods 1–3
 Scaffolds, specs and xfail tests in place; owners implement.
 
 ## Known limitations
