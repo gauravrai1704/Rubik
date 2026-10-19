@@ -5,6 +5,7 @@ from rubiks.engine import random_state, square
 from rubiks.solvers import REGISTRY, Budget, get_solver, load_all
 
 METHODS = ["m1_idastar", "m2_reduction", "m3_demaine", "m4_cayleypy"]
+DONE = {"m4_cayleypy"}
 
 
 def test_all_registered():
@@ -13,7 +14,8 @@ def test_all_registered():
         assert m in REGISTRY
 
 
-@pytest.mark.parametrize("name", [pytest.param(m, marks=pytest.mark.xfail(raises=NotImplementedError, strict=True))
+@pytest.mark.parametrize("name", [m if m in DONE else
+                                  pytest.param(m, marks=pytest.mark.xfail(raises=NotImplementedError, strict=True))
                                   for m in METHODS])
 def test_solves_small_square(name, rng):
     P = square(4)
