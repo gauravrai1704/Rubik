@@ -48,10 +48,11 @@ python -m rubiks.bench run --solver m4_cayleypy --puzzle cube --N 3 --dataset ra
 | Beam search (learned methods) | `rubiks.search.beam.BeamSearch`, `BeamConfig` |
 
 ## Done when
-- [ ] 3×3×3 mean within ~0.5 moves of the paper's 21.14 QTM at W = 2¹⁸.
-- [ ] Length-vs-W curves for 3×3×3 and 4×4×4.
-- [ ] Per-N Square models for N = 3..8 on our benchmark.
-- [ ] Training time and peak GPU memory recorded for every run.
+- [ ] 3×3×3 mean within ~0.5 moves of the paper's 21.14 QTM at W = 2¹⁸. *Needs the GPU run: a CPU model
+      trained on 32M examples (paper: 8B) solves 0/10 random states at W ≤ 4096; see docs/STATUS.md.*
+- [ ] Length-vs-W curves for 3×3×3 and 4×4×4. *Script ready (`experiments/m4_cayleypy.sh`); needs GPU models.*
+- [x] Per-N Square models for N = 3..8 on our benchmark (committed; results in docs/STATUS.md).
+- [x] Training time and peak GPU memory recorded for every run (`checkpoints/m4/*.json`).
 
 ## Workflow
 1. Benchmark: `python -m rubiks.bench make --puzzle square --N 3-8 --depth 20`, then

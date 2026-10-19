@@ -6,7 +6,7 @@ name               method                                owner
 m1_idastar         IDA* + pattern databases              Shree
 m2_reduction       Reduction + Kociemba two-phase        Sunaina
 m3_demaine         Demaine parallel cluster algorithm    Kashvi
-m4_cayleypy        CayleyPy reproduction                 Shaurya
+m4_cayleypy        CayleyPy reproduction                 Shaurya (implemented by Gaurav)
 m5a_tokens         Cluster-token model, one for all N    Sharanya (implemented by Gaurav)
 m5b_stages         Learned search inside stages          Gaurav
 =================  ====================================  ================================
