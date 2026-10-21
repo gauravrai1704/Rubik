@@ -11,3 +11,5 @@ results/
 # and name them *.large.pt. Small ones (5B cluster MLPs, the CPU 5A Square model) are committed.
 checkpoints/**/*.large.pt
 *.beam
+# Method 1 pattern databases (~170 MB per metric), rebuilt on first use
+checkpoints/m1/

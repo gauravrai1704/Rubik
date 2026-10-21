@@ -1,6 +1,6 @@
 # Method 1: IDA* with pattern databases
 
-**Owner:** Shree · **Spec:** technical basis, Section 4 · **Registered name:** `m1_idastar`
+**Owner:** Shree (implemented by Gaurav) · **Spec:** technical basis, Section 4 · **Registered name:** `m1_idastar`
 
 Finds provably shortest solutions where feasible: the ground truth every other method is measured against, plus the measured curve of where exact search stops working.
 
@@ -9,13 +9,24 @@ Finds provably shortest solutions where feasible: the ground truth every other m
 * Rubik's Square: full BFS of the whole state space for the smallest N (exact God's number), then IDA* for as large an N as the budget allows.
 * Report the largest N, per puzzle, at which IDA* still solves random states within the budget.
 
-## How
-* IDA*: depth-first searches with bound f = g + h, raising the bound each round; with admissible h the first solution is optimal.
-* 3×3×3 heuristic: max of Korf's three pattern databases — corners 8!·3⁷ = 88,179,840 entries; two 6-edge tables of 12!/6!·2⁶ = 42,577,920 entries each; 4 bits per entry; built by BFS backwards from solved.
-* Square heuristic: max over clusters of each cluster's exact distance. `rubiks.engine.projection.bfs_projection` already builds these tables (see `rubiks/solvers/m5b_stages/cluster_models.py::table_for`).
-* Pruning: `rubiks.engine.canonical_successor_mask(puzzle)` gives the allowed next moves (no same face twice, one order for commuting moves).
-* Write the inner loop in C++ or Numba, on a compact piece-level state (corner perm/twist, edge perm/flip), not the sticker array.
-* Cross-check a sample of optimal lengths against Rokicki's cube20src.
+## How (implemented)
+| File | What |
+|---|---|
+| `cube3.py` | Cubie model of the 3×3×3 read off the engine's clusters (move tables are derived from the engine's sticker permutations, and a test checks they agree), Korf's three pattern databases built by BFS in Numba, parallel IDA* (one root move per thread) |
+| `square.py` | Full-state BFS (`gods_number`), IDA* with h = max over clusters of exact cluster distances (Numba) |
+| `solver.py` | `m1_idastar`: 3×3×3 (`metric="htm"` 18 face turns, or `"qtm"` 12 quarter turns) and Squares; other puzzles raise `ValueError` |
+| `label.py` | Writes optimal lengths into datasets (`optimal_len`) and prints God's numbers |
+
+* Pattern databases: one byte per entry (not 4 bits: 173 MB per metric fits in RAM and keeps
+  lookups one load). Built on first use in ~1 min per metric, cached in `checkpoints/m1/` (git-ignored).
+* Colours are relabelled first (`cluster_tools.orient`), so solutions are optimal to the reference
+  orientation; on the Square that is optimal position-solving (an upper bound for colour-solving).
+
+```bash
+python -m rubiks.solvers.m1_idastar.label --gods 3                      # exact God's number, Square 3
+python -m rubiks.solvers.m1_idastar.label --puzzle square --N 3-5 --time 120
+python -m rubiks.bench run --solver m1_idastar --puzzle cube --N 3 --dataset random --time 1800
+```
 
 ## Engine pieces you can use
 | Need | Use |
@@ -38,9 +49,6 @@ Finds provably shortest solutions where feasible: the ground truth every other m
 - [ ] Write optimal lengths back into the datasets' `optimal_len` field (`rubiks.bench.datasets`).
 
 ## Workflow
-1. Branch: `git checkout -b m1-idastar`.
-2. Implement `solver.py` (add modules in this folder as needed).
-3. Remove the `xfail` mark for `m1_idastar` in `tests/test_methods_1_4.py` and make it pass.
-4. Benchmark: `python -m rubiks.bench make --puzzle square --N 3-8 --depth 20`, then
+1. Benchmark: `python -m rubiks.bench make --puzzle square --N 3-8 --depth 20`, then
    `python -m rubiks.bench run --solver m1_idastar --puzzle square --N 3-8 --dataset d20`.
-5. Open a PR; CI must pass and one reviewer approves.
+2. Open a PR; CI must pass and one reviewer approves.

@@ -1,19 +1,26 @@
 # Method 3: Demaine's parallel cluster algorithm
 
-**Owner:** Kashvi · **Spec:** technical basis, Section 6 · **Registered name:** `m3_demaine`
+**Owner:** Kashvi (implemented by Gaurav) · **Spec:** technical basis, Section 6 · **Registered name:** `m3_demaine`
 
 The asymptotically optimal O(N²/log N) algorithm of Demaine et al. (2011): one slice move touches many clusters, so clusters needing the same fix share one move sequence. Build the Square first (6 interior configurations), then the Cube.
 
 ## Scope
 * Square N = 3..20, then Cube N = 3..20.
 
-## How
-* Clusters and their canonical sticker order come from `rubiks.engine.clusters(puzzle)` — `Orbit.stickers`, `Orbit.gen_moves`, `Orbit.gen_perms`.
-* Square batching (Lemma 4): if every cluster in columns X × rows Y has the same configuration, flip X, then Y, then X, then Y: each cluster in X × Y gets its own 4-move fix, others see every move twice.
-* Square algorithm (Lemmas 5–6, Theorem 1): frame clusters in O(N) (Lemma 3), then for each of the 6 interior configurations group columns into sets of size ½·log₂|Y| and apply Lemma 4 per subset pattern.
-* Cube (Lemmas 7–12, Theorem 3): fix edge-cluster parity with single slice moves, solve edge clusters, then for each ordered pair of index groups apply the bulk construction of Lemma 10 with Schütze's 10-move commutator S (Table 1 lists its 24 variants; together they generate A₂₄).
-* Practical fix (Section 6.4): cube clusters have ~3·10¹⁵ configurations, so batch at the level of 3-cycles: write each cluster's solution as basic 3-cycles, and each round apply one 3-cycle type to every cluster that needs it next (greedy: the most-needed type). KMCoders' Santa 2023 solution does this.
-* `rubiks.search.macros.square_macros` already builds the single-cluster commutators c r c r — reuse for testing your sequences.
+## How (implemented)
+* **Square (Theorem 1).** Frame and edge groups exactly as Method 2 (Lemma 3, O(N)). Interior
+  clusters: each cluster's optimal word of Lemma 2 commutators is read off its exact table; round r
+  applies every cluster's r-th commutator, grouped into blocks X × Y (`batching.blocks`: Demaine's
+  column groups of size ℓ, with ℓ chosen per round to minimise the real cost) and one
+  `C_X R_Y C_X R_Y` per block (Lemma 4).
+* **Cube (Theorem 3 + the Section 6.4 fix).** Wing parity (Lemma 7) and the 3×3×3 part as Method 2.
+  Centers, then wings, by greedy rounds of batched 3-cycles: a *type* is an outer-face setup plus a
+  commutator with layer parameters (`[A_i, B C_j B']`, `[X_i, Y Z Y']`); with layer sets I, J it acts
+  on every cluster (i, j) ∈ I × J at once. Each round picks the type with the most slots fixed per
+  move over all clusters (or a single-cluster 3-cycle when that is better), and checks the result
+  sticker by sticker; a block that would disturb anything else is split.
+
+So Methods 2 and 3 differ only in the batching, which is the comparison Section 6.5 asks for.
 
 ## Engine pieces you can use
 | Need | Use |
@@ -35,9 +42,6 @@ The asymptotically optimal O(N²/log N) algorithm of Demaine et al. (2011): one 
 - [ ] Direct comparison with Method 2 on the same instances.
 
 ## Workflow
-1. Branch: `git checkout -b m3-demaine`.
-2. Implement `solver.py` (add modules in this folder as needed).
-3. Remove the `xfail` mark for `m3_demaine` in `tests/test_methods_1_4.py` and make it pass.
-4. Benchmark: `python -m rubiks.bench make --puzzle square --N 3-8 --depth 20`, then
+1. Benchmark: `python -m rubiks.bench make --puzzle square --N 3-8 --depth 20`, then
    `python -m rubiks.bench run --solver m3_demaine --puzzle square --N 3-8 --dataset d20`.
-5. Open a PR; CI must pass and one reviewer approves.
+2. Open a PR; CI must pass and one reviewer approves.

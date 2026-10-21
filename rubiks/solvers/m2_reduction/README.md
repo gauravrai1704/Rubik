@@ -1,20 +1,28 @@
 # Method 2: Reduction + Kociemba two-phase
 
-**Owner:** Sunaina · **Spec:** technical basis, Section 5 · **Registered name:** `m2_reduction`
+**Owner:** Sunaina (implemented by Gaurav) · **Spec:** technical basis, Section 5 · **Registered name:** `m2_reduction`
 
 The standard way to solve any N: reduce to a 3×3×3 stage by stage, then use a fast 3×3×3 solver. Works for every N with O(N²) moves.
 
 ## Scope
 * Cube N = 3..20 and Square N = 3..20, 100% of instances.
 
-## How
-* Centers: solve every center cluster (odd N: around the fixed centers; even N: pick face colours first). Use commutators [A, B] = A B A' B' that 3-cycle center pieces of one cluster; parameterise them by layer so they work for any N.
-* Edge pairing: group each wing cluster's wings with the middle edge (odd N) into 12 composite edges with slice moves undone afterwards (slice-flip-slice).
-* Parity: fix odd wing-orbit parity with the standard inner-slice sequences; for even N these are OLL and PLL parity.
-* 3×3×3 stage: Kociemba two-phase — `pip install kociemba`, or min2phase (cs0x7f) / RubiksCube-TwophaseSolver (hkociemba). Map its face turns to outer-layer `Move`s with `rubiks.engine.parse_notation`.
-* Square version: solve clusters one at a time with Demaine (2011) Lemma 2 sequences (≤ 6 moves per interior cluster) after the O(N) frame procedure of Lemma 3. Method 3 parallelises exactly this, so keep them comparable.
-* Keep each stage a separate function `state -> moves` so Method 5B can swap stages, and log moves per stage in `SolveResult.info`.
-* Run the dwalton76 NxNxN solver on the same instances as an external baseline.
+## How (implemented)
+Cube stages (each a function `state -> moves`; moves per stage in `SolveResult.info["stages"]`):
+
+| Stage | What |
+|---|---|
+| orient | Relabel colours so the target is the reference orientation (odd N: the fixed centers decide; even N: the rotation matching the most centers) |
+| `wing_parity` | One inner-slice quarter turn per odd wing orbit (Demaine Lemma 7); first, because it disturbs centers |
+| `centers` | Each center orbit with pure 3-cycles `s [A, B C B'] s'` (`cluster_tools.CycleLibrary`: every 3-cycle of the orbit, found by conjugating automatically found base commutators) |
+| `three` | Corners, middle edges, fixed centers: Kociemba two-phase (`kociemba` package) on outer layers, which keep centers in place; even-N PLL parity = one outer quarter turn first |
+| `wings` | Each wing orbit with pure 3-cycles `s [X, Y Z Y'] s'`: wings go home, so OLL parity never reaches the 3×3×3 stage |
+
+Square: frame (exact BFS over the projected 3×3 Square), edge groups (Lemma 3: edge cluster +
+cross cluster, single flips + border commutators, exact BFS), then each interior cluster with its
+four Lemma 2 commutators (exact, ≤ 3 commutators). Shared with Method 3 in `solvers/square_plan.py`.
+
+Not done: the dwalton76 external baseline (no network access to install it here).
 
 ## Engine pieces you can use
 | Need | Use |
@@ -35,9 +43,6 @@ The standard way to solve any N: reduce to a 3×3×3 stage by stage, then use a 
 - [ ] Moves per stage reported for each N.
 
 ## Workflow
-1. Branch: `git checkout -b m2-reduction`.
-2. Implement `solver.py` (add modules in this folder as needed).
-3. Remove the `xfail` mark for `m2_reduction` in `tests/test_methods_1_4.py` and make it pass.
-4. Benchmark: `python -m rubiks.bench make --puzzle square --N 3-8 --depth 20`, then
+1. Benchmark: `python -m rubiks.bench make --puzzle square --N 3-8 --depth 20`, then
    `python -m rubiks.bench run --solver m2_reduction --puzzle square --N 3-8 --dataset d20`.
-5. Open a PR; CI must pass and one reviewer approves.
+2. Open a PR; CI must pass and one reviewer approves.

@@ -13,7 +13,8 @@ from the repo root on the GPU machine with `DEVICE=cuda`. Results land in `resul
 | `e6_tiers.sh` | Tiered memory: how much wider a beam, at what speed cost |
 | `e7_gods_number.sh` | Upper-bound evidence for God's number, N = 4–20 |
 | `e8_canonical_walks.sh` | Does removing commuting moves from training walks help? |
+| `methods_1_3.sh` | Methods 1–3: God's number, optimal lengths, Method 2 vs Method 3 on the same instances, N = 3–20 |
 | `m4_cayleypy.sh` | Method 4: train the paper's per-N models, length vs W on cubes 3–4, Squares 3–8 |
 | `go_no_go_5a.sh` | Section 8.6: train 5A on Squares 4–8, test 10/14/20 against Method 2 |
 
-Methods 1–4 drop into these scripts by name once they are implemented.
+Every method is implemented; scripts take solvers by name.

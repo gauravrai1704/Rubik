@@ -8,11 +8,10 @@ version = "0.1.0"
 description = "Six solvers for the N×N×1 Rubik's Square and N×N×N Rubik's Cube (3 <= N <= 20) on one shared engine"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = ["numpy>=1.24", "torch>=2.1"]
+dependencies = ["numpy>=1.24", "torch>=2.1", "numba>=0.58", "kociemba>=1.2"]
 
 [project.optional-dependencies]
 dev = ["pytest>=7", "ruff>=0.4"]
-kociemba = ["kociemba>=1.2"]
 
 [tool.setuptools.packages.find]
 include = ["rubiks*"]

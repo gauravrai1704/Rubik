@@ -10,6 +10,9 @@ Committed (small, CPU-trained, enough to run everything out of the box):
   paper3 model is `m4/cube3.large.pt` (16 MB, not committed; `m4/cube3.large.json` records its training).
 * `m5a/square.pt` — Method 5A cluster-token model, 0.2M params, Squares 4–8, 2,500 CPU steps.
 
+Built on first use, not committed: `m1/pdb_<metric>_*.npy` — Method 1's 3×3×3 pattern databases
+(173 MB per metric, ~1 min to build on 4 cores).
+
 Large GPU-trained models: name them `*.large.pt` (git-ignored) and share them as GitHub
 release assets or on the team drive. Every Rubik's Square cluster uses an exact table, so
 Method 5B on the Square needs no checkpoint at all.
