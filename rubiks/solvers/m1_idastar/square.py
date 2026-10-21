@@ -1,8 +1,8 @@
 """Rubik's Square for Method 1 (technical basis, Sections 4.1-4.3).
 
-* :func:`gods_number` — breadth-first search of the whole state space from solved (small N):
-  the exact distance distribution, hence God's number. Distances are to the reference
-  solved state; states that differ by a whole-Square rotation are counted separately.
+* :func:`gods_number` — breadth-first search of the whole state space (small N): the exact
+  distance distribution, hence God's number, for the colour goal (BFS from all 4 rotations
+  of the solved Square) or, with ``goal="position"``, to the reference state only.
 * :func:`ida_star` — IDA* with h = max over clusters of that cluster's exact distance
   (each cluster's table from :func:`rubiks.engine.projection.bfs_projection`), admissible
   because no solution fixes a cluster in fewer moves than it needs alone. Pruning: never the
@@ -85,8 +85,10 @@ def _dfs(state, g, bound, last, perms, allowed, st_idx, st_off, codes, dists, ta
     return best
 
 
-def ida_star(N: int, state: np.ndarray, time_limit: float = 60.0, node_limit: int = 10**12):
-    """Optimal solution (engine move ids to the reference solved state), or None on a limit."""
+def ida_star(N: int, state: np.ndarray, time_limit: float = 60.0, node_limit: int = 10**12,
+             max_bound: int = 1 << 30):
+    """Optimal solution (engine move ids to the reference solved state), or None on a limit
+    (``bound > max_bound`` counts as one: no solution of at most ``max_bound`` moves)."""
     P = square(N)
     tabs = cluster_tables(N)
     perms = P.move_perms.astype(np.int64)
@@ -99,7 +101,7 @@ def ida_star(N: int, state: np.ndarray, time_limit: float = 60.0, node_limit: in
     rate = 2e5  # nodes / s, refined after each iteration
     while True:
         left = time_limit - (time.time() - t0)
-        if left <= 0:
+        if left <= 0 or bound > max_bound:
             return None, {"nodes": int(nodes[0]), "bound": bound, "time_s": time.time() - t0}
         before, t1 = int(nodes[0]), time.time()
         lim = min(node_limit, before + int(rate * left) + 1000)
@@ -117,14 +119,50 @@ def ida_star(N: int, state: np.ndarray, time_limit: float = 60.0, node_limit: in
         bound = t
 
 
-def gods_number(N: int, cap: int = 50_000_000) -> dict:
-    """Full BFS from solved. Returns {"states", "distribution", "gods_number"} or raises past cap."""
+def ida_star_any_orientation(N: int, state: np.ndarray, time_limit: float = 60.0, node_limit: int = 10**12):
+    """Optimal colour-solving: IDA* to each whole-Square rotation of the goal (each a colour
+    relabelling), most promising first, later searches capped below the best length so far."""
+    from ..cluster_tools import rotation_colour_maps
+
+    P = square(N)
+    tabs = cluster_tables(N)
+    starts = []
+    for cmap in rotation_colour_maps(P):
+        inv = np.empty(6, dtype=np.int64)
+        inv[cmap] = np.arange(6)
+        s = inv[np.asarray(state).astype(np.int64)]
+        starts.append((int(_h(s, *tabs)), s))
+    starts.sort(key=lambda x: x[0])
+    t0 = time.time()
+    best, stats = None, {"nodes": 0}
+    complete = True
+    for h0, s in starts:
+        cap = (len(best) - 1) if best is not None else (1 << 30)
+        if h0 > cap:
+            continue
+        left = time_limit - (time.time() - t0)
+        if left <= 0:
+            complete = False
+            break
+        ids, st = ida_star(N, s, left, node_limit, cap)
+        stats["nodes"] += st["nodes"]
+        if ids is not None:
+            best = ids
+        elif st["bound"] <= cap:
+            complete = False  # stopped by a limit before proving no shorter solution
+    stats["time_s"] = time.time() - t0
+    return (best if complete else None), stats
+
+
+def gods_number(N: int, goal: str = "colour", cap: int = 50_000_000) -> dict:
+    """Full BFS from the goal states. Returns {"states", "distribution", "gods_number"}."""
     P = square(N)
     perms = P.move_perms
-    start = P.solved.astype(np.int8)
-    seen = {start.tobytes()}
-    frontier = start[None]
-    dist = [1]
+    starts = [P.solved[R] for R in P.rotations] if goal == "colour" else [P.solved]
+    starts = np.unique(np.array(starts, dtype=np.int8), axis=0)
+    seen = {s.tobytes() for s in starts}
+    frontier = starts
+    dist = [len(starts)]
     while len(frontier):
         kids = frontier[:, perms].reshape(-1, P.num_stickers)
         new = []
@@ -139,4 +177,4 @@ def gods_number(N: int, cap: int = 50_000_000) -> dict:
             break
         dist.append(len(new))
         frontier = np.array(new)
-    return {"N": N, "states": len(seen), "distribution": dist, "gods_number": len(dist) - 1}
+    return {"N": N, "goal": goal, "states": len(seen), "distribution": dist, "gods_number": len(dist) - 1}

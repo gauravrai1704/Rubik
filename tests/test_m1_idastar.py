@@ -9,8 +9,10 @@ from rubiks.solvers.m1_idastar.square import gods_number, ida_star
 
 
 def test_square3_gods_number():
-    g = gods_number(3)
+    g = gods_number(3, goal="position")
     assert g["states"] == 768 == sum(g["distribution"]) and g["gods_number"] == 8
+    c = gods_number(3)
+    assert c["states"] == 768 and c["distribution"][0] == 4 and c["gods_number"] <= 8
 
 
 def test_square_ida_is_optimal_against_bfs(rng):
@@ -34,6 +36,30 @@ def test_square_ida_is_optimal_against_bfs(rng):
         ids, _ = ida_star(3, s, time_limit=30)
         assert len(ids) == dist[s.tobytes()]
         assert P.is_solved(P.apply(s, ids))
+
+
+def test_square_any_orientation_is_colour_optimal(rng):
+    """Multi-source BFS from the 4 solved colourings gives the true colour-solving distance."""
+    from rubiks.solvers.m1_idastar.square import ida_star_any_orientation
+
+    P = square(3)
+    starts = [P.solved[R].astype(np.int8) for R in P.rotations]
+    dist = {s.tobytes(): 0 for s in starts}
+    frontier, d = starts, 0
+    while frontier:
+        d += 1
+        nxt = []
+        for st in frontier:
+            for p in P.move_perms:
+                k = st[p]
+                if k.tobytes() not in dist:
+                    dist[k.tobytes()] = d
+                    nxt.append(k)
+        frontier = nxt
+    for _ in range(15):
+        s = random_state(P, rng).astype(np.int8)
+        ids, _ = ida_star_any_orientation(3, s, time_limit=30)
+        assert len(ids) == dist[s.tobytes()] and P.is_solved(P.apply(s, ids))
 
 
 def test_solver_square(rng):

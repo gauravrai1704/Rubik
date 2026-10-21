@@ -19,8 +19,9 @@ Finds provably shortest solutions where feasible: the ground truth every other m
 
 * Pattern databases: one byte per entry (not 4 bits: 173 MB per metric fits in RAM and keeps
   lookups one load). Built on first use in ~1 min per metric, cached in `checkpoints/m1/` (git-ignored).
-* Colours are relabelled first (`cluster_tools.orient`), so solutions are optimal to the reference
-  orientation; on the Square that is optimal position-solving (an upper bound for colour-solving).
+* Optimal for the colour goal: on the 3×3×3 the fixed centers fix the orientation; on the Square,
+  IDA* runs to each of the 4 rotations of the goal (most promising first, later runs capped
+  below the best length found) and keeps the shortest.
 
 ```bash
 python -m rubiks.solvers.m1_idastar.label --gods 3                      # exact God's number, Square 3

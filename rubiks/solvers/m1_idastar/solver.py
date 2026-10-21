@@ -10,8 +10,8 @@ measured against, plus the measured curve of where exact search stops working.
 * Rubik's Square (``square.py``): IDA* with h = max over clusters of each cluster's exact
   distance; full BFS for the exact God's number at the smallest N.
 
-Solutions are optimal to the reference orientation after colour relabelling; for the
-Square that is optimal position-solving, which upper-bounds colour-solving.
+Solutions are optimal for the colour goal: the 3×3×3's fixed centers pick the orientation,
+and on the Square IDA* runs to each of the 4 rotations of the goal and keeps the shortest.
 Other puzzles are out of Method 1's scope (the solver raises ``ValueError``).
 
 Contract (do not change): subclass ``Solver``, keep the registered name ``m1_idastar``, return
@@ -59,9 +59,9 @@ class IDAStarSolver(Solver):
             moves, stats = ida_star(s, self.metric, self.node_limit, self.budget.wall_time_s)
             moves = None if moves is None else [P.moves[m] for m in moves]
         else:
-            from .square import ida_star
+            from .square import ida_star_any_orientation
 
-            ids, stats = ida_star(P.N, s, self.budget.wall_time_s, self.node_limit)
+            ids, stats = ida_star_any_orientation(P.N, state, self.budget.wall_time_s, self.node_limit)
             moves = None if ids is None else [P.moves[m] for m in ids]
         info = {"optimal": moves is not None, "metric": self.metric if P.kind == "cube" else "htm", **stats}
         return SolveResult(moves=canonicalize(moves or []), wall_time_s=time.time() - t0,
