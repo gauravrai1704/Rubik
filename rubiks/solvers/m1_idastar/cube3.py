@@ -396,6 +396,12 @@ def _search(cp0, co0, codes0, last0, bound, cpm, com, etab, allowed, pc, pa, pb,
             st[g + 1, i] = etab[m, st[g, i]]
         h = _h(cp, co, st[g + 1], pc, pa, pb)
         nodes[0] += 1
+        if nodes[0] & 4095 == 0:
+            shared[0] += 4096  # racy across threads; only an approximate budget is needed
+            if shared[0] > limit:
+                return -2
+            if stop[0]:
+                return -3
         f = g + 1 + h
         if f > bound:
             if f < best:
@@ -405,12 +411,6 @@ def _search(cp0, co0, codes0, last0, bound, cpm, com, etab, allowed, pc, pa, pb,
         if h == 0:
             nodes[1] = g + 1
             return -1
-        if nodes[0] & 4095 == 0:
-            shared[0] += 4096  # racy across threads; only an approximate budget is needed
-            if shared[0] > limit:
-                return -2
-            if stop[0]:
-                return -3
         g += 1
         cps[g], cos[g] = cp, co
         nxt[g] = 0
@@ -480,7 +480,7 @@ def ida_star(state: np.ndarray, metric: str = "htm", node_limit: int = 10**12, t
         n = int(nodes[:, 0].sum())
         total += n
         dt = time.time() - t1
-        if dt > 0.5:
+        if n > 10**6 and dt > 0.5:  # skip short iterations (and the first call's compile time)
             rate = n / dt
         stats = {"nodes": total, "bound": bound, "time_s": round(time.time() - t0, 3)}
         hit = np.nonzero(res == -1)[0]
@@ -489,5 +489,9 @@ def ida_star(state: np.ndarray, metric: str = "htm", node_limit: int = 10**12, t
             L = int(nodes[m, 1])
             return [cb.moves[m]] + [cb.moves[int(x)] for x in paths[m, :L]], stats
         if (res == -2).any():
-            return None, stats
+            left = None if time_limit is None else time_limit - (time.time() - t0)
+            if total >= node_limit or left is None or left < 0.1 * time_limit:
+                return None, stats
+            rate *= 2  # budget estimate was too low: redo this bound with a larger one
+            continue
         bound = int(res.min())
