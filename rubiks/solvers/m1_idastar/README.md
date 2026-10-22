@@ -43,11 +43,12 @@ python -m rubiks.bench run --solver m1_idastar --puzzle cube --N 3 --dataset ran
 | Beam search (learned methods) | `rubiks.search.beam.BeamSearch`, `BeamConfig` |
 
 ## Done when
-- [ ] Pattern databases built, entry counts matching the table above.
-- [ ] Optimal solutions for ≥ 100 3×3×3 instances, mean length in HTM and QTM.
-- [ ] Exact God's number for the smallest Squares from full BFS.
-- [ ] Plot of IDA* success rate against N for the Square.
-- [ ] Write optimal lengths back into the datasets' `optimal_len` field (`rubiks.bench.datasets`).
+- [x] Pattern databases built, entry counts matching the table above.
+- [ ] Optimal solutions for ≥ 100 3×3×3 instances, mean length in HTM and QTM. *Done for 91/100
+      scrambles of depth 12 (13.2 HTM, 17.6 QTM); random states are out of reach on 4 CPU cores — see docs/STATUS.md.*
+- [x] Exact God's number for the smallest Squares from full BFS.
+- [x] Plot of IDA* success rate against N for the Square.
+- [x] Write optimal lengths back into the datasets' `optimal_len` field (`rubiks.bench.datasets`).
 
 ## Workflow
 1. Benchmark: `python -m rubiks.bench make --puzzle square --N 3-8 --depth 20`, then

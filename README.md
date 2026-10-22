@@ -8,16 +8,15 @@ style of CayleyPy (NeurIPS 2025). The full spec is the technical basis document
 
 | # | Method | Owner | Package | Status |
 |---|---|---|---|---|
-| 1 | IDA* + pattern databases | Shree | `rubiks/solvers/m1_idastar` | scaffold + spec |
-| 2 | Reduction + Kociemba two-phase | Sunaina | `rubiks/solvers/m2_reduction` | scaffold + spec |
-| 3 | Demaine parallel cluster algorithm | Kashvi | `rubiks/solvers/m3_demaine` | scaffold + spec |
+| 1 | IDA* + pattern databases | Shree | `rubiks/solvers/m1_idastar` | implemented; optimal on Squares N ≤ 5 and 3×3×3 scrambles (Korf PDBs, parallel IDA*); Square God's numbers 6 / 10 / 12 for N = 3 / 4 / 5 |
+| 2 | Reduction + Kociemba two-phase | Sunaina | `rubiks/solvers/m2_reduction` | implemented; 100% solved on Square and Cube N = 3–20 |
+| 3 | Demaine parallel cluster algorithm | Kashvi | `rubiks/solvers/m3_demaine` | implemented; 100% solved on Square and Cube N = 3–20, shortest of all methods for N ≥ 9 |
 | 4 | CayleyPy reproduction | Shaurya | `rubiks/solvers/m4_cayleypy` | implemented; per-N Square models N = 3–8 (shortest of the learned methods); 3×3×3 needs GPU training |
 | 5A | Cluster-token transformer, one model for all N | Sharanya | `rubiks/solvers/m5a_tokens` | implemented; small CPU Square model trained, beats 5B at N ≤ 10 |
 | 5B | Learned search inside reduction stages | Gaurav | `rubiks/solvers/m5b_stages` | implemented; 100% solved on Square N = 3–20 and Cube N = 3–20 (solutions still long) |
 | — | Engine, checker, beam search, harness | Gaurav | `rubiks/engine`, `rubiks/search`, `rubiks/bench` | implemented, tested |
 
-Each teammate's folder has a `README.md` with their spec, the engine functions to use,
-and a done-when checklist. Measured results so far: [docs/STATUS.md](docs/STATUS.md).
+Each method's folder has a `README.md` with its spec, what was built, and a done-when checklist. Measured results so far: [docs/STATUS.md](docs/STATUS.md).
 
 **Publish to GitHub** (once, from your machine, with `gh auth login` done):
 `bash scripts/publish_to_github.sh <your-user>/nxn-rubiks` — creates the repo, pushes `main`,

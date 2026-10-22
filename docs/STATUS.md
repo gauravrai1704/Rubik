@@ -1,11 +1,116 @@
-# Status (2026-10-19)
+# Status (2026-10-22)
 
-Summary: Method 4 (CayleyPy) is in: per-N Square models give the shortest Square solutions so far (N = 3–8). Method 5B solves 100% of random states tested for the Square (N = 3–20, 64 states)
-and the Cube (N = 3–8, 10, 15, 20; 16 states). Method 5A beats 5B on solution length at the Square
-sizes tested, including unseen N = 10. Solutions are still long; see each section.
+Summary: **all six methods are implemented**. On the same random instances:
+* **Square:** Method 1 gives exact optima up to N = 5 and Method 4's per-N models match them.
+  For N = 9–20 (beyond the per-N models), Method 3 (Demaine, batched) is shortest at every N,
+  Method 2 next, both ahead of 5B. Exact God's numbers from full BFS: 6 (N = 3), 10 (N = 4), 12 (N = 5).
+* **Cube:** Methods 2 and 3 solve 100% for N = 3–20; Method 3 is 20% shorter than Method 2 at
+  N = 20 and 33% shorter than 5B. Method 1 solves 3×3×3 scrambles optimally (91/100 at
+  depth 12 within 120 s each); random 3×3×3 states are beyond IDA* with Korf's databases on 4 CPU cores.
+* HTM / (N²/ln N) still rises with N for every method, so none reaches Demaine's rate yet at N ≤ 20.
 
-All numbers come from the harness or the evaluation scripts on a 2-core CPU, no GPU.
+All numbers come from the harness or the evaluation scripts on CPU, no GPU (Methods 1–3: 4 cores).
 Random states = long random canonical walks (Section 3.4). HTM after canonicalisation.
+Instances are generated deterministically, so rows with the same N and id are the same states
+across methods; the tables below average every method over the same instances.
+
+## All methods, same instances
+
+Rubik's Square, HTM (Square moves are all 180°, so QTM = HTM). n = instances per N.
+Method 4 at W = 4096; 5A as in its section; "—" = not run at that N.
+
+| N | n | M1 (optimal) | M2 | M3 | M4 | 5A | 5B |
+|---|---|---|---|---|---|---|---|
+| 3 | 5 | 4.2 | 4.8 | 4.8 | 4.2 | — | 5.6 |
+| 4 | 5 | 6.4 | 10.8 | 10.8 | 6.4 | 6.4 | 12.4 |
+| 5 | 5 | 8.8 | 19.2 | 19.2 | 8.8 | 9.8 | 22.4 |
+| 6 | 5 | 0/5 in 120 s | 29.6 | 27.6 | 14.0 | 14.8 | 27.6 |
+| 7 | 5 | — | 37.6 | 36.4 | 15.0 | 22.7 (3/5 solved) | 40.4 |
+| 8 | 5 | — | 60.4 | 56.4 | 20.4 | 55.2 | 59.2 |
+| 9 | 5 | — | 66.0 | 63.2 | — | — | 80.8 |
+| 10 | 5 | — | 96.4 | 86.8 | — | — | 100.8 |
+| 11 | 5 | — | 108.6 | 95.0 | — | — | 123.2 |
+| 12 | 5 | — | 138.4 | 121.2 | — | — | 144.4 |
+| 13 | 2 | — | 154.5 | 136.5 | — | — | 166.0 |
+| 14 | 2 | — | 179.0 | 153.0 | — | — | 230.0 |
+| 15 | 2 | — | 185.0 | 165.0 | — | — | 251.0 |
+| 16 | 2 | — | 242.0 | 203.0 | — | — | 290.0 |
+| 17 | 2 | — | 248.5 | 205.5 | — | — | 275.0 |
+| 18 | 2 | — | 290.0 | 244.0 | — | — | 356.0 |
+| 19 | 2 | — | 312.0 | 258.0 | — | — | 406.0 |
+| 20 | 2 | — | 380.0 | 303.0 | — | — | 472.0 |
+
+Methods 2 and 3 were also run on 5 states for every N (`docs/results/m*_square_random.jsonl`):
+at N = 20, 379.6 vs 304.0 HTM.
+
+Rubik's Cube, HTM (QTM in brackets), every state solved:
+
+| N | n | M2 | M3 | 5B |
+|---|---|---|---|---|
+| 3 | 2 | 21.0 (31.0) | 21.0 (31.0) | 52.0 (54.5) |
+| 4 | 2 | 219.0 (259.5) | 192.5 (226.5) | 246.0 (249.5) |
+| 5 | 2 | 319.5 (359.0) | 258.0 (284.0) | 452.5 (459.0) |
+| 6 | 2 | 574.5 (654.5) | 464.5 (505.5) | 724.5 (729.5) |
+| 7 | 2 | 811.0 (911.5) | 633.0 (689.5) | 1045.0 (1049.5) |
+| 8 | 2 | 1131.0 (1255.0) | 897.5 (960.0) | 1510.5 (1515.0) |
+| 9 | 2 | 1498.0 (1648.5) | 1141.5 (1217.5) | — |
+| 10 | 2 | 1900.5 (2113.5) | 1509.0 (1603.5) | 2260.5 (2270.5) |
+| 12 | 1 | 2843 (3123) | 2290 (2409) | — |
+| 15 | 1 | 4565 (4985) | 3578 (3767) | 5280 (5292) |
+| 20 | 1 | 8259 (8976) | 6612 (6898) | 9904 (9916) |
+
+![HTM / (N²/ln N) for Methods 2, 3 and 5B](figures/methods_2_3_scaling.png)
+
+## Method 1: IDA* + pattern databases — implemented
+* **Pattern databases** (Korf): corners 88,179,840 entries (max depth 11 HTM / 14 QTM), two 6-edge
+  tables of 42,577,920 entries (max depth 10 HTM / 11 QTM), built by BFS in ~1 min per metric on 4 cores.
+* **3×3×3, IDA\*** (parallel over the root's moves, ~12M nodes/s on 4 cores):
+  * 100 scrambles of depth 12 (`docs/results/m1_cube3_d12.jsonl`, 120 s each): 91 solved optimally,
+    mean 13.2 HTM (17.6 QTM), optimal lengths 8–16; the other 9 need more than 120 s.
+  * Face-turn scrambles of depth 14 / 15 / 16: optimal in 3 s / 8 s / 905 s (10.2·10⁹ nodes).
+    Each extra move costs ~13×, so a random state (~18 HTM) needs ~10¹²–10¹³ nodes: about a day per
+    state here. RANDOM_CUBE_LINE
+* **Square:** exact God's number from full BFS (colour goal, i.e. any of the 4 solved orientations):
+
+  | N | states | God's number | distance distribution |
+  |---|---|---|---|
+  | 3 | 768 | 6 | 4, 24, 68, 160, 288, 156, 68 |
+  | 4 | 82,944 | 10 | 4, 32, 152, 640, 2,464, 7,152, 16,248, 24,720, 20,700, 8,928, 1,904 |
+  | 5 | 10,616,832 | 12 | 4, 40, 276, 1,648, 8,876, 42,752, 181,000, 641,772, 1,738,920, 3,105,096, 3,211,932, 1,446,544, 237,972 |
+
+  (To the reference orientation only, the 3×3 Square's God's number is 8.)
+* **Where exact search stops (Square):** IDA* with the max-cluster heuristic solves 100% of random
+  states at N = 3, 4, 5 (N = 5 in 21 s on average) and 0% at N = 6 within 120 s.
+  Optimal lengths are written into `data/square/N{3,4,5}/random.jsonl` (`optimal_len`).
+
+  ![IDA* success rate by N](figures/m1_square_ida_success.png)
+
+## Methods 2 and 3: reduction vs Demaine's parallel algorithm — implemented
+Both solve **100% of random states for N = 3–20 on both puzzles** (Square: 5 per N; cube: 2 per N
+for N ≤ 10, 1 for 12, 15, 20). They share every non-batched stage, so the gap is the parallelism.
+
+Moves per cube stage (mean HTM):
+
+| N | wing parity | centers M2 | centers M3 | 3×3×3 (Kociemba) | wings M2 | wings M3 |
+|---|---|---|---|---|---|---|
+| 4 | 0 | 82 | 74 | 20 | 118 | 99 |
+| 5 | 1 | 182 | 143 | 22 | 116 | 93 |
+| 6 | 0.5 | 324 | 257 | 18 | 233 | 190 |
+| 7 | 0.5 | 548 | 424 | 21 | 242 | 188 |
+| 8 | 0.5 | 777 | 610 | 19 | 336 | 270 |
+| 9 | 1.5 | 1109 | 844 | 21 | 368 | 277 |
+| 10 | 1.5 | 1431 | 1141 | 20 | 449 | 347 |
+| 12 | 3 | 2202 | 1799 | 19 | 621 | 469 |
+| 15 | 4 | 3830 | 3035 | 21 | 710 | 518 |
+| 20 | 4 | 7194 | 5885 | 19 | 1042 | 704 |
+
+* Centers dominate. Method 3's batching works best early in the center stage (one round of the
+  N = 20 cube applied one commutator type to 18.6 orbits on average) and fades as the orbits
+  diverge, when single-orbit 3-cycles win the per-move score. Batching more of the late rounds is
+  the obvious next step (a learned schedule is the Section 6.4 stretch goal).
+* Every parity case is reached in the tests: odd wing orbits on odd and even N (Lemma 7 slice turn),
+  and PLL parity on even N (one outer quarter turn before Kociemba).
+* Speed: Method 2 solves a 20×20×20 in 92 s, Method 3 in 32 s (plus 92 s to build its type bank once per N).
 
 ## Method 5B: Rubik's Square, N = 3–20 — complete
 `docs/results/m5b_square_random.jsonl` (width 128, widening to 2048; 900 s budget):
@@ -119,11 +224,11 @@ solved, at or below scramble length; depth 18: solved in 24–28) but **0 of 10 
 The 21.14 QTM check needs the GPU run: `DEVICE=cuda bash experiments/m4_cayleypy.sh`
 (8192 epochs × 1M, then W up to 2¹⁸; `--kw '{"tier": "host"}'` for wider).
 
-## Methods 1–3
-Scaffolds, specs and xfail tests in place; owners implement.
-
 ## Known limitations
 * Random states come from long random walks, not an exact uniform sampler.
 * The checker enforces necessary conditions (property-tested); wing and center rules are
   per-layer multiset checks rather than full parity proofs.
 * All timings are CPU-only and include contention with concurrent jobs.
+* Method 1's pattern databases are the spec's 6-edge tables; 7-edge tables or inverse-state
+  lookups would cut 3×3×3 search several-fold but not to random states on this CPU.
+* Not run: the dwalton76 NxNxN solver (external baseline, needs network access to install).

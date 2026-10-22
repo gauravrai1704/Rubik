@@ -38,9 +38,9 @@ Not done: the dwalton76 external baseline (no network access to install it here)
 | Beam search (learned methods) | `rubiks.search.beam.BeamSearch`, `BeamConfig` |
 
 ## Done when
-- [ ] Solves 100% of benchmark instances for N = 3..20 on both puzzles.
-- [ ] Every parity case reached at least once in testing, for odd and even N.
-- [ ] Moves per stage reported for each N.
+- [x] Solves 100% of benchmark instances for N = 3..20 on both puzzles.
+- [x] Every parity case reached at least once in testing, for odd and even N.
+- [x] Moves per stage reported for each N.
 
 ## Workflow
 1. Benchmark: `python -m rubiks.bench make --puzzle square --N 3-8 --depth 20`, then

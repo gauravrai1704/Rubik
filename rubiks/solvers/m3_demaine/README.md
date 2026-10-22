@@ -36,10 +36,10 @@ So Methods 2 and 3 differ only in the batching, which is the comparison Section 
 | Beam search (learned methods) | `rubiks.search.beam.BeamSearch`, `BeamConfig` |
 
 ## Done when
-- [ ] Square solves all instances for N = 3..20.
-- [ ] Cube solves all instances for N = 3..20.
-- [ ] Plot of moves / (N²/ln N) against N for both puzzles.
-- [ ] Direct comparison with Method 2 on the same instances.
+- [x] Square solves all instances for N = 3..20.
+- [x] Cube solves all instances for N = 3..20.
+- [x] Plot of moves / (N²/ln N) against N for both puzzles.
+- [x] Direct comparison with Method 2 on the same instances.
 
 ## Workflow
 1. Benchmark: `python -m rubiks.bench make --puzzle square --N 3-8 --depth 20`, then
