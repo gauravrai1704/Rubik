@@ -17,7 +17,8 @@ import matplotlib.pyplot as plt  # noqa: E402
 ROOT = Path(__file__).resolve().parents[1]
 RES, OUT = ROOT / "docs" / "results", ROOT / "docs" / "figures"
 # categorical slots 1-3 of the validated default palette (light surface #fcfcfb)
-SERIES = {"Method 2 (one cluster at a time)": "#2a78d6", "Method 3 (batched)": "#eb6834", "Method 5B": "#1baf7a"}
+SERIES = {"Method 2 (one cluster at a time)": "#2a78d6", "Method 3 (batched)": "#eb6834", "Method 5B": "#1baf7a",
+          "Method 5C (net-gain schedule)": "#eda100"}
 INK, MUTED, GRID, SURFACE = "#1d1d1b", "#6b6a63", "#e4e3dd", "#fcfcfb"
 
 
@@ -58,13 +59,16 @@ def scaling():
     data = {
         "Rubik's Square": {"Method 2 (one cluster at a time)": rows("m2_reduction_square_random.jsonl"),
                            "Method 3 (batched)": rows("m3_demaine_square_random.jsonl"),
-                           "Method 5B": rows("m5b_square_random.jsonl")},
+                           "Method 5B": rows("m5b_square_random.jsonl"),
+                           "Method 5C (net-gain schedule)": rows("m5c_schedule_square_random.jsonl")},
         "Rubik's Cube": {"Method 2 (one cluster at a time)": rows("m2_reduction_cube_random.jsonl"),
                          "Method 3 (batched)": rows("m3_demaine_cube_random.jsonl"),
-                         "Method 5B": rows("m5b_cube_random.jsonl", "m5b_cube_random_15_20.jsonl")},
+                         "Method 5B": rows("m5b_cube_random.jsonl", "m5b_cube_random_15_20.jsonl"),
+                         "Method 5C (net-gain schedule)": rows("m5c_schedule_cube_random.jsonl")},
     }
     for ax, (title, series) in zip(axes, data.items()):
         style(ax, title, "HTM / (N² / ln N)")
+        ends = []
         for name, rs in series.items():
             pts = norm_by_n(rs)
             if not pts:
@@ -72,7 +76,15 @@ def scaling():
             xs, ys = zip(*pts)
             ax.plot(xs, ys, color=SERIES[name], linewidth=2, marker="o", markersize=5,
                     markeredgecolor=SURFACE, markeredgewidth=1.5, label=name)
-            ax.annotate(name.split(" (")[0], (xs[-1], ys[-1]), xytext=(6, 0), textcoords="offset points",
+            ends.append([ys[-1], xs[-1], ys[-1], name.split(" (")[0]])
+        # direct labels at line ends, pushed apart so they never overlap
+        ends.sort()
+        top = max(e[0] for e in ends)
+        gap = 0.06 * top
+        for i in range(1, len(ends)):
+            ends[i][2] = max(ends[i][2], ends[i - 1][2] + gap)
+        for _, x, y_label, label in ends:
+            ax.annotate(label, (x, y_label), xytext=(6, 0), textcoords="offset points",
                         va="center", color=INK, fontsize=8.5)
         ax.set_xlim(2, 23.5)
         ax.set_xticks([3, 5, 10, 15, 20])

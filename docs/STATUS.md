@@ -1,9 +1,13 @@
 # Status (2026-10-22)
 
-Summary: **all six methods are implemented**. On the same random instances:
+Summary: **all six methods are implemented, plus a new one, Method 5C** (net-gain scheduling
+of bulk commutators), which is now the best method for the Cube at every N ≥ 5 and the best (tied with Method 3 at
+N = 9, 11, 14) for the Square from N = 9 up. On the same random instances:
+* **5C:** 4,925 HTM on the 20×20×20 against Method 3's 6,612 (−26%) and 5B's 9,904 (−50%); the
+  gap to Method 3 grows with N (−6% at N = 6, −21% at N = 10, −23% at N = 15).
 * **Square:** Method 1 gives exact optima up to N = 5 and Method 4's per-N models match them.
-  For N = 9–20 (beyond the per-N models), Method 3 (Demaine, batched) is shortest at every N,
-  Method 2 next, both ahead of 5B. Exact God's numbers from full BFS: 6 (N = 3), 10 (N = 4), 12 (N = 5).
+  For N = 9–20 (beyond the per-N models), 5C and Method 3 are shortest (5C ≤ Method 3 at every N),
+  Method 2 next, all ahead of 5B. Exact God's numbers from full BFS: 6 (N = 3), 10 (N = 4), 12 (N = 5).
 * **Cube:** Methods 2 and 3 solve 100% for N = 3–20; Method 3 is 20% shorter than Method 2 at
   N = 20 and 33% shorter than 5B. Method 1 solves 3×3×3 scrambles optimally (91/100 at
   depth 12 within 120 s each); random 3×3×3 states are beyond IDA* with Korf's databases on 4 CPU cores.
@@ -19,47 +23,72 @@ across methods; the tables below average every method over the same instances.
 Rubik's Square, HTM (Square moves are all 180°, so QTM = HTM). n = instances per N.
 Method 4 at W = 4096; 5A as in its section; "—" = not run at that N.
 
-| N | n | M1 (optimal) | M2 | M3 | M4 | 5A | 5B |
-|---|---|---|---|---|---|---|---|
-| 3 | 5 | 4.2 | 4.8 | 4.8 | 4.2 | — | 5.6 |
-| 4 | 5 | 6.4 | 10.8 | 10.8 | 6.4 | 6.4 | 12.4 |
-| 5 | 5 | 8.8 | 19.2 | 19.2 | 8.8 | 9.8 | 22.4 |
-| 6 | 5 | 0/5 in 120 s | 29.6 | 27.6 | 14.0 | 14.8 | 27.6 |
-| 7 | 5 | — | 37.6 | 36.4 | 15.0 | 22.7 (3/5 solved) | 40.4 |
-| 8 | 5 | — | 60.4 | 56.4 | 20.4 | 55.2 | 59.2 |
-| 9 | 5 | — | 66.0 | 63.2 | — | — | 80.8 |
-| 10 | 5 | — | 96.4 | 86.8 | — | — | 100.8 |
-| 11 | 5 | — | 108.6 | 95.0 | — | — | 123.2 |
-| 12 | 5 | — | 138.4 | 121.2 | — | — | 144.4 |
-| 13 | 2 | — | 154.5 | 136.5 | — | — | 166.0 |
-| 14 | 2 | — | 179.0 | 153.0 | — | — | 230.0 |
-| 15 | 2 | — | 185.0 | 165.0 | — | — | 251.0 |
-| 16 | 2 | — | 242.0 | 203.0 | — | — | 290.0 |
-| 17 | 2 | — | 248.5 | 205.5 | — | — | 275.0 |
-| 18 | 2 | — | 290.0 | 244.0 | — | — | 356.0 |
-| 19 | 2 | — | 312.0 | 258.0 | — | — | 406.0 |
-| 20 | 2 | — | 380.0 | 303.0 | — | — | 472.0 |
+| N | n | M1 (optimal) | M2 | M3 | 5C | M4 | 5A | 5B |
+|---|---|---|---|---|---|---|---|---|
+| 3 | 5 | 4.2 | 4.8 | 4.8 | 4.8 | 4.2 | — | 5.6 |
+| 4 | 5 | 6.4 | 10.8 | 10.8 | 10.8 | 6.4 | 6.4 | 12.4 |
+| 5 | 5 | 8.8 | 19.2 | 19.2 | 19.2 | 8.8 | 9.8 | 22.4 |
+| 6 | 5 | 0/5 in 120 s | 29.6 | 27.6 | 27.6 | 14.0 | 14.8 | 27.6 |
+| 7 | 5 | — | 37.6 | 36.4 | 36.4 | 15.0 | 22.7 (3/5 solved) | 40.4 |
+| 8 | 5 | — | 60.4 | 56.4 | 56.0 | 20.4 | 55.2 | 59.2 |
+| 9 | 5 | — | 66.0 | 63.2 | 63.2 | — | — | 80.8 |
+| 10 | 5 | — | 96.4 | 86.8 | 85.6 | — | — | 100.8 |
+| 11 | 5 | — | 108.6 | 95.0 | 95.0 | — | — | 123.2 |
+| 12 | 5 | — | 138.4 | 121.2 | 120.0 | — | — | 144.4 |
+| 13 | 2 | — | 154.5 | 136.5 | 134.5 | — | — | 166.0 |
+| 14 | 2 | — | 179.0 | 153.0 | 153.0 | — | — | 230.0 |
+| 15 | 2 | — | 185.0 | 165.0 | 161.0 | — | — | 251.0 |
+| 16 | 2 | — | 242.0 | 203.0 | 200.0 | — | — | 290.0 |
+| 17 | 2 | — | 248.5 | 205.5 | 204.5 | — | — | 275.0 |
+| 18 | 2 | — | 290.0 | 244.0 | 241.0 | — | — | 356.0 |
+| 19 | 2 | — | 312.0 | 258.0 | 246.0 | — | — | 406.0 |
+| 20 | 2 | — | 380.0 | 303.0 | 297.0 | — | — | 472.0 |
 
-Methods 2 and 3 were also run on 5 states for every N (`docs/results/m*_square_random.jsonl`):
-at N = 20, 379.6 vs 304.0 HTM.
+Methods 2, 3 and 5C were also run on 5 states for every N (`docs/results/m*_square_random.jsonl`):
+at N = 20, 379.6 / 304.0 / 295.6 HTM.
 
 Rubik's Cube, HTM (QTM in brackets), every state solved:
 
-| N | n | M2 | M3 | 5B |
-|---|---|---|---|---|
-| 3 | 2 | 21.0 (31.0) | 21.0 (31.0) | 52.0 (54.5) |
-| 4 | 2 | 219.0 (259.5) | 192.5 (226.5) | 246.0 (249.5) |
-| 5 | 2 | 319.5 (359.0) | 258.0 (284.0) | 452.5 (459.0) |
-| 6 | 2 | 574.5 (654.5) | 464.5 (505.5) | 724.5 (729.5) |
-| 7 | 2 | 811.0 (911.5) | 633.0 (689.5) | 1045.0 (1049.5) |
-| 8 | 2 | 1131.0 (1255.0) | 897.5 (960.0) | 1510.5 (1515.0) |
-| 9 | 2 | 1498.0 (1648.5) | 1141.5 (1217.5) | — |
-| 10 | 2 | 1900.5 (2113.5) | 1509.0 (1603.5) | 2260.5 (2270.5) |
-| 12 | 1 | 2843 (3123) | 2290 (2409) | — |
-| 15 | 1 | 4565 (4985) | 3578 (3767) | 5280 (5292) |
-| 20 | 1 | 8259 (8976) | 6612 (6898) | 9904 (9916) |
+| N | n | M2 | M3 | 5C | 5B |
+|---|---|---|---|---|---|
+| 3 | 2 | 21.0 (31.0) | 21.0 (31.0) | 21.0 (31.0) | 52.0 (54.5) |
+| 4 | 2 | 219.0 (259.5) | 192.5 (226.5) | 196.0 (224.5) | 246.0 (249.5) |
+| 5 | 2 | 319.5 (359.0) | 258.0 (284.0) | **253.0** (281.0) | 452.5 (459.0) |
+| 6 | 2 | 574.5 (654.5) | 464.5 (505.5) | **437.0** (481.5) | 724.5 (729.5) |
+| 7 | 2 | 811.0 (911.5) | 633.0 (689.5) | **564.0** (614.5) | 1045.0 (1049.5) |
+| 8 | 2 | 1131.0 (1255.0) | 897.5 (960.0) | **806.5** (863.0) | 1510.5 (1515.0) |
+| 9 | 2 | 1498.0 (1648.5) | 1141.5 (1217.5) | **991.5** (1056.5) | — |
+| 10 | 2 | 1900.5 (2113.5) | 1509.0 (1603.5) | **1196.5** (1256.5) | 2260.5 (2270.5) |
+| 12 | 1 | 2843 (3123) | 2290 (2409) | **1770** (1861) | — |
+| 15 | 1 | 4565 (4985) | 3578 (3767) | **2765** (2927) | 5280 (5292) |
+| 20 | 1 | 8259 (8976) | 6612 (6898) | **4925** (5188) | 9904 (9916) |
 
-![HTM / (N²/ln N) for Methods 2, 3 and 5B](figures/methods_2_3_scaling.png)
+![HTM / (N²/ln N) for Methods 2, 3, 5B and 5C](figures/methods_2_3_scaling.png)
+
+## Method 5C: net-gain scheduling of bulk commutators — new
+The novel method. Method 3 bulks one commutator type over a block of layers X × Y only when every
+cell helps its cluster; once clusters diverge, blocks shrink to single cells (358 of Method 3's
+385 center rounds on the 20×20×20 fixed a single orbit). 5C chooses each round's block by **net**
+slots fixed per move, cells that do not help included when the block still pays, scores every
+candidate exactly by applying it, discounts setup moves shared with the previous step, and (N ≤ 15)
+looks one step ahead. Everything else is Method 3's, so the gain is the schedule alone.
+
+| Cube N | M3 HTM | 5C HTM | change | 5C bulk rounds (centers) | 5C solve time |
+|---|---|---|---|---|---|
+| 6 | 464.5 | 437.0 | −6% | 22 of 22 | 4 s |
+| 10 | 1509.0 | 1196.5 | −21% | 62 of 73 | 37 s |
+| 15 | 3578 | 2765 | −23% | 142 of 184 | 223 s |
+| 20 | 6612 | 4925 | −26% | 229 of 333 | 158 s (+132 s type bank) |
+
+* The saving grows with N, and HTM / (N²/ln N) grows much more slowly (cube: 21.8 at N = 6 → 36.9 at
+  N = 20, against Method 3's 23.1 → 49.5).
+* Lookahead is worth ~2.5% (20×20×20: 4,794 with it, 4,925 without) for ~5× the time, so it is on
+  only for N ≤ 15 by default (`lookahead=1` forces it).
+* Square: the interior schedule is the shorter of 5C's net-gain schedule and Method 3's, so 5C is
+  never longer than Method 3; it is shorter at most N ≥ 8 (e.g. 246 vs 258 at N = 19).
+* N = 4 has one center orbit and one wing orbit, nothing to batch: 196.0 vs Method 3's 192.5.
+* Not done yet (the planned learned part): a learned cost-to-go in place of the one-step lookahead,
+  and choosing which identical center sticker goes where so orbits need the same next 3-cycle.
 
 ## Method 1: IDA* + pattern databases — implemented
 * **Pattern databases** (Korf): corners 88,179,840 entries (max depth 11 HTM / 14 QTM), two 6-edge

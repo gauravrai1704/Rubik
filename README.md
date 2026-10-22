@@ -1,8 +1,9 @@
-# NxN Rubik's — six solvers, one engine
+# NxN Rubik's — seven solvers, one engine
 
 Solvers for the **N×N×1 Rubik's Square** and the **N×N×N Rubik's Cube** for every
 N from 3 to 20, benchmarked on one shared engine. Methods 1–4 are established techniques
-(the course requirement); Methods 5A and 5B are new learned solvers aimed at a paper in the
+(the course requirement); Methods 5A and 5B are new learned solvers, and 5C a new schedule for
+Demaine's parallel algorithm that is the best method at large N, aimed at a paper in the
 style of CayleyPy (NeurIPS 2025). The full spec is the technical basis document
 ([docs/technical_basis.pdf](docs/technical_basis.pdf)); section numbers below refer to it.
 
@@ -10,10 +11,11 @@ style of CayleyPy (NeurIPS 2025). The full spec is the technical basis document
 |---|---|---|---|---|
 | 1 | IDA* + pattern databases | Shree | `rubiks/solvers/m1_idastar` | implemented; optimal on Squares N ≤ 5 and 3×3×3 scrambles (Korf PDBs, parallel IDA*); Square God's numbers 6 / 10 / 12 for N = 3 / 4 / 5 |
 | 2 | Reduction + Kociemba two-phase | Sunaina | `rubiks/solvers/m2_reduction` | implemented; 100% solved on Square and Cube N = 3–20 |
-| 3 | Demaine parallel cluster algorithm | Kashvi | `rubiks/solvers/m3_demaine` | implemented; 100% solved on Square and Cube N = 3–20, shortest of all methods for N ≥ 9 |
+| 3 | Demaine parallel cluster algorithm | Kashvi | `rubiks/solvers/m3_demaine` | implemented; 100% solved on Square and Cube N = 3–20 |
 | 4 | CayleyPy reproduction | Shaurya | `rubiks/solvers/m4_cayleypy` | implemented; per-N Square models N = 3–8 (shortest of the learned methods); 3×3×3 needs GPU training |
 | 5A | Cluster-token transformer, one model for all N | Sharanya | `rubiks/solvers/m5a_tokens` | implemented; small CPU Square model trained, beats 5B at N ≤ 10 |
 | 5B | Learned search inside reduction stages | Gaurav | `rubiks/solvers/m5b_stages` | implemented; 100% solved on Square N = 3–20 and Cube N = 3–20 (solutions still long) |
+| 5C | **New:** net-gain scheduling of bulk commutators | Gaurav | `rubiks/solvers/m5c_schedule` | implemented; best method on the Cube for N ≥ 5 (20×20×20: 4,925 HTM, −26% vs Method 3) and on the Square for N ≥ 9 |
 | — | Engine, checker, beam search, harness | Gaurav | `rubiks/engine`, `rubiks/search`, `rubiks/bench` | implemented, tested |
 
 Each method's folder has a `README.md` with its spec, what was built, and a done-when checklist. Measured results so far: [docs/STATUS.md](docs/STATUS.md).
