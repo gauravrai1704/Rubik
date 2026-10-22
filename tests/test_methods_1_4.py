@@ -9,7 +9,7 @@ METHODS = ["m1_idastar", "m2_reduction", "m3_demaine", "m4_cayleypy"]
 
 def test_all_registered():
     load_all()
-    for m in METHODS + ["m5a_tokens", "m5b_stages"]:
+    for m in METHODS + ["m5a_tokens", "m5b_stages", "m5c_schedule"]:
         assert m in REGISTRY
 
 

@@ -1,4 +1,4 @@
-"""All six methods. Each sub-package registers its solver under a short name:
+"""All seven methods (six from the technical basis, plus 5C). Each sub-package registers its solver under a short name:
 
 =================  ====================================  ================================
 name               method                                owner
@@ -9,6 +9,7 @@ m3_demaine         Demaine parallel cluster algorithm    Kashvi (implemented by 
 m4_cayleypy        CayleyPy reproduction                 Shaurya (implemented by Gaurav)
 m5a_tokens         Cluster-token model, one for all N    Sharanya (implemented by Gaurav)
 m5b_stages         Learned search inside stages          Gaurav
+m5c_schedule       Net-gain scheduling of bulk commutators  Gaurav
 =================  ====================================  ================================
 """
 from .base import REGISTRY, Budget, Solver, SolveResult, get_solver, register
@@ -22,7 +23,7 @@ def load_all() -> None:
         return
     import importlib
 
-    for mod in ("m1_idastar", "m2_reduction", "m3_demaine", "m4_cayleypy", "m5a_tokens", "m5b_stages"):
+    for mod in ("m1_idastar", "m2_reduction", "m3_demaine", "m4_cayleypy", "m5a_tokens", "m5b_stages", "m5c_schedule"):
         importlib.import_module(f"{__name__}.{mod}")
     _LOADED = True
 
