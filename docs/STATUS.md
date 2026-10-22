@@ -69,7 +69,9 @@ Rubik's Cube, HTM (QTM in brackets), every state solved:
     mean 13.2 HTM (17.6 QTM), optimal lengths 8–16; the other 9 need more than 120 s.
   * Face-turn scrambles of depth 14 / 15 / 16: optimal in 3 s / 8 s / 905 s (10.2·10⁹ nodes).
     Each extra move costs ~13×, so a random state (~18 HTM) needs ~10¹²–10¹³ nodes: about a day per
-    state here. RANDOM_CUBE_LINE
+    state here.
+    Measured: 2 random states, 30 min each (`docs/results/m1_cube3_random.jsonl`): neither solved;
+    each search covered ~2.7·10¹⁰ nodes and proved the optimum is longer than 16 HTM.
 * **Square:** exact God's number from full BFS (colour goal, i.e. any of the 4 solved orientations):
 
   | N | states | God's number | distance distribution |
