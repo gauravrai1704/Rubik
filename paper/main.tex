@@ -1,0 +1,528 @@
+%% Cluster-Decomposed Beam Search for Rubik's Cubes and Squares up to N = 20
+%% acmart, sigconf. `nonacm` drops the ACM rights block for a preprint; remove it (and fill
+%% \acmConference, \acmDOI, ...) when targeting a specific ACM venue.
+\documentclass[sigconf,nonacm]{acmart}
+
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,fit,calc}
+\usepackage{xspace}
+
+\input{generated/numbers.tex}
+
+\newcommand{\Sq}[1]{#1$\times$#1$\times$1\xspace}
+\newcommand{\Cu}[1]{#1$\times$#1$\times$#1\xspace}
+\newcommand{\Mfour}{Method~4\xspace}
+\newcommand{\FiveA}{Method~5A\xspace}
+\newcommand{\FiveB}{Method~5B\xspace}
+
+\begin{document}
+
+\title{Cluster-Decomposed Beam Search for Rubik's Cubes and Squares up to $N=20$}
+\subtitle{An Open Engine, Verified Commutator Actions and a Size-Generalizing Heuristic}
+
+%% TODO(authors): add family names, e-mail addresses and the supervising faculty member.
+\author{Gaurav}
+\affiliation{%
+  \institution{Shiv Nadar University}
+  \city{Greater Noida}
+  \country{India}}
+\author{Shree}
+\affiliation{%
+  \institution{Shiv Nadar University}
+  \city{Greater Noida}
+  \country{India}}
+\author{Sunaina}
+\affiliation{%
+  \institution{Shiv Nadar University}
+  \city{Greater Noida}
+  \country{India}}
+\author{Kashvi}
+\affiliation{%
+  \institution{Shiv Nadar University}
+  \city{Greater Noida}
+  \country{India}}
+\author{Shaurya}
+\affiliation{%
+  \institution{Shiv Nadar University}
+  \city{Greater Noida}
+  \country{India}}
+\author{Sharanya}
+\affiliation{%
+  \institution{Shiv Nadar University}
+  \city{Greater Noida}
+  \country{India}}
+
+\renewcommand{\shortauthors}{Gaurav et al.}
+
+\begin{abstract}
+Learned Rubik's Cube solvers stop at the \Cu{5}, and they train a separate network for every
+cube size. Classical solvers handle any size but say little about how learned search scales.
+We study the full family of \Sq{N} Rubik's Squares and \Cu{N} Rubik's Cubes for every
+$N$ from 3 to 20 on one open engine. The engine generates moves from geometry, splits any
+puzzle into Demaine's cubie clusters with a sticker order that does not depend on $N$,
+checks solvability, and re-verifies every reported solution. On it we build a staged beam
+search (\FiveB) whose stages each solve a few pieces. Its heuristics are exact
+abstraction tables and small cluster networks, and its actions include commutators that are
+machine-verified to touch only the pieces they should. On a two-core CPU without a GPU,
+\FiveB solved all \SqSolved{} random Squares we tested (\Sq{3} to \Sq{20}) and all
+\CuSolved{} random cubes (\Cu{3} to \Cu{20}); the \Cu{20} took \CuTwentyMin{} minutes. Its
+solutions are long, however: on Squares small enough for exhaustive search, a per-size
+CayleyPy-style network (\Mfour) found the optimum on every instance, while \FiveB averaged
+\GapFiveBThree{} and \GapFiveBFour{} moves above it on the \Sq{3} and \Sq{4}, and its length divided by
+$N^2/\ln N$ keeps rising with $N$. A cluster-token transformer trained only on Squares with $N\le 8$
+(\FiveA) keeps a correlation of \FiveACorrTwenty{} with the true scramble depth at $N=20$. We
+release the engine, benchmarks, solvers and all result files, and report our negative
+results alongside the positive ones.
+\end{abstract}
+
+\begin{CCSXML}
+<ccs2012>
+<concept><concept_id>10010147.10010178.10010205</concept_id>
+<concept_desc>Computing methodologies~Search methodologies</concept_desc>
+<concept_significance>500</concept_significance></concept>
+<concept><concept_id>10010147.10010257</concept_id>
+<concept_desc>Computing methodologies~Machine learning</concept_desc>
+<concept_significance>300</concept_significance></concept>
+<concept><concept_id>10003752.10003809.10003716</concept_id>
+<concept_desc>Theory of computation~Mathematical optimization</concept_desc>
+<concept_significance>100</concept_significance></concept>
+</ccs2012>
+\end{CCSXML}
+\ccsdesc[500]{Computing methodologies~Search methodologies}
+\ccsdesc[300]{Computing methodologies~Machine learning}
+\ccsdesc[100]{Theory of computation~Mathematical optimization}
+
+\keywords{Rubik's Cube, heuristic search, beam search, pattern databases, macro-operators,
+commutators, size generalization, Cayley graphs}
+
+\maketitle
+
+%% =====================================================================
+\section{Introduction}
+
+The \Cu{N} Rubik's Cube is a standard testbed for planning on graphs that are far too large to
+enumerate. Its worst-case solution length, God's number, is 20 for $N=3$~\cite{rokicki2014diameter}
+and grows as $\Theta(N^2/\log N)$~\cite{demaine2011algorithms}; finding a shortest solution of
+a given state is NP-complete~\cite{demaine2018npcomplete}. Learned solvers have recently become
+strong on small cubes. DeepCubeA~\cite{agostinelli2019deepcubea} and
+EfficientCube~\cite{takano2023selfsupervision} solve the \Cu{3}, and the CayleyPy approach of
+Chervov et al.~\cite{chervov2025cayleypy} reaches near-optimal \Cu{3} solutions and the first
+learned \Cu{4} and \Cu{5} solvers. All of these train one network per size on a one-hot encoding
+of the whole sticker array, so a \Cu{6} needs a new model and a new training run, and none
+reports a cube beyond $N=5$.
+
+We ask what it takes to cover the whole range $3\le N\le 20$ with search-based solvers, for both
+the cube and its flat relative, the \Sq{N} Rubik's Square of Demaine et
+al.~\cite{demaine2011algorithms}. The two families share their key structure. Moves never mix
+\emph{cubie clusters}, and clusters of the same type behave identically at every $N$. That
+structure is what we build on. Our contributions:
+
+\begin{enumerate}
+\item \textbf{An open engine and benchmark} (\S\ref{sec:engine}) for both puzzle families and
+  every $N$. Moves come from 3D geometry rather than hand-written tables; clusters are found
+  automatically and given a sticker order that does not depend on $N$, so equal cluster types
+  have equal \emph{signatures}. A solvability checker, three move metrics and a harness that
+  re-applies every returned solution make results comparable across methods.
+\item \textbf{\FiveB, a staged beam search} (\S\ref{sec:5b}) that solves a few pieces per stage.
+  It combines exact abstraction tables (pattern databases~\cite{culberson1998pattern}),
+  small cluster networks, exact breadth-first search for stages whose projected puzzle is
+  tiny, and commutator macro-actions~\cite{korf1985macro} that are generated and then
+  machine-verified to move only the intended pieces. It solved every random state we tested,
+  from the \Sq{3} to the \Sq{20} and from the \Cu{3} to the \Cu{20}, on a CPU.
+\item \textbf{\FiveA, a cluster-token transformer} (\S\ref{sec:5a}) that reads the puzzle as a
+  set of cluster tokens, so one network applies to any $N$. Trained only on Squares with
+  $N\le 8$, its distance estimates stay correlated with scramble depth up to $N=20$.
+\item \textbf{A careful evaluation} (\S\ref{sec:experiments}) on shared, seeded instances,
+  including exact optima for small Squares, a reproduction of the CayleyPy recipe (\Mfour),
+  ablations, and counting lower bounds. We report where our methods fall short: \FiveB's
+  solutions are long, and we could not reproduce CayleyPy's \Cu{3} result without a GPU.
+\end{enumerate}
+
+%% =====================================================================
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Structure and complexity.}
+Demaine et al.~\cite{demaine2011algorithms} decompose \Sq{N} and \Cu{N} puzzles into cubie
+clusters, show that every cluster can be solved without disturbing the others, and obtain
+$\Theta(N^2/\log N)$ bounds on the diameter by solving many identical clusters with one shared
+move sequence. Optimal solving is NP-complete for both families~\cite{demaine2018npcomplete}.
+For the \Cu{3} the diameter is exactly 20 in the half-turn metric~\cite{rokicki2014diameter}.
+
+\paragraph{Classical solvers.}
+Korf found optimal \Cu{3} solutions with IDA* and pattern databases~\cite{korf1997optimal},
+following Culberson and Schaeffer's pattern databases~\cite{culberson1998pattern}.
+Kociemba's two-phase algorithm~\cite{kociemba2phase} and its engineered implementation
+min2phase~\cite{chen2phase} give near-optimal \Cu{3} solutions in milliseconds. Large cubes
+are usually solved by \emph{reduction} to a \Cu{3}~\cite{walton2017nxnxn}. Korf's
+macro-operators~\cite{korf1985macro} learn move sequences that change one part of the state
+and restore the rest; our verified commutators play the same role inside a learned search.
+The Kaggle Santa 2023 competition~\cite{kaggle2023santa} included large cubes; the KMCoders
+write-up~\cite{kmcoders2024santa} reports, for example, a 33$\times$33$\times$33 in 4,719 moves
+using cluster-wise 3-cycles.
+
+\paragraph{Learned solvers.}
+DeepCubeA~\cite{agostinelli2019deepcubea} learns a cost-to-go function by approximate value
+iteration and searches with batch weighted A*. EfficientCube~\cite{takano2023selfsupervision}
+trains directly on random scrambles from the goal. Q* search~\cite{agostinelli2024qstar}
+scores all children of a node in one network pass and handles large action spaces, including
+1,872 meta-actions on the \Cu{3}. CayleyPy~\cite{chervov2025cayleypy} trains a residual MLP to
+predict the length of a random walk from the solved state (a diffusion distance) and
+searches with very wide beams; it reports over 98\% optimal \Cu{3} solutions and the first
+learned \Cu{4} and \Cu{5} solvers, and its authors note that the diameter is unknown for every
+$N>3$~\cite{chervov2025growth}. All of these models are trained per puzzle size.
+
+\paragraph{Other uses of the cube.}
+The cube also serves as a benchmark for robotic manipulation~\cite{openai2019dactyl} and for
+spatial reasoning in (multimodal) language models~\cite{anand2025cubebench,gao2025cubebench};
+those works use small cubes and do not target solution quality at scale.
+
+\paragraph{Size generalization.}
+Networks that read a problem as a set or sequence of parts, such as pointer
+networks~\cite{vinyals2015pointer} and set transformers~\cite{lee2019settransformer}, can be
+applied to larger instances than they were trained on. \FiveA applies this idea to cubie
+clusters.
+
+%% =====================================================================
+\section{Problem}
+\label{sec:problem}
+
+\paragraph{Puzzles.}
+An \Sq{N} Rubik's Square is an $N\times N$ grid of cubies with a top and a bottom colour, plus
+side stickers on the border. Its $2N$ moves are 180$^\circ$ flips of one row or one column; each
+move is its own inverse. An \Cu{N} Rubik's Cube has $6N^2$ stickers and $3N$ slices; counting a
+quarter, half or three-quarter turn of one slice as one move (the half-turn metric, HTM) gives
+$9N$ moves. A state is \emph{solved} when every face shows one colour, in any of the reachable
+orientations (24 for the cube, 4 for the Square). Given a reachable state, the task is to return
+a short move sequence that solves it.
+
+\paragraph{Metrics.}
+We report lengths after merging commuting same-axis moves (Section~\ref{sec:engine}) in HTM,
+the quarter-turn metric (QTM, where a half turn counts 2) and the slice-turn metric (STM, where a
+block of adjacent layers turned together counts 1). For the Square all moves are flips, so
+HTM\,=\,QTM. To compare sizes we also divide lengths by $N^2/\ln N$, the growth rate of the
+worst case.
+
+\paragraph{Clusters.}
+A cubie can only ever reach the positions in its own cluster. Table~\ref{tab:clusters} lists the
+cluster types and how many of each an $N$ has; our engine finds them automatically
+(\S\ref{sec:engine}) and the counts are checked by unit tests. A \Cu{20} has 2,400 stickers,
+9 wing clusters and 81 center clusters; every one must be solved.
+
+\begin{table}[t]
+\caption{Cubie cluster types. Wings combine two sticker orbits of one layer. Counts are for one
+$N$; $k=\lfloor N/2\rfloor-1$.}
+\label{tab:clusters}
+\small
+\begin{tabular}{@{}llrl@{}}
+\toprule
+Puzzle & Cluster type & Stickers & Count \\
+\midrule
+Cube & corners & 24 & 1 \\
+     & middle edges & 24 & 1 if $N$ odd \\
+     & wing edges & 48 & $k$ \\
+     & centers ($+$, $\times$, oblique) & 24 & $((N-2)^2-[N\text{ odd}])/4$ \\
+     & fixed centers & 6 & 1 if $N$ odd \\
+\midrule
+Square & corner & 16 & 1 \\
+       & edge & 12 & $2k$ \\
+       & interior & 8 & $k^2$ \\
+       & edge-cross, cross, center & 6, 4, 2 & odd $N$ only \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%% =====================================================================
+\section{Engine and Benchmark}
+\label{sec:engine}
+
+All methods run on one engine~\cite{rubikrepo}. Everything below is generic over cuboid
+dimensions $(d_0,d_1,d_2)$, so the cube $(N,N,N)$ and the Square $(N,N,1)$ come from the same code.
+
+\paragraph{Moves from geometry.}
+Each sticker stores a doubled, centred cubie coordinate and an outward normal. A move rotates
+every sticker of one slab by an integer rotation matrix; looking up the rotated
+(position, normal) pair gives a permutation $\pi$, and applying the move is the gather
+$s\leftarrow s[\pi]$. A slab whose cross-section is not square, such as one row of the Square,
+only gets 180$^\circ$ turns, and an axis of length 1 gets none. Unit tests check that every move
+has order 4 (or 2) and that each move followed by its inverse is the identity, for every tested
+$N$.
+
+\paragraph{Canonical form.}
+Moves on the same axis commute. We canonicalise a sequence by merging each same-axis run per
+layer and sorting by layer, and we use the same order to prune search: after a move on axis
+$a$, layer $\ell$, no move on axis $a$ with layer $\le\ell$ is allowed. This removes immediate
+repeats and every redundant ordering of commuting moves.
+
+\paragraph{Clusters with $N$-invariant signatures.}
+Union-find over all move permutations gives the sticker orbits; orbits sharing cubies are merged
+into cubie clusters. Inside a cluster, stickers are sorted by face and by the signs and relative
+magnitudes of their in-face coordinates. This order does not depend on $N$, so the moves acting
+on a cluster induce the same local permutations at every $N$. We hash the local generator set
+and the solved pattern into a \emph{signature}; tests confirm that, for example, every
+$\times$-center cluster of the \Cu{5}, \Cu{7} and \Cu{9} has the same signature. A model trained
+for one cluster type therefore applies at any size.
+
+\paragraph{Projections.}
+Restricting attention to a subset of stickers gives a \emph{projected puzzle}. When it is small
+we enumerate it by breadth-first search from the solved pattern; the resulting table gives exact
+distances for that subset and doubles as an exact membership test.
+
+\paragraph{Solvability checker.}
+A state is accepted only if it passes: global and per-cluster colour counts; membership in the
+exact projection table for every cluster small enough to enumerate (all Square clusters); for
+cubes, valid corner, middle-edge and wing pieces, corner twist $\equiv 0 \pmod 3$ and, for odd
+$N$ after normalising orientation by the fixed centers, even middle-edge flip and equal corner
+and middle-edge permutation parity; and for the Square, joint consistency of each cross cluster
+with the border clusters it shares moves with. These are necessary conditions. Property tests
+confirm that the checker accepts scrambled states and rejects a single corner twist, a single
+middle-edge flip, a swap of two corners on odd cubes and wrong colour counts.
+
+\paragraph{Harness.}
+Every solver implements one interface and returns engine moves. The harness re-applies the
+moves, decides \emph{solved} itself, and writes one row per instance with lengths in all three
+metrics, time, nodes, memory, seed, hardware and git commit. A crash or time-out counts as a
+failure and stays in the denominator.
+
+\paragraph{Shared beam search.}
+Methods 4, 5A and 5B share one beam search. Per step it expands the beam in chunks, scores
+children with the heuristic, and keeps the $W$ best after removing duplicates by a random
+64-bit linear hash (also across the last three steps). Only (score, hash, parent, action) is
+stored per child; the next beam is rebuilt from parents. Beam states are packed at 3 bits per
+sticker and can live on the device, in pinned host memory or on disk. The search accepts
+\emph{macro actions}: fixed move sequences applied as one step and expanded into ordinary moves in
+the output. A heuristic that can score all children of a parent in one pass is used that way,
+as in Q* search~\cite{agostinelli2024qstar}.
+
+\paragraph{Instances.}
+Random states are long random canonical walks (at least $25\times$ the number of moves, and at
+least 400 moves). This approximates, but does not guarantee, a uniform random reachable state.
+Every instance is regenerated from a seed and checked by the solvability checker; all methods
+see the same instances.
+
+%% =====================================================================
+\section{Method 5B: Cluster-Decomposed Staged Beam Search}
+\label{sec:5b}
+
+\FiveB solves the puzzle in a sequence of stages (Figure~\ref{fig:pipeline},
+Algorithm~\ref{alg:5b}). Each stage adds a few pieces to an exact goal: those pieces, and every
+piece solved by an earlier stage, must show their solved stickers. Each stage is a small search
+problem with a sharp signal, and later stages cannot silently undo earlier work.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[font=\footnotesize,
+  box/.style={draw=black!55, rounded corners=2pt, align=center, inner sep=2.5pt, minimum height=7mm},
+  hl/.style={box, draw=blue!65!black, fill=blue!6, line width=0.7pt},
+  ar/.style={-{Stealth[length=1.6mm]}, draw=black!60}, lab/.style={font=\scriptsize, text=black!70}]
+\node[box, text width=21mm] (plan) at (0,0) {stage plan\\{\scriptsize corners, edges, wings,\\centers; 6 pieces each}};
+\node[box, text width=19mm] (small) at (28mm,0) {projected stage\\$\le 10^5$ states?};
+\node[box, text width=15mm] (bfs) at (54mm,0) {exact BFS:\\optimal moves};
+\node[box, text width=21mm] (inp) at (0,-17mm) {heuristic + actions\\{\scriptsize tables, cluster MLPs;\\verified commutators}};
+\node[hl, text width=19mm] (beam) at (28mm,-17mm) {beam search\\{\scriptsize widen until found}};
+\node[box, text width=19mm] (apply) at (28mm,-32mm) {apply moves};
+\draw[ar] (plan) -- (small);
+\draw[ar] (small) -- node[lab, above]{yes} (bfs);
+\draw[ar] (small) -- node[lab, right]{no} (beam);
+\draw[ar] (inp) -- (beam);
+\draw[ar] (beam) -- (apply);
+\draw[ar] (bfs.south) |- (apply.east);
+\draw[ar] (apply.west) -- node[lab, below]{next stage} ++(-31mm,0) |- (plan.west);
+\end{tikzpicture}
+\caption{\FiveB. Each stage adds a few pieces to an exact goal. Tiny stages are solved
+optimally by lookup; the rest by beam search over single moves and verified commutators, guided
+by exact abstraction tables and small cluster networks.}
+\label{fig:pipeline}
+\end{figure}
+
+\paragraph{Stage plan.}
+For the Square we follow Demaine et al.~\cite{demaine2011algorithms}: the \emph{frame} (corner,
+center and edge-cross clusters), then edge clusters two at a time, then cross clusters and interior
+clusters three at a time, from the outside in. For the cube we use an \emph{edges-first} order:
+fixed centers, corners, middle edges, wings, then centers, with every wing and center cluster split
+into stages of 6 pieces. Inner-slice moves never disturb corners, and the commutators below never
+disturb edges, so the later and more numerous stages have cheap actions that keep earlier work.
+
+\paragraph{Stage actions.}
+A move that touches none of the current targets cannot make progress, so each stage searches
+only the single moves that touch a target plus the macro actions that do. This cuts the
+branching factor from $O(N^2)$ macros to a handful. The macro pool is:
+\begin{itemize}
+\item \emph{Square}: for every row $r$ and column $c$, the commutator $c\,r\,c\,r$, which changes
+  only the cluster at their crossing (Demaine's Lemma~2), and the conjugates $r\,c\,r$ and
+  $c\,r\,c$; $3N^2$ macros.
+\item \emph{Cube}: $X\,Y\,X'\,Y'$ for an inner-slice quarter turn $X$ and an outer-face quarter
+  turn $Y$ on another axis, which never moves corners; and pure-center commutators
+  $[A, B\,C\,B'] = A\,B\,C\,B'\,A'\,B\,C'\,B'$ with $A$ and $C$ inner-slice quarter turns on one axis
+  (the middle slice included, e.g.\ $[M, U\,r\,U']$) and $B$ a face turn on another axis.
+  Every candidate is applied to the sticker permutation and kept only if it moves center stickers
+  alone; duplicates with the same permutation are dropped. This leaves 192 pure-center
+  commutators for the \Cu{4} and 29,376 for the \Cu{20}, and covers all 81 center clusters
+  of the \Cu{20}.
+\end{itemize}
+Once every corner and edge is solved, a center stage searches \emph{only} the pure-center
+commutators, which keep all earlier work by construction.
+
+\paragraph{Heuristics.}
+A stage's heuristic is a weighted sum over clusters:
+\begin{equation}
+h(s)=\sum_{c\in T} h_c(s) + \lambda_{\text{keep}}\!\!\sum_{c\in P} h_c(s)
+     + \lambda_{\text{ex}}\,\bigl|\{i\in G: s_i\ne s^\ast_i\}\bigr| ,
+\end{equation}
+where $T$ are the target clusters, $P$ the earlier clusters that some allowed action can move,
+$G$ the stage's goal stickers and $s^\ast$ the solved state ($\lambda_{\text{keep}}=1$,
+$\lambda_{\text{ex}}=0.5$). Each per-cluster term $h_c$, shared by signature across all $N$, is
+one of three kinds:
+\begin{enumerate}
+\item \emph{Exact table}, when the projected cluster has at most 1.5M states: every Square
+  cluster and the fixed centers.
+\item \emph{Coarse abstraction tables}: the projection after mapping one pair of opposite
+  colours to 1 and the rest to 0. These are pattern databases over a colour
+  abstraction~\cite{culberson1998pattern} and give admissible lower bounds. They have
+  2,187 states for corners, 126,720 for middle edges and 735,471 for every center type; wings
+  are skipped because every such projection exceeds the cap. For corners a finer three-class
+  abstraction (one colour to 1, its opposite to 2) has 153,090 states.
+\item \emph{Cluster MLP}: a small residual MLP (hidden width 256, two residual blocks) trained on
+  random walks of the projected cluster to predict walk length, combined with the coarse tables
+  by $\max$. Six such networks (corner, middle edge, wing, three center types) cover every
+  cube size; each trained for 1,500 steps on CPU in 2--15 minutes.
+\end{enumerate}
+Corners use the three-class tables alone. The MLP's walk-length targets overestimate the true
+distance, and taking the max with them flattens the tables' signal; Section~\ref{sec:ablations}
+measures the effect.
+
+\paragraph{Exact small stages.}
+If the projection of a stage's goal stickers under the stage's single moves has at most 100,000
+states, we enumerate it and descend greedily on the exact distances, which is optimal for that
+stage. The Square frame always qualifies: for any $N$ it depends only on rows and columns $0$,
+$\lfloor N/2\rfloor$ and $N-1$, and is therefore a \Sq{3} with at most 768 states.
+
+\paragraph{Width schedule.}
+Each stage starts at width $W_0$ (128 for the Square, 512 for the cube) and, if it fails within its
+step limit (40 and 60 steps), retries at $4\times$ the width up to $W_{\max}$ (2,048 and 8,192).
+Stages with few actions may widen further while $W\times|\text{actions}|\le 1.2\cdot 10^6$; the
+18-action \Cu{3} corner stage thus reaches $2^{16}$.
+
+\begin{algorithm}[t]
+\caption{\FiveB (one state)}
+\label{alg:5b}
+\small
+\KwIn{state $s$, stage plan $S_1,\dots,S_m$}
+\KwOut{move sequence $\mu$ with $s\cdot\mu$ solved}
+$\mu\leftarrow[\,]$\;
+\For{$i\leftarrow1$ \KwTo $m$}{
+  $G\leftarrow\bigcup_{j\le i}\text{goal}(S_j)$\;
+  \lIf{$s$ already solved on $G$}{\textbf{continue}}
+  $A\leftarrow$ single moves and verified macros that move some target of $S_i$\;
+  \uIf{projection of $G$ under $A$ has $\le 10^5$ states}{
+    $\nu\leftarrow$ optimal moves by greedy descent on its BFS table\;}
+  \Else{
+    $h\leftarrow$ stage heuristic (Eq.~1)\;
+    $W\leftarrow W_0$\;
+    \Repeat{$\nu$ found \textbf{or} $W > W_{\max}(|A|)$}{
+      $\nu\leftarrow$ \textsc{BeamSearch}$(s, A, h, W, \text{goal}=G)$\;
+      $W\leftarrow4W$\;}
+  }
+  \lIf{no $\nu$}{\Return failure}
+  $s\leftarrow s\cdot\nu$;\quad $\mu\leftarrow\mu\,\Vert\,\nu$\;
+}
+\Return canonicalise$(\mu)$\;
+\end{algorithm}
+
+%% =====================================================================
+\section{Method 5A: One Network for Every Size}
+\label{sec:5a}
+
+\FiveA replaces the per-size sticker network with one that reads the puzzle as a set of cluster
+tokens. Each cluster becomes one token: the one-hot colours of its stickers in the canonical order,
+projected by a linear map shared by all clusters of the same type, plus a learned embedding of the
+cluster kind and a small MLP of geometric features (the cluster's two in-face depths divided by
+$N-1$, and $N/20$). A transformer encoder~\cite{vaswani2017attention} without positional order
+mixes the tokens, since they form a set~\cite{lee2019settransformer}. The value head is
+\emph{additive}: each token predicts a non-negative cost, the costs are summed, and a small global
+correction is added. A sum matches the structure of the problem, since total distance grows with the
+number of unsolved clusters, and it extends to any number of tokens. The per-token costs also serve as
+per-cluster heuristics inside \FiveB's stages.
+
+Training uses fresh non-backtracking random walks from the solved state on every training size,
+with the walk length $k$ as target and the loss on $(\hat k-k)/(N^2/\ln N)$ so that all sizes
+contribute on one scale. The model we evaluate has \FiveAParams{} parameters (width 64, two layers,
+four heads) and was trained for \FiveASteps{} steps on Squares with $N\in\{4,\dots,8\}$ only, in
+\FiveATrainMin{} minutes on CPU. At test time it runs full-puzzle beam search for $N\le7$ and,
+above that, \FiveB's stages with its per-token costs as the stage heuristic. The architecture
+also has a Q*-style move head; we did not evaluate it.
+
+%% =====================================================================
+\section{Method 4: CayleyPy Reproduction}
+\label{sec:m4}
+
+\Mfour re-implements the recipe of Chervov et al.~\cite{chervov2025cayleypy} on our engine: one
+residual MLP per puzzle size on one-hot sticker inputs, trained with MSE on fresh non-backtracking
+random walks to predict walk length, and beam search with hash deduplication for at most 200
+steps. Square models have 0.25--0.45M parameters and were trained on 4M (N $\le$ 5) or 10M
+(N = 6--8) examples in 1--4 minutes each on CPU. We also trained the paper's 4.0M-parameter
+\Cu{3} model on 32M examples (77 minutes on CPU), 250$\times$ fewer than the paper's 8B.
+
+%% =====================================================================
+\section{Experiments}
+\label{sec:experiments}
+
+\paragraph{Setup.}
+All runs used a 2-core CPU, no GPU and one thread per process. Square experiments use 10 seeded
+random states for $N\le12$ and 5 for $13\le N\le20$; cube experiments use 2 states for $N\le10$
+and one each for $N=15$ and $N=20$. Every method sees the same instances, and every number below
+comes from the harness's result files, from which our tables and figures are generated by
+script. Means are over solved instances; a superscript gives the solved fraction when it is
+below 100\%.
+
+\input{results_body.tex}
+
+%% =====================================================================
+\section{Limitations}
+\label{sec:limitations}
+
+\begin{itemize}
+\item \emph{Small samples and CPU only.} We test few states per size, especially for large cubes
+  (one each at $N=15$ and $20$). The coverage results are strong evidence of reliability, not a
+  guarantee, and every timing is for a 2-core CPU.
+\item \emph{Long solutions.} \FiveB is far from optimal, and its normalised length rises over the
+  tested range of $N$.
+  It solves clusters a few at a time and never batches identical fixes across clusters the way
+  Demaine's construction does, which is what $O(N^2/\log N)$ requires.
+\item \emph{\Mfour on cubes.} With 250$\times$ less training data than the original, our \Cu{3}
+  model solved short scrambles but none of 10 random states at $W\in\{256, 1024, 4096\}$ and none of
+  4 at $W=16{,}384$ (from the project's status log).
+  This is a statement about our compute, not about the method.
+\item \emph{\FiveA's evidence is preliminary.} One small Square model, a CPU budget, and no cube
+  model.
+\item \emph{Checker and sampling.} The checker enforces necessary conditions only, and random
+  states come from long random walks rather than an exact uniform sampler.
+\item \emph{Missing baselines.} Our project plan also includes IDA* with pattern databases, a
+  reduction solver with Kociemba's two-phase algorithm, and Demaine's parallel algorithm; they are
+  not yet implemented, so we compare only against \Mfour and exact optima.
+\end{itemize}
+
+%% =====================================================================
+\section{Conclusion}
+
+Decomposing Rubik's puzzles into clusters with $N$-invariant signatures lets one engine, one set of
+small heuristics and one search procedure cover every size from 3 to 20. With exact abstraction
+tables, machine-verified commutator actions and exact small stages, a staged beam search solved
+every random state we tested on a CPU, including a \Cu{20}. The same structure gives a
+cluster-token network whose distance estimates carry over to Square sizes it never saw. What remains is solution quality: per-size
+networks are much shorter where they apply, and closing that gap at large $N$, for example with
+\FiveA's heuristics inside the stages and Demaine-style batching of identical fixes, is the next
+step. Code, data and result files are available at
+\url{https://github.com/gauravrai1704/Rubik}.
+
+\begin{acks}
+This work was carried out as a course project at Shiv Nadar University.
+\end{acks}
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references}
+
+\end{document}

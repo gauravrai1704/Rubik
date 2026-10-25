@@ -1,0 +1,60 @@
+{
+ "3": {
+  "states": 768,
+  "rotations": 4,
+  "gods_number": 6,
+  "histogram": {
+   "0": 4,
+   "1": 24,
+   "2": 68,
+   "3": 160,
+   "4": 288,
+   "5": 156,
+   "6": 68
+  },
+  "mean_random": 3.6,
+  "instances": {
+   "square-3-drandom-0000": 1,
+   "square-3-drandom-0001": 5,
+   "square-3-drandom-0002": 5,
+   "square-3-drandom-0003": 6,
+   "square-3-drandom-0004": 4,
+   "square-3-drandom-0005": 3,
+   "square-3-drandom-0006": 2,
+   "square-3-drandom-0007": 3,
+   "square-3-drandom-0008": 3,
+   "square-3-drandom-0009": 4
+  }
+ },
+ "4": {
+  "states": 82944,
+  "rotations": 4,
+  "gods_number": 10,
+  "histogram": {
+   "0": 4,
+   "1": 32,
+   "2": 152,
+   "3": 640,
+   "4": 2464,
+   "5": 7152,
+   "6": 16248,
+   "7": 24720,
+   "8": 20700,
+   "9": 8928,
+   "10": 1904
+  },
+  "mean_random": 6.4,
+  "instances": {
+   "square-4-drandom-0000": 8,
+   "square-4-drandom-0001": 6,
+   "square-4-drandom-0002": 6,
+   "square-4-drandom-0003": 6,
+   "square-4-drandom-0004": 6,
+   "square-4-drandom-0005": 8,
+   "square-4-drandom-0006": 4,
+   "square-4-drandom-0007": 6,
+   "square-4-drandom-0008": 6,
+   "square-4-drandom-0009": 8
+  }
+ }
+}

@@ -5,9 +5,19 @@ __pycache__/
 .ruff_cache/
 .venv/
 # generated — regenerate with `python -m rubiks.bench make`
-data/
-results/
+/data/
+/results/
 # Large checkpoints (> ~5 MB, e.g. GPU-trained 5A models): share via release assets / team drive
 # and name them *.large.pt. Small ones (5B cluster MLPs, the CPU 5A Square model) are committed.
 checkpoints/**/*.large.pt
 *.beam
+# paper build outputs (the PDF itself is committed)
+paper/*.aux
+paper/*.log
+paper/*.bbl
+paper/*.blg
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.out
+paper/build.log
+paper/comment.cut
