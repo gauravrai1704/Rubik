@@ -116,8 +116,6 @@
 \newlabel{tab:cube}{{3}{7}{Rubik's Cube, random states: mean HTM of every method on the same instances (bold: shortest), then \FiveC 's QTM, its length divided by $N^2/\ln N$ and its time per state on the 4-core machine. Every method solved every instance}{table.caption.40}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Method\nonbreakingspace 5C\xspace  components on the cube (mean HTM, same instances): Method\nonbreakingspace 3\xspace  's schedule; Method\nonbreakingspace 5C\xspace  without lookahead; full Method\nonbreakingspace 5C\xspace  (lookahead on, the default for $N\le 15$); Method\nonbreakingspace 5C\xspace  with lookahead but without setup sharing. ``--'' = not run.}}{7}{table.caption.41}\protected@file@percent }
 \newlabel{tab:5cabl}{{4}{7}{\FiveC components on the cube (mean HTM, same instances): \Mthree 's schedule; \FiveC without lookahead; full \FiveC (lookahead on, the default for $N\le 15$); \FiveC with lookahead but without setup sharing. ``--'' = not run}{table.caption.41}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {9.6}Ablations of Method\nonbreakingspace 5B\xspace  }{7}{subsection.9.6}\protected@file@percent }
-\newlabel{sec:ablations}{{9.6}{7}{Ablations of \FiveB }{subsection.9.6}{}}
 \citation{demaine2011algorithms}
 \citation{demaine2011algorithms}
 \citation{walton2017nxnxn}
@@ -125,6 +123,8 @@
 \newlabel{tab:optimal}{{5}{8}{Optimality on the smallest Squares. ``Gap'' = mean HTM above the exact optimum over solved instances; ``optimal'' = instances solved in exactly the optimal length. \FiveA was evaluated for $N\ge 4$ only}{table.caption.42}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Method\nonbreakingspace 5A\xspace  , trained on Squares with $N\in \{4,\dots  ,8\}$ only: agreement of its distance estimate with the true random-walk depth at the end of training, on fresh walks ($^\ast $ = size never seen in training). RMSE is in units of $N^2/\ln N$.}}{8}{table.caption.44}\protected@file@percent }
 \newlabel{tab:gen}{{6}{8}{\FiveA , trained on Squares with $N\in \{4,\dots ,8\}$ only: agreement of its distance estimate with the true random-walk depth at the end of training, on fresh walks ($^\ast $ = size never seen in training). RMSE is in units of $N^2/\ln N$}{table.caption.44}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.6}Ablations of Method\nonbreakingspace 5B\xspace  }{8}{subsection.9.6}\protected@file@percent }
+\newlabel{sec:ablations}{{9.6}{8}{Ablations of \FiveB }{subsection.9.6}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {9.7}Scaling with $N$ and lower bounds}{8}{subsection.9.7}\protected@file@percent }
 \newlabel{sec:scaling}{{9.7}{8}{Scaling with $N$ and lower bounds}{subsection.9.7}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {10}Limitations}{8}{section.10}\protected@file@percent }
@@ -138,10 +138,6 @@
 \bibcite{gao2025cubebench}{{4}{2025}{{ang Gao et~al\mbox  {.}}}{{}}}
 \bibcite{chen2phase}{{5}{[n.\,d.]}{{Chen}}{{}}}
 \bibcite{chervov2025growth}{{6}{2025a}{{Chervov et~al\mbox  {.}}}{{}}}
-\bibcite{chervov2025cayleypy}{{7}{2025b}{{Chervov et~al\mbox  {.}}}{{}}}
-\bibcite{culberson1998pattern}{{8}{1998}{{Culberson and Schaeffer}}{{}}}
-\bibcite{demaine2011algorithms}{{9}{2011}{{Demaine et~al\mbox  {.}}}{{}}}
-\bibcite{demaine2018npcomplete}{{10}{2018}{{Demaine et~al\mbox  {.}}}{{}}}
 \@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Ablations of Method\nonbreakingspace 5B\xspace  , removing one component at a time: macro actions, exact small stages, the restriction of late center stages to pure-center commutators, the tables-only corner heuristic, and the coarse abstraction tables (corners then use the MLP alone). Each cell: solved / tried, mean HTM over solved states, mean seconds per state (failures included in time). Square: 5 states per size, 600\,s budget; cube: 2 states per size, 300\,s budget. The same instances as Tables\nonbreakingspace \ref {tab:square} and \ref {tab:cube}.}}{9}{table.caption.45}\protected@file@percent }
 \newlabel{tab:ablation}{{7}{9}{Ablations of \FiveB , removing one component at a time: macro actions, exact small stages, the restriction of late center stages to pure-center commutators, the tables-only corner heuristic, and the coarse abstraction tables (corners then use the MLP alone). Each cell: solved / tried, mean HTM over solved states, mean seconds per state (failures included in time). Square: 5 states per size, 600\,s budget; cube: 2 states per size, 300\,s budget. The same instances as Tables~\ref {tab:square} and \ref {tab:cube}}{table.caption.45}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Solution length divided by $N^2/\ln N$, the growth rate of the worst case, for the Square (a) and the cube (b). A flat line would mean growth at the rate of the worst case. Means over solved states; the same instances as Tables\nonbreakingspace \ref {tab:square} and \ref {tab:cube}.}}{9}{figure.caption.46}\protected@file@percent }
@@ -150,6 +146,10 @@
 \newlabel{tab:lb}{{8}{9}{Counting lower bounds on the worst case (God's number) in our move sets ($2N$ Square flips, $9N$ cube half-turn moves), from the number of reachable center-cluster configurations as in Demaine et al.~\cite {demaine2011algorithms}, next to the mean lengths of \FiveB and \FiveC on random states. The bounds are for the worst state, not for these instances}{table.caption.47}{}}
 \@writefile{toc}{\contentsline {section}{Acknowledgments}{9}{section*.49}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{References}{9}{section*.51}\protected@file@percent }
+\bibcite{chervov2025cayleypy}{{7}{2025b}{{Chervov et~al\mbox  {.}}}{{}}}
+\bibcite{culberson1998pattern}{{8}{1998}{{Culberson and Schaeffer}}{{}}}
+\bibcite{demaine2011algorithms}{{9}{2011}{{Demaine et~al\mbox  {.}}}{{}}}
+\bibcite{demaine2018npcomplete}{{10}{2018}{{Demaine et~al\mbox  {.}}}{{}}}
 \bibcite{rubikrepo}{{11}{2026}{{Gaurav et~al\mbox  {.}}}{{}}}
 \bibcite{kaggle2023santa}{{12}{2023}{{Kaggle}}{{}}}
 \bibcite{kmcoders2024santa}{{13}{2024}{{KMCoders}}{{}}}

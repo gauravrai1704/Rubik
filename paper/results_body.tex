@@ -38,7 +38,7 @@ Methods 2, 3 and \FiveC solved all Square instances (\SqSolvedFiveC{}) and all c
 \CuTotal{} cubes (Tables~\ref{tab:square} and~\ref{tab:cube}). Which method is shortest depends on
 the size. On the smallest Squares, exact search and the per-size networks of \Mfour are optimal. From
 the \Sq{9} on, where no per-size network exists, \FiveC is the shortest method: strictly shorter than
-\Mthree at \SqFiveCBetter{} of the 12 sizes from 9 to 20 and tied at the others
+\Mthree at \SqFiveCBetter{} of the 12 sizes from 9 to 20
 (\SqTwentyHTMFiveC{} against \SqTwentyHTMMthree{} and \SqTwentyHTMMtwo{} moves for \Mthree and \Mtwo on
 the \Sq{20}). On the cube, \FiveC is the shortest method at every size from $N=5$ on. On the \Cu{20}
 it needs \CuTwentyHTMFiveC{} moves against \CuTwentyHTMMthree{} for \Mthree, \CuTwentyHTMMtwo{} for
@@ -58,7 +58,12 @@ by $N^2/\ln N$ rises from \CuNormSixFiveC{} to \CuNormTwentyFiveC{} between $N=6
 centers, which are \FiveCCenterShareTwenty\% of \FiveC's moves on the \Cu{20}: there,
 \FiveCBulkRoundsTwenty{} of its \FiveCRoundsTwenty{} center rounds were bulk moves, against
 \Mthree, where \MthreeSingleRoundsTwenty{} of \MthreeRoundsTwenty{} rounds fixed a single cluster.
-Table~\ref{tab:5cabl} removes the lookahead and the setup sharing.
+Table~\ref{tab:5cabl} removes the lookahead and the setup sharing. Net-gain blocks alone, without
+lookahead, already give most of the gain (on the \Cu{20}, \FiveCNoLookaheadTwenty{} moves against
+\Mthree's \CuTwentyHTMMthree{}). One step of lookahead shortens solutions by a further 2--8\%
+(\FiveCLookaheadTwenty{} moves on the \Cu{20}, our default only up to $N=15$ because it multiplies the
+time by about four). Setup sharing matters least: it saved 4\% on the \Cu{10}, less at $N=7$ and 8, and
+nothing on the \Cu{6}, where there are few bulk moves to chain.
 
 \begin{table}[t]
 \caption{\FiveC components on the cube (mean HTM, same instances): \Mthree's schedule; \FiveC without

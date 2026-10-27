@@ -433,7 +433,7 @@ def style(ax):
 
 
 # Figure: normalised length vs N, both puzzles
-fig, axes = plt.subplots(1, 2, figsize=(7.0, 2.3))
+fig, axes = plt.subplots(1, 2, figsize=(7.0, 2.6))
 ax = axes[0]
 Ns = sorted(sq_by_N)
 y5b = [np.mean([r["htm"] for r in sq_by_N[N] if r["solved"]]) / scale(N) for N in Ns]
@@ -465,7 +465,6 @@ ax.set_xticks([3, 5, 8, 10, 12, 15, 20])
 ax.set_title("(a) N×N×1 Rubik's Square", fontsize=8, loc="left", color=INK)
 ax.set_ylim(bottom=0)
 style(ax)
-ax.legend(loc="upper left", fontsize=6.5, ncol=2)
 ax = axes[1]
 Nc = sorted(cu_by_N)
 ax.plot(Nc, [np.mean([r["htm"] for r in cu_by_N[N] if r["solved"]]) / scale(N) for N in Nc], "-o",
@@ -480,14 +479,21 @@ for label, src, col, mk in (("Method 2", base_cu["M2"], CM2, "v"), ("Method 3", 
     if xs:
         ax.plot(xs, [np.mean(pts[N]) / scale(N) for N in xs], "-" + mk, color=col, lw=2.2 if "5C" in label else 1.2,
                 ms=4.5 if "5C" in label else 3.5, label=label)
-ax.legend(loc="upper left", fontsize=7)
 ax.set_xlabel("Cube size $N$")
 ax.set_ylabel("HTM / ($N^2/\\ln N$)")
 ax.set_xticks([3, 5, 8, 10, 15, 20])
 ax.set_title("(b) N×N×N Rubik's Cube", fontsize=8, loc="left", color=INK)
 ax.set_ylim(bottom=0)
 style(ax)
-fig.tight_layout()
+handles, labels = {}, []
+for a_ in axes:
+    for h_, l_ in zip(*a_.get_legend_handles_labels()):
+        if l_ not in handles:
+            handles[l_] = h_
+            labels.append(l_)
+fig.legend([handles[l_] for l_ in labels], labels, loc="lower center", ncol=len(labels), fontsize=7,
+           handlelength=2.2, columnspacing=1.4)
+fig.tight_layout(rect=(0, 0.1, 1, 1))
 fig.savefig(FIG / "scaling.pdf")
 plt.close(fig)
 

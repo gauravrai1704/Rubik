@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.10.25)  27 OCT 2026 02:55
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.10.25)  27 OCT 2026 03:37
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1391,20 +1391,20 @@ Underfull \vbox (badness 1953) has occurred while \output is active []
 (./results_body.tex (./generated/tab_square_rows.tex)
 (./generated/tab_cube_rows.tex) (./generated/tab_5c_ablation.tex)
 (./generated/tab_optimal_rows.tex)
-Overfull \hbox (2.3324pt too wide) in paragraph at lines 99--105
+Overfull \hbox (2.3324pt too wide) in paragraph at lines 104--110
  [][] 
  []
 
 <figures/m4_width.pdf, id=297, 238.49101pt x 158.99399pt>
 File: figures/m4_width.pdf Graphic file (type pdf)
 <use figures/m4_width.pdf>
-Package pdftex.def Info: figures/m4_width.pdf  used on input line 130.
+Package pdftex.def Info: figures/m4_width.pdf  used on input line 135.
 (pdftex.def)             Requested size: 241.14749pt x 160.76703pt.
 
-Class acmart Warning: A possible image without description on input line 135.
+Class acmart Warning: A possible image without description on input line 140.
 
 
-Underfull \hbox (badness 1048) in paragraph at lines 143--143
+Underfull \hbox (badness 1048) in paragraph at lines 148--148
 \T1/LinuxLibertineT-TLF/b/n/9 (+20) only: agree-ment of its dis-tance es-ti-mat
 e with the true
  []
@@ -1413,52 +1413,50 @@ e with the true
 
 LaTeX Warning: Text page 7 contains only floats.
 
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [7.7]
 (./generated/tab_ablation.tex
 Overfull \hbox (3.43703pt too wide) in paragraph at lines 2--12
  [][] 
  []
 
 )
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [7.7]
 LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 10.95pt on input line 202.
+(Font)              scaled to size 10.95pt on input line 207.
 LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 6.1pt on input line 202.
+(Font)              scaled to size 6.1pt on input line 207.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 202.
+(hyperref)                removing `math shift' on input line 207.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 202.
+(hyperref)                removing `math shift' on input line 207.
 
-<figures/scaling.pdf, id=340, 505.89pt x 166.22101pt>
+<figures/scaling.pdf, id=339, 505.89pt x 187.902pt>
 File: figures/scaling.pdf Graphic file (type pdf)
 <use figures/scaling.pdf>
-Package pdftex.def Info: figures/scaling.pdf  used on input line 207.
-(pdftex.def)             Requested size: 506.295pt x 166.35753pt.
+Package pdftex.def Info: figures/scaling.pdf  used on input line 212.
+(pdftex.def)             Requested size: 506.295pt x 188.05635pt.
 
-Class acmart Warning: A possible image without description on input line 212.
+Class acmart Warning: A possible image without description on input line 217.
 
-(./generated/tab_lb_rows.tex)) Processing 'acks' comment.
-Underfull \vbox (badness 10000) has occurred while \output is active []
+(./generated/tab_lb_rows.tex)) [8.8]
+Underfull \vbox (badness 1648) has occurred while \output is active []
 
- [8.8]
+
+Processing 'acks' comment.
 \openout3 = `comment.cut'.
 
-
-Comment 'acks' writing to comment.cut. Straight input of comment.cut.
-(./comment.cut) (./main.bbl
+ Comment 'acks' writing to comment.cut.
+Straight input of comment.cut. (./comment.cut) (./main.bbl
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/it' will be
 (Font)              scaled to size 7.0pt on input line 47.
-LaTeX Info: Redefining \tempurl on input line 176.
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
  [9.9 <./figures/scaling.pdf>]
+LaTeX Info: Redefining \tempurl on input line 176.
 LaTeX Info: Redefining \tempurl on input line 287.
 
 Underfull \hbox (badness 1521) in paragraph at lines 330--338
@@ -1469,10 +1467,6 @@ N-solver.  []$https : / / github . com /
 )
 
 Class acmart Warning: Some images may lack descriptions.
-
-
-Overfull \vbox (1.16599pt too high) has occurred while \output is active []
-
 
 (/usr/share/texlive/texmf-dist/tex/generic/stringenc/se-pdfdoc.def
 File: se-pdfdoc.def 2019/11/29 v1.12 stringenc: PDFDocEncoding
@@ -1489,11 +1483,11 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 894691D3E8076693C121AD043184781F;3960.
  ) 
 Here is how much of TeX's memory you used:
- 33445 strings out of 476106
- 606058 string characters out of 5793932
- 1970975 words of memory out of 5000000
- 53859 multiletter control sequences out of 15000+600000
- 812478 words of font info for 579 fonts, out of 8000000 for 9000
+ 33450 strings out of 476106
+ 606175 string characters out of 5793932
+ 1967975 words of memory out of 5000000
+ 53861 multiletter control sequences out of 15000+600000
+ 812751 words of font info for 581 fonts, out of 8000000 for 9000
  220 hyphenation exceptions out of 8191
  90i,19n,131p,1001b,850s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/newtx/LibertineMathMI.pfb><
@@ -1511,7 +1505,7 @@ xmf-dist/fonts/type1/public/newtx/NewTXMI7.pfb></usr/share/texlive/texmf-dist/f
 onts/type1/public/newtx/txexs.pfb></usr/share/texlive/texmf-dist/fonts/type1/pu
 blic/newtx/txmiaX.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/newtx/t
 xsys.pfb>
-Output written on main.pdf (10 pages, 607785 bytes).
+Output written on main.pdf (10 pages, 607786 bytes).
 PDF statistics:
  529 PDF objects out of 1000 (max. 8388607)
  443 compressed objects within 5 object streams
