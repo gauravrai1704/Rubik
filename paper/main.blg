@@ -1,0 +1,76 @@
+This is BibTeX, Version 0.99d (TeX Live 2023/Debian)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: main.aux
+The style file: ACM-Reference-Format.bst
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Database file #1: references.bib
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated glb_str_ptr (elt_size=4) to 20 items from 10.
+Reallocated global_strs (elt_size=200001) to 20 items from 10.
+Reallocated glb_str_end (elt_size=4) to 20 items from 10.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Warning--empty year in chen2phase
+Warning--empty publisher in chervov2025cayleypy
+Warning--empty address in chervov2025cayleypy
+Warning--page numbers missing in both pages and numpages fields in chervov2025cayleypy
+Warning--empty address in demaine2011algorithms
+Warning--empty address in demaine2018npcomplete
+Warning--empty year in kociemba2phase
+Warning--empty publisher in korf1997optimal
+Warning--empty address in korf1997optimal
+Warning--empty publisher in lee2019settransformer
+Warning--empty address in lee2019settransformer
+Warning--page numbers missing in both pages and numpages fields in lee2019settransformer
+Warning--no number and no volume in takano2023selfsupervision
+Warning--page numbers missing in both pages and numpages fields in takano2023selfsupervision
+Warning--empty publisher in vaswani2017attention
+Warning--empty address in vaswani2017attention
+Warning--page numbers missing in both pages and numpages fields in vaswani2017attention
+Warning--empty publisher in vinyals2015pointer
+Warning--empty address in vinyals2015pointer
+Warning--page numbers missing in both pages and numpages fields in vinyals2015pointer
+Warning--empty year in walton2017nxnxn
+You've used 23 entries,
+            5981 wiz_defined-function locations,
+            1598 strings with 22574 characters,
+and the built_in function-call counts, 24316 in all, are:
+= -- 2793
+> -- 1032
+< -- 0
++ -- 353
+- -- 363
+* -- 1855
+:= -- 2600
+add.period$ -- 117
+call.type$ -- 23
+change.case$ -- 201
+chr.to.int$ -- 22
+cite$ -- 44
+duplicate$ -- 2021
+empty$ -- 1443
+format.name$ -- 422
+if$ -- 5634
+int.to.chr$ -- 3
+int.to.str$ -- 1
+missing$ -- 55
+newline$ -- 243
+num.names$ -- 160
+pop$ -- 889
+preamble$ -- 1
+purify$ -- 363
+quote$ -- 0
+skip$ -- 743
+stack$ -- 0
+substring$ -- 1524
+swap$ -- 157
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 614
+warning$ -- 21
+while$ -- 130
+width$ -- 0
+write$ -- 489
+(There were 21 warnings)

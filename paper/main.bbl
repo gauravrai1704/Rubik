@@ -1,0 +1,340 @@
+%%% -*-BibTeX-*-
+%%% Do NOT edit. File created by BibTeX with style
+%%% ACM-Reference-Format-Journals [18-Jan-2012].
+
+\begin{thebibliography}{23}
+
+%%% ====================================================================
+%%% NOTE TO THE USER: you can override these defaults by providing
+%%% customized versions of any of these macros before the \bibliography
+%%% command.  Each of them MUST provide its own final punctuation,
+%%% except for \shownote{}, \showDOI{}, and \showURL{}.  The latter two
+%%% do not use final punctuation, in order to avoid confusing it with
+%%% the Web address.
+%%%
+%%% To suppress output of a particular field, define its macro to expand
+%%% to an empty string, or better, \unskip, like this:
+%%%
+%%% \newcommand{\showDOI}[1]{\unskip}   % LaTeX syntax
+%%%
+%%% \def \showDOI #1{\unskip}           % plain TeX syntax
+%%%
+%%% ====================================================================
+
+\ifx \showCODEN    \undefined \def \showCODEN     #1{\unskip}     \fi
+\ifx \showDOI      \undefined \def \showDOI       #1{#1}\fi
+\ifx \showISBNx    \undefined \def \showISBNx     #1{\unskip}     \fi
+\ifx \showISBNxiii \undefined \def \showISBNxiii  #1{\unskip}     \fi
+\ifx \showISSN     \undefined \def \showISSN      #1{\unskip}     \fi
+\ifx \showLCCN     \undefined \def \showLCCN      #1{\unskip}     \fi
+\ifx \shownote     \undefined \def \shownote      #1{#1}          \fi
+\ifx \showarticletitle \undefined \def \showarticletitle #1{#1}   \fi
+\ifx \showURL      \undefined \def \showURL       {\relax}        \fi
+% The following commands are used for tagged output and should be
+% invisible to TeX
+\providecommand\bibfield[2]{#2}
+\providecommand\bibinfo[2]{#2}
+\providecommand\natexlab[1]{#1}
+\providecommand\showeprint[2][]{arXiv:#2}
+
+\bibitem[Agostinelli et~al\mbox{.}(2019)]%
+        {agostinelli2019deepcubea}
+\bibfield{author}{\bibinfo{person}{Forest Agostinelli},
+  \bibinfo{person}{Stephen McAleer}, \bibinfo{person}{Alexander Shmakov}, {and}
+  \bibinfo{person}{Pierre Baldi}.} \bibinfo{year}{2019}\natexlab{}.
+\newblock \showarticletitle{Solving the {Rubik's} Cube with Deep Reinforcement
+  Learning and Search}.
+\newblock \bibinfo{journal}{\emph{Nature Machine Intelligence}}
+  \bibinfo{volume}{1}, \bibinfo{number}{8} (\bibinfo{year}{2019}),
+  \bibinfo{pages}{356--363}.
+\newblock
+\urldef\tempurl%
+\url{https://doi.org/10.1038/s42256-019-0070-z}
+\showDOI{\tempurl}
+
+
+\bibitem[Agostinelli et~al\mbox{.}(2024)]%
+        {agostinelli2024qstar}
+\bibfield{author}{\bibinfo{person}{Forest Agostinelli},
+  \bibinfo{person}{Shahaf~S. Shperberg}, \bibinfo{person}{Alexander Shmakov},
+  \bibinfo{person}{Stephen McAleer}, \bibinfo{person}{Roy Fox}, {and}
+  \bibinfo{person}{Pierre Baldi}.} \bibinfo{year}{2024}\natexlab{}.
+\newblock \bibinfo{title}{A* Search Without Expansions: Learning Heuristic
+  Functions with Deep {Q}-Networks}.
+\newblock
+\newblock
+\showeprint[arxiv]{2102.04518}~[cs.AI]
+
+
+\bibitem[Anand and Shareghi(2025)]%
+        {anand2025cubebench}
+\bibfield{author}{\bibinfo{person}{Dhruv Anand} {and} \bibinfo{person}{Ehsan
+  Shareghi}.} \bibinfo{year}{2025}\natexlab{}.
+\newblock \bibinfo{title}{Cube Bench: A Benchmark for Spatial Visual Reasoning
+  in {MLLMs}}.
+\newblock
+\newblock
+\showeprint[arxiv]{2512.20595}
+
+
+\bibitem[ang Gao et~al\mbox{.}(2025)]%
+        {gao2025cubebench}
+\bibfield{author}{\bibinfo{person}{Huan ang Gao}, \bibinfo{person}{Zikang
+  Zhang}, \bibinfo{person}{Tianwei Luo}, \bibinfo{person}{Kaisen Yang},
+  \bibinfo{person}{Xinzhe Juan}, \bibinfo{person}{Jiahao Qiu},
+  \bibinfo{person}{Tianxing Chen}, \bibinfo{person}{Bingxiang He},
+  \bibinfo{person}{Hao Zhao}, \bibinfo{person}{Hao Zhou},
+  \bibinfo{person}{Shilong Liu}, {and} \bibinfo{person}{Mengdi Wang}.}
+  \bibinfo{year}{2025}\natexlab{}.
+\newblock \bibinfo{title}{{CubeBench}: Diagnosing Interactive, Long-Horizon
+  Spatial Reasoning Under Partial Observations}.
+\newblock
+\newblock
+\showeprint[arxiv]{2512.23328}
+
+
+\bibitem[Chen({[n.\,d.]})]%
+        {chen2phase}
+\bibfield{author}{\bibinfo{person}{Shuang Chen}.}
+  \bibinfo{year}{[n.\,d.]}\natexlab{}.
+\newblock \bibinfo{title}{min2phase: An Implementation of {Kociemba's}
+  Two-Phase Algorithm}.
+\newblock \bibinfo{howpublished}{\url{https://github.com/cs0x7f/min2phase}}.
+\newblock
+\newblock
+\shownote{Accessed October 2026}.
+
+
+\bibitem[Chervov et~al\mbox{.}(2025a)]%
+        {chervov2025growth}
+\bibfield{author}{\bibinfo{person}{Alexander Chervov}, \bibinfo{person}{Dmytro
+  Fedoriaka}, \bibinfo{person}{Mark Obozov}, \bibinfo{person}{Elena
+  Konstantinova}, {et~al\mbox{.}}} \bibinfo{year}{2025}\natexlab{a}.
+\newblock \bibinfo{title}{{CayleyPy} Growth: Efficient Growth Computations and
+  Hundreds of New Conjectures on {Cayley} Graphs}.
+\newblock
+\newblock
+\showeprint[arxiv]{2509.19162}
+
+
+\bibitem[Chervov et~al\mbox{.}(2025b)]%
+        {chervov2025cayleypy}
+\bibfield{author}{\bibinfo{person}{Alexander Chervov}, \bibinfo{person}{Kirill
+  Khoruzhii}, \bibinfo{person}{Nikita Bukhal}, \bibinfo{person}{Jalal
+  Naghiyev}, \bibinfo{person}{Vladislav Zamkovoy}, \bibinfo{person}{Ivan
+  Koltsov}, \bibinfo{person}{Lyudmila Cheldieva}, \bibinfo{person}{Arsenii
+  Sychev}, \bibinfo{person}{Arsenii Lenin}, \bibinfo{person}{Mark Obozov},
+  \bibinfo{person}{Egor Urvanov}, {and} \bibinfo{person}{Alexey Romanov}.}
+  \bibinfo{year}{2025}\natexlab{b}.
+\newblock \showarticletitle{A Machine Learning Approach That Beats {Rubik's}
+  Cubes}. In \bibinfo{booktitle}{\emph{Advances in Neural Information
+  Processing Systems (NeurIPS)}}.
+\newblock
+\newblock
+\shownote{Spotlight. arXiv:2502.13266}.
+
+
+\bibitem[Culberson and Schaeffer(1998)]%
+        {culberson1998pattern}
+\bibfield{author}{\bibinfo{person}{Joseph~C. Culberson} {and}
+  \bibinfo{person}{Jonathan Schaeffer}.} \bibinfo{year}{1998}\natexlab{}.
+\newblock \showarticletitle{Pattern Databases}.
+\newblock \bibinfo{journal}{\emph{Computational Intelligence}}
+  \bibinfo{volume}{14}, \bibinfo{number}{3} (\bibinfo{year}{1998}),
+  \bibinfo{pages}{318--334}.
+\newblock
+
+
+\bibitem[Demaine et~al\mbox{.}(2011)]%
+        {demaine2011algorithms}
+\bibfield{author}{\bibinfo{person}{Erik~D. Demaine}, \bibinfo{person}{Martin~L.
+  Demaine}, \bibinfo{person}{Sarah Eisenstat}, \bibinfo{person}{Anna Lubiw},
+  {and} \bibinfo{person}{Andrew Winslow}.} \bibinfo{year}{2011}\natexlab{}.
+\newblock \showarticletitle{Algorithms for Solving {Rubik's} Cubes}. In
+  \bibinfo{booktitle}{\emph{Proceedings of the 19th Annual European Symposium
+  on Algorithms (ESA 2011)}} \emph{(\bibinfo{series}{Lecture Notes in Computer
+  Science}, Vol.~\bibinfo{volume}{6942})}. \bibinfo{publisher}{Springer},
+  \bibinfo{pages}{689--700}.
+\newblock
+\newblock
+\shownote{Full version: arXiv:1106.5736}.
+
+
+\bibitem[Demaine et~al\mbox{.}(2018)]%
+        {demaine2018npcomplete}
+\bibfield{author}{\bibinfo{person}{Erik~D. Demaine}, \bibinfo{person}{Sarah
+  Eisenstat}, {and} \bibinfo{person}{Mikhail Rudoy}.}
+  \bibinfo{year}{2018}\natexlab{}.
+\newblock \showarticletitle{Solving the {Rubik's} Cube Optimally is
+  {NP}-complete}. In \bibinfo{booktitle}{\emph{35th Symposium on Theoretical
+  Aspects of Computer Science (STACS 2018)}} \emph{(\bibinfo{series}{Leibniz
+  International Proceedings in Informatics (LIPIcs)},
+  Vol.~\bibinfo{volume}{96})}. \bibinfo{publisher}{Schloss
+  Dagstuhl--Leibniz-Zentrum f{\"u}r Informatik}, \bibinfo{pages}{24:1--24:13}.
+\newblock
+\urldef\tempurl%
+\url{https://doi.org/10.4230/LIPIcs.STACS.2018.24}
+\showDOI{\tempurl}
+
+
+\bibitem[Gaurav et~al\mbox{.}(2026)]%
+        {rubikrepo}
+\bibfield{author}{\bibinfo{person}{Gaurav}, \bibinfo{person}{Shree},
+  \bibinfo{person}{Sunaina}, \bibinfo{person}{Kashvi},
+  \bibinfo{person}{Shaurya}, {and} \bibinfo{person}{Sharanya}.}
+  \bibinfo{year}{2026}\natexlab{}.
+\newblock \bibinfo{title}{{Rubik}: Six Solvers for {N$\times$N$\times$1} and
+  {N$\times$N$\times$N} {Rubik's} Puzzles on One Engine}.
+\newblock \bibinfo{howpublished}{\url{https://github.com/gauravrai1704/Rubik}}.
+\newblock
+
+
+\bibitem[{Kaggle}(2023)]%
+        {kaggle2023santa}
+\bibfield{author}{\bibinfo{person}{{Kaggle}}.} \bibinfo{year}{2023}\natexlab{}.
+\newblock \bibinfo{title}{Santa 2023 -- The Polytope Permutation Puzzle}.
+\newblock
+  \bibinfo{howpublished}{\url{https://www.kaggle.com/competitions/santa-2023}}.
+\newblock
+
+
+\bibitem[{KMCoders}(2024)]%
+        {kmcoders2024santa}
+\bibfield{author}{\bibinfo{person}{{KMCoders}}.}
+  \bibinfo{year}{2024}\natexlab{}.
+\newblock \bibinfo{title}{Kaggle {Santa} 2023 -- The Polytope Permutation
+  Puzzle: {KMCoders'} Solution}.
+\newblock
+  \bibinfo{howpublished}{\url{https://github.com/wata-orz/santa2023_permutation_puzzle}}.
+\newblock
+
+
+\bibitem[Kociemba({[n.\,d.]})]%
+        {kociemba2phase}
+\bibfield{author}{\bibinfo{person}{Herbert Kociemba}.}
+  \bibinfo{year}{[n.\,d.]}\natexlab{}.
+\newblock \bibinfo{title}{The Two-Phase Algorithm}.
+\newblock \bibinfo{howpublished}{\url{https://kociemba.org/cube.htm}}.
+\newblock
+\newblock
+\shownote{Accessed October 2026}.
+
+
+\bibitem[Korf(1985)]%
+        {korf1985macro}
+\bibfield{author}{\bibinfo{person}{Richard~E. Korf}.}
+  \bibinfo{year}{1985}\natexlab{}.
+\newblock \showarticletitle{Macro-Operators: A Weak Method for Learning}.
+\newblock \bibinfo{journal}{\emph{Artificial Intelligence}}
+  \bibinfo{volume}{26}, \bibinfo{number}{1} (\bibinfo{year}{1985}),
+  \bibinfo{pages}{35--77}.
+\newblock
+
+
+\bibitem[Korf(1997)]%
+        {korf1997optimal}
+\bibfield{author}{\bibinfo{person}{Richard~E. Korf}.}
+  \bibinfo{year}{1997}\natexlab{}.
+\newblock \showarticletitle{Finding Optimal Solutions to {Rubik's} Cube Using
+  Pattern Databases}. In \bibinfo{booktitle}{\emph{Proceedings of the
+  Fourteenth National Conference on Artificial Intelligence (AAAI-97)}}.
+  \bibinfo{pages}{700--705}.
+\newblock
+
+
+\bibitem[Lee et~al\mbox{.}(2019)]%
+        {lee2019settransformer}
+\bibfield{author}{\bibinfo{person}{Juho Lee}, \bibinfo{person}{Yoonho Lee},
+  \bibinfo{person}{Jungtaek Kim}, \bibinfo{person}{Adam Kosiorek},
+  \bibinfo{person}{Seungjin Choi}, {and} \bibinfo{person}{Yee~Whye Teh}.}
+  \bibinfo{year}{2019}\natexlab{}.
+\newblock \showarticletitle{Set Transformer: A Framework for Attention-Based
+  Permutation-Invariant Neural Networks}. In
+  \bibinfo{booktitle}{\emph{Proceedings of the 36th International Conference on
+  Machine Learning (ICML)}}.
+\newblock
+
+
+\bibitem[{OpenAI} et~al\mbox{.}(2019)]%
+        {openai2019dactyl}
+\bibfield{author}{\bibinfo{person}{{OpenAI}}, \bibinfo{person}{Ilge Akkaya},
+  \bibinfo{person}{Marcin Andrychowicz}, \bibinfo{person}{Maciek Chociej},
+  \bibinfo{person}{Mateusz Litwin}, \bibinfo{person}{Bob McGrew},
+  \bibinfo{person}{Arthur Petron}, \bibinfo{person}{Alex Paino},
+  \bibinfo{person}{Matthias Plappert}, \bibinfo{person}{Glenn Powell},
+  \bibinfo{person}{Raphael Ribas}, \bibinfo{person}{Jonas Schneider},
+  \bibinfo{person}{Nikolas Tezak}, \bibinfo{person}{Jerry Tworek},
+  \bibinfo{person}{Peter Welinder}, \bibinfo{person}{Lilian Weng},
+  \bibinfo{person}{Qiming Yuan}, \bibinfo{person}{Wojciech Zaremba}, {and}
+  \bibinfo{person}{Lei Zhang}.} \bibinfo{year}{2019}\natexlab{}.
+\newblock \bibinfo{title}{Solving {Rubik's} Cube with a Robot Hand}.
+\newblock
+\newblock
+\showeprint[arxiv]{1910.07113}
+
+
+\bibitem[Rokicki et~al\mbox{.}(2014)]%
+        {rokicki2014diameter}
+\bibfield{author}{\bibinfo{person}{Tomas Rokicki}, \bibinfo{person}{Herbert
+  Kociemba}, \bibinfo{person}{Morley Davidson}, {and} \bibinfo{person}{John
+  Dethridge}.} \bibinfo{year}{2014}\natexlab{}.
+\newblock \showarticletitle{The Diameter of the {Rubik's} Cube Group Is
+  Twenty}.
+\newblock \bibinfo{journal}{\emph{SIAM Rev.}} \bibinfo{volume}{56},
+  \bibinfo{number}{4} (\bibinfo{year}{2014}), \bibinfo{pages}{645--670}.
+\newblock
+\urldef\tempurl%
+\url{https://doi.org/10.1137/14097375X}
+\showDOI{\tempurl}
+
+
+\bibitem[Takano(2023)]%
+        {takano2023selfsupervision}
+\bibfield{author}{\bibinfo{person}{Kyo Takano}.}
+  \bibinfo{year}{2023}\natexlab{}.
+\newblock \showarticletitle{Self-Supervision Is All You Need for Solving
+  {Rubik's} Cube}.
+\newblock \bibinfo{journal}{\emph{Transactions on Machine Learning Research}}
+  (\bibinfo{year}{2023}).
+\newblock
+\newblock
+\shownote{arXiv:2106.03157}.
+
+
+\bibitem[Vaswani et~al\mbox{.}(2017)]%
+        {vaswani2017attention}
+\bibfield{author}{\bibinfo{person}{Ashish Vaswani}, \bibinfo{person}{Noam
+  Shazeer}, \bibinfo{person}{Niki Parmar}, \bibinfo{person}{Jakob Uszkoreit},
+  \bibinfo{person}{Llion Jones}, \bibinfo{person}{Aidan~N. Gomez},
+  \bibinfo{person}{{\L}ukasz Kaiser}, {and} \bibinfo{person}{Illia
+  Polosukhin}.} \bibinfo{year}{2017}\natexlab{}.
+\newblock \showarticletitle{Attention Is All You Need}. In
+  \bibinfo{booktitle}{\emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}}.
+\newblock
+
+
+\bibitem[Vinyals et~al\mbox{.}(2015)]%
+        {vinyals2015pointer}
+\bibfield{author}{\bibinfo{person}{Oriol Vinyals}, \bibinfo{person}{Meire
+  Fortunato}, {and} \bibinfo{person}{Navdeep Jaitly}.}
+  \bibinfo{year}{2015}\natexlab{}.
+\newblock \showarticletitle{Pointer Networks}. In
+  \bibinfo{booktitle}{\emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}}.
+\newblock
+
+
+\bibitem[Walton({[n.\,d.]})]%
+        {walton2017nxnxn}
+\bibfield{author}{\bibinfo{person}{Daniel Walton}.}
+  \bibinfo{year}{[n.\,d.]}\natexlab{}.
+\newblock \bibinfo{title}{rubiks-cube-{NxNxN}-solver}.
+\newblock
+  \bibinfo{howpublished}{\url{https://github.com/dwalton76/rubiks-cube-NxNxN-solver}}.
+\newblock
+\newblock
+\shownote{Accessed October 2026}.
+
+
+\end{thebibliography}
