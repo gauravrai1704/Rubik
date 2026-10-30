@@ -55,6 +55,15 @@ python -m rubiks.bench run  --solver m5b_stages --puzzle square --N 3-12 --datas
 python -m rubiks.bench summary results/m5b_stages/square_random.jsonl
 ```
 
+## Training on a GPU (Google Colab)
+
+[`notebooks/train_gpu_colab.ipynb`](notebooks/train_gpu_colab.ipynb) trains every network that needs a GPU
+(Method 4's paper-size cube models and per-N Square models, Method 5A for Squares and cubes, Method 5B's
+cluster MLPs) on a free Colab T4, with evaluation cells. Everything is saved to Google Drive and every
+training resumes after a disconnect (`--save-every`, `--stop-after` on the Method 4 and 5A trainers).
+[Open in Colab](https://colab.research.google.com/github/gauravrai1704/Rubik/blob/full_proj/notebooks/train_gpu_colab.ipynb)
+(for a private repository, upload the notebook instead: *File → Upload notebook*).
+
 ## Layout
 
 ```

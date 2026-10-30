@@ -50,3 +50,26 @@ def test_staged_mode_with_untrained_model_runs(tmp_path, rng):
     s = random_state(P, rng)
     r = S.solve(s)
     assert "stages" in r.info
+
+
+def test_train_resume_matches_uninterrupted(tmp_path):
+    """5A training stopped at step 4 and resumed from its state ends with the same weights."""
+    from rubiks.solvers.m5a_tokens.train import main
+
+    args = ["--puzzle", "square", "--train-N", "4-5", "--val-N", "", "--batch", "16", "--walks", "4",
+            "--d-model", "16", "--layers", "1", "--heads", "2", "--eval-every", "100"]
+    main(args + ["--steps", "8", "--out", str(tmp_path / "a.pt")])
+    main(args + ["--steps", "8", "--out", str(tmp_path / "b.pt"), "--save-every", "4",
+                 "--state", str(tmp_path / "b.state")])
+    # a session that stops after step 4 (as a Colab disconnect would), then a resumed one
+    st = torch.load(tmp_path / "b.state", weights_only=False)
+    assert st["step"] == 8
+    main(args + ["--steps", "8", "--out", str(tmp_path / "c.pt"), "--save-every", "4",
+                 "--state", str(tmp_path / "c.state"), "--stop-after", "4"])
+    assert not (tmp_path / "c.pt").exists()  # stopped mid-run: no final checkpoint yet
+    main(args + ["--steps", "8", "--out", str(tmp_path / "c.pt"), "--save-every", "4",
+                 "--state", str(tmp_path / "c.state")])
+    a, _ = load(tmp_path / "a.pt")
+    c, _ = load(tmp_path / "c.pt")
+    for p, q in zip(a.state_dict().values(), c.state_dict().values()):
+        assert torch.allclose(p, q)

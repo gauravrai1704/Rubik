@@ -88,6 +88,12 @@ def main(argv=None) -> None:
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--eval-every", type=int, default=500)
     ap.add_argument("--out", default="checkpoints/m5a/model.pt")
+    ap.add_argument("--save-every", type=int, default=0,
+                    help="write a resumable training state every this many steps (0: never)")
+    ap.add_argument("--state", default=None,
+                    help="training-state file (default <out>.state); training resumes from it if it exists")
+    ap.add_argument("--stop-after", type=int, default=0,
+                    help="train at most this many steps in this session, save the state and exit (0: no limit)")
     a = ap.parse_args(argv)
 
     torch.manual_seed(a.seed)
@@ -105,8 +111,19 @@ def main(argv=None) -> None:
     sched = torch.optim.lr_scheduler.OneCycleLR(opt, a.lr, total_steps=a.steps, pct_start=0.05)
     log = []
     t0 = time.time()
+    state_path = Path(a.state) if a.state else Path(a.out).with_suffix(".state")
+    start = 1
+    if state_path.exists():  # resume (e.g. after a Colab disconnect)
+        st = torch.load(state_path, map_location=dev, weights_only=False)
+        model.load_state_dict(st["model"])
+        opt.load_state_dict(st["opt"])
+        sched.load_state_dict(st["sched"])
+        gen.set_state(st["gen"].cpu())  # generator states are CPU byte tensors, even for CUDA generators
+        log, start = st["log"], st["step"] + 1
+        t0 -= st["time_s"]
+        print(f"resumed from {state_path} at step {st['step']}")
     print(f"params: {sum(p.numel() for p in model.parameters()) / 1e6:.2f}M; train N={[p.N for p in train_P]}")
-    for it in range(1, a.steps + 1):
+    for it in range(start, a.steps + 1):
         p = train_P[int(torch.randint(0, len(train_P), (1,), generator=torch.Generator().manual_seed(a.seed + it)))]
         X, Y = samplers[p.N].sample(a.walks, a.batch, gen)
         tok = toks[p.N]
@@ -123,6 +140,15 @@ def main(argv=None) -> None:
             log.append(entry)
             print(f"step {it:6d} loss {loss.item():.4f} "
                   + " ".join(f"N{e['N']}:rmse={e['rmse_norm']:.3f},r={e['corr']:.2f}" for e in ev))
+        if a.save_every and (it % a.save_every == 0 or it == a.steps):
+            state_path.parent.mkdir(parents=True, exist_ok=True)
+            tmp = state_path.with_suffix(".tmp")
+            torch.save({"model": model.state_dict(), "opt": opt.state_dict(), "sched": sched.state_dict(),
+                        "gen": gen.get_state(), "log": log, "step": it, "time_s": time.time() - t0}, tmp)
+            tmp.replace(state_path)  # atomic: a disconnect mid-write never corrupts the state
+        if a.stop_after and it - start + 1 >= a.stop_after and it < a.steps:
+            print(f"stopping after {a.stop_after} steps of this session (step {it}); rerun to resume")
+            return
 
     if a.move_head:  # phase 2: distil Q(s, a) = 1 + V(child) from the frozen value head
         for name, prm in model.named_parameters():

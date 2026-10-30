@@ -91,3 +91,16 @@ def test_committed_square_checkpoints(N):
     r = S.solve(s)
     assert P.is_solved(P.apply(s, r.moves)), r.info
     assert metrics(r.moves, P)["htm"] == len(r.moves)
+
+
+def test_resume_matches_uninterrupted_training(tmp_path):
+    """A run stopped after 2 epochs and resumed from its state ends with the same weights."""
+    full, _ = train("square", 3, preset="tiny", epochs=4, epoch_size=2000, out=tmp_path / "a.pt", verbose=False)
+    _, meta = train("square", 3, preset="tiny", epochs=4, epoch_size=2000, out=tmp_path / "b.pt", verbose=False,
+                    save_every=1, state=tmp_path / "b.state", stop_after=2)
+    assert meta["stopped_at"] == 2 and not (tmp_path / "b.pt").exists()
+    resumed, meta = train("square", 3, preset="tiny", epochs=4, epoch_size=2000, out=tmp_path / "b.pt",
+                          verbose=False, save_every=1, state=tmp_path / "b.state")
+    for p, q in zip(full.state_dict().values(), resumed.state_dict().values()):
+        assert torch.equal(p, q)
+    assert meta["examples"] == 4 * meta["epoch_size"] and len(meta["log"]) == 4
