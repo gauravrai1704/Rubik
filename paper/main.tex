@@ -520,7 +520,8 @@ one of three kinds:
 \item \emph{Cluster MLP}: a small residual MLP (hidden width 256, two residual blocks) trained on
   random walks of the projected cluster to predict walk length, combined with the coarse tables
   by $\max$. Six such networks (corner, middle edge, wing, three center types) cover every
-  cube size; each trained for 1,500 steps on CPU in 2--15 minutes.
+  cube size; each trained for \CpuSteps{} steps on CPU in \CpuTrainMin{} minutes. A larger set trained on a GPU
+  predicts distance better but searches worse (\S\ref{sec:cpugpu}).
 \end{enumerate}
 Corners use the three-class tables alone. The MLP's walk-length targets overestimate the true
 distance, and taking the max with them flattens the tables' signal; Section~\ref{sec:ablations}

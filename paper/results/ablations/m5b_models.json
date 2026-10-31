@@ -1,0 +1,146 @@
+{
+ "corner": {
+  "kind": "corner",
+  "K": 24,
+  "cpu": {
+   "hidden": 256,
+   "blocks": 2,
+   "steps": 1500,
+   "params": 303105,
+   "train_time_s": 119.2,
+   "final_loss": 42.03540802001953,
+   "spearman": 0.5730666518211365,
+   "excess_near_goal": 2.601691961288452
+  },
+  "gpu": {
+   "hidden": 512,
+   "blocks": 2,
+   "steps": 20000,
+   "params": 1130497,
+   "train_time_s": 248.8,
+   "final_loss": 36.22770309448242,
+   "spearman": 0.6498848795890808,
+   "excess_near_goal": 1.2885786294937134
+  }
+ },
+ "midge": {
+  "kind": "midge",
+  "K": 24,
+  "cpu": {
+   "hidden": 256,
+   "blocks": 2,
+   "steps": 1500,
+   "params": 303105,
+   "train_time_s": 231.7,
+   "final_loss": 33.152645111083984,
+   "spearman": 0.6652909517288208,
+   "excess_near_goal": 2.0761466026306152
+  },
+  "gpu": {
+   "hidden": 512,
+   "blocks": 2,
+   "steps": 20000,
+   "params": 1130497,
+   "train_time_s": 257.4,
+   "final_loss": 27.976964950561523,
+   "spearman": 0.7369637489318848,
+   "excess_near_goal": 1.4663889408111572
+  }
+ },
+ "wing": {
+  "kind": "wing",
+  "K": 48,
+  "cpu": {
+   "hidden": 256,
+   "blocks": 2,
+   "steps": 1500,
+   "params": 339969,
+   "train_time_s": 125.2,
+   "final_loss": 48.39373016357422,
+   "spearman": 0.7498646378517151,
+   "excess_near_goal": 3.4305055141448975
+  },
+  "gpu": {
+   "hidden": 512,
+   "blocks": 2,
+   "steps": 20000,
+   "params": 1204225,
+   "train_time_s": 270.5,
+   "final_loss": 39.87438201904297,
+   "spearman": 0.7876648306846619,
+   "excess_near_goal": 3.301184892654419
+  }
+ },
+ "center_x": {
+  "kind": "center_x",
+  "K": 24,
+  "cpu": {
+   "hidden": 256,
+   "blocks": 2,
+   "steps": 1500,
+   "params": 303105,
+   "train_time_s": 119.7,
+   "final_loss": 23.411548614501953,
+   "spearman": 0.7989957928657532,
+   "excess_near_goal": 2.502018451690674
+  },
+  "gpu": {
+   "hidden": 512,
+   "blocks": 2,
+   "steps": 20000,
+   "params": 1130497,
+   "train_time_s": 257.7,
+   "final_loss": 19.638267517089844,
+   "spearman": 0.8352327346801758,
+   "excess_near_goal": 2.3253233432769775
+  }
+ },
+ "center_plus": {
+  "kind": "center_plus",
+  "K": 24,
+  "cpu": {
+   "hidden": 256,
+   "blocks": 2,
+   "steps": 1500,
+   "params": 303105,
+   "train_time_s": 604.0,
+   "final_loss": 20.229345321655273,
+   "spearman": 0.8378627300262451,
+   "excess_near_goal": 2.2077465057373047
+  },
+  "gpu": {
+   "hidden": 512,
+   "blocks": 2,
+   "steps": 20000,
+   "params": 1130497,
+   "train_time_s": 257.2,
+   "final_loss": 17.869770050048828,
+   "spearman": 0.8692916035652161,
+   "excess_near_goal": 2.055868625640869
+  }
+ },
+ "center_oblique": {
+  "kind": "center_oblique",
+  "K": 24,
+  "cpu": {
+   "hidden": 256,
+   "blocks": 2,
+   "steps": 1500,
+   "params": 303105,
+   "train_time_s": 866.2,
+   "final_loss": 19.758888244628906,
+   "spearman": 0.8185233473777771,
+   "excess_near_goal": 1.8860678672790527
+  },
+  "gpu": {
+   "hidden": 512,
+   "blocks": 2,
+   "steps": 20000,
+   "params": 1130497,
+   "train_time_s": 256.8,
+   "final_loss": 19.382190704345703,
+   "spearman": 0.8393213748931885,
+   "excess_near_goal": 1.7463310956954956
+  }
+ }
+}

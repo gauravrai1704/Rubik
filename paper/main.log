@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.10.25)  27 OCT 2026 03:37
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.10.25)  31 OCT 2026 11:14
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1380,12 +1380,9 @@ Class acmart Warning: A possible image without description on input line 471.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
 (Font)              scaled to size 7.3pt on input line 504.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/sc' will be
-(Font)              scaled to size 8.0pt on input line 564.
+(Font)              scaled to size 8.0pt on input line 565.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/b/it' will be
-(Font)              scaled to size 8.0pt on input line 564.
-
-Underfull \vbox (badness 1953) has occurred while \output is active []
-
+(Font)              scaled to size 8.0pt on input line 565.
  [5.5{/usr/share/texlive/texmf-dist/fonts/enc/dvips/libertine/lbtn_ncsllp.enc}{
 /usr/share/texlive/texmf-dist/fonts/enc/dvips/libertine/lbtn_ki75ao.enc}]
 (./results_body.tex (./generated/tab_square_rows.tex)
@@ -1395,7 +1392,7 @@ Overfull \hbox (2.3324pt too wide) in paragraph at lines 104--110
  [][] 
  []
 
-<figures/m4_width.pdf, id=297, 238.49101pt x 158.99399pt>
+<figures/m4_width.pdf, id=302, 238.49101pt x 158.99399pt>
 File: figures/m4_width.pdf Graphic file (type pdf)
 <use figures/m4_width.pdf>
 Package pdftex.def Info: figures/m4_width.pdf  used on input line 135.
@@ -1409,7 +1406,10 @@ Underfull \hbox (badness 1048) in paragraph at lines 148--148
 e with the true
  []
 
-(./generated/tab_5a_gen.tex) [6.6 <./figures/m4_width.pdf>]
+(./generated/tab_5a_gen.tex)
+Underfull \vbox (badness 2753) has occurred while \output is active []
+
+ [6.6 <./figures/m4_width.pdf>]
 
 LaTeX Warning: Text page 7 contains only floats.
 
@@ -1422,40 +1422,41 @@ Overfull \hbox (3.43703pt too wide) in paragraph at lines 2--12
  [][] 
  []
 
-)
+) (./generated/tab_5b_models.tex) (./generated/tab_5b_cpu_gpu.tex)
+Overfull \hbox (30.5004pt too wide) in paragraph at lines 244--250
+ [][] 
+ []
+
 LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 10.95pt on input line 207.
+(Font)              scaled to size 10.95pt on input line 267.
 LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 6.1pt on input line 207.
+(Font)              scaled to size 6.1pt on input line 267.
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 267.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 207.
+(hyperref)                removing `math shift' on input line 267.
 
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 207.
-
-<figures/scaling.pdf, id=339, 505.89pt x 187.902pt>
+<figures/scaling.pdf, id=347, 505.89pt x 187.902pt>
 File: figures/scaling.pdf Graphic file (type pdf)
 <use figures/scaling.pdf>
-Package pdftex.def Info: figures/scaling.pdf  used on input line 212.
+Package pdftex.def Info: figures/scaling.pdf  used on input line 272.
 (pdftex.def)             Requested size: 506.295pt x 188.05635pt.
 
-Class acmart Warning: A possible image without description on input line 217.
+Class acmart Warning: A possible image without description on input line 277.
 
-(./generated/tab_lb_rows.tex)) [8.8]
-Underfull \vbox (badness 1648) has occurred while \output is active []
-
-
+(./generated/tab_lb_rows.tex)) [8.8] [9.9 <./figures/scaling.pdf>]
 Processing 'acks' comment.
 \openout3 = `comment.cut'.
 
  Comment 'acks' writing to comment.cut.
 Straight input of comment.cut. (./comment.cut) (./main.bbl
+Underfull \vbox (badness 2856) has occurred while \output is active []
+
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/it' will be
 (Font)              scaled to size 7.0pt on input line 47.
- [9.9 <./figures/scaling.pdf>]
 LaTeX Info: Redefining \tempurl on input line 176.
 LaTeX Info: Redefining \tempurl on input line 287.
 
@@ -1467,6 +1468,10 @@ N-solver.  []$https : / / github . com /
 )
 
 Class acmart Warning: Some images may lack descriptions.
+
+
+Package balance Warning: You have called \balance in second column
+(balance)                Columns might not be balanced.
 
 (/usr/share/texlive/texmf-dist/tex/generic/stringenc/se-pdfdoc.def
 File: se-pdfdoc.def 2019/11/29 v1.12 stringenc: PDFDocEncoding
@@ -1480,14 +1485,14 @@ LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 894691D3E8076693C121AD043184781F;3960.
+(rerunfilecheck)             Checksum: 831C8041D051FBA0F0A156A69E381D42;4288.
  ) 
 Here is how much of TeX's memory you used:
- 33450 strings out of 476106
- 606175 string characters out of 5793932
- 1967975 words of memory out of 5000000
- 53861 multiletter control sequences out of 15000+600000
- 812751 words of font info for 581 fonts, out of 8000000 for 9000
+ 33501 strings out of 476106
+ 607083 string characters out of 5793932
+ 1968975 words of memory out of 5000000
+ 53894 multiletter control sequences out of 15000+600000
+ 813554 words of font info for 587 fonts, out of 8000000 for 9000
  220 hyphenation exceptions out of 8191
  90i,19n,131p,1001b,850s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/newtx/LibertineMathMI.pfb><
@@ -1505,10 +1510,10 @@ xmf-dist/fonts/type1/public/newtx/NewTXMI7.pfb></usr/share/texlive/texmf-dist/f
 onts/type1/public/newtx/txexs.pfb></usr/share/texlive/texmf-dist/fonts/type1/pu
 blic/newtx/txmiaX.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/newtx/t
 xsys.pfb>
-Output written on main.pdf (10 pages, 607786 bytes).
+Output written on main.pdf (10 pages, 612893 bytes).
 PDF statistics:
- 529 PDF objects out of 1000 (max. 8388607)
- 443 compressed objects within 5 object streams
- 144 named destinations out of 1000 (max. 500000)
- 131279 words of extra memory for PDF output out of 154059 (max. 10000000)
+ 541 PDF objects out of 1000 (max. 8388607)
+ 455 compressed objects within 5 object streams
+ 147 named destinations out of 1000 (max. 500000)
+ 131287 words of extra memory for PDF output out of 154059 (max. 10000000)
 

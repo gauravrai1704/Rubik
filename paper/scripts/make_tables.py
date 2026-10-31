@@ -398,6 +398,63 @@ for N in (6, 7, 8, 10, 15, 20):
         macro("FiveCNoLookaheadTwenty", f"{nola:,.0f}")
 (GEN / "tab_5c_ablation.tex").write_text("\n".join(abl5) + "\n\\bottomrule\n")
 
+
+# ------------------------------------------------------------------ 5B: CPU- vs GPU-trained cluster networks
+mq_path = RES / "ablations" / "m5b_models.json"
+if mq_path.exists():
+    mq = json.loads(mq_path.read_text())
+    names5b = {"corner": "corner$^\\dagger$", "midge": "middle edge", "wing": "wing", "center_x": "$\\times$-center",
+               "center_plus": "$+$-center", "center_oblique": "oblique center"}
+    mlines = []
+    for kind, r in mq.items():
+        c, g = r["cpu"], r["gpu"]
+        mlines.append(f"{names5b[kind]} & {c['spearman']:.2f} & {g['spearman']:.2f} & {c['excess_near_goal']:.1f} & "
+                      f"{g['excess_near_goal']:.1f} & {c['final_loss']:.1f} & {g['final_loss']:.1f} \\\\")
+    (GEN / "tab_5b_models.tex").write_text("\n".join(mlines) + "\n\\bottomrule\n")
+    any_ = next(iter(mq.values()))
+    macro("CpuHidden", any_["cpu"]["hidden"])
+    macro("GpuHidden", any_["gpu"]["hidden"])
+    macro("CpuSteps", f"{any_['cpu']['steps']:,}")
+    macro("GpuSteps", f"{any_['gpu']['steps']:,}")
+    macro("CpuParams", f"{np.mean([r['cpu']['params'] for r in mq.values()]) / 1e6:.2f}")
+    macro("GpuParams", f"{np.mean([r['gpu']['params'] for r in mq.values()]) / 1e6:.2f}")
+    macro("CpuTrainMin", f"{min(r['cpu']['train_time_s'] for r in mq.values()) / 60:.0f}--"
+                         f"{max(r['cpu']['train_time_s'] for r in mq.values()) / 60:.0f}")
+    macro("GpuTrainMin", f"{min(r['gpu']['train_time_s'] for r in mq.values()) / 60:.0f}--"
+                         f"{max(r['gpu']['train_time_s'] for r in mq.values()) / 60:.0f}")
+ab_cpu, ab_gpu = rows("ablations/cube5b_cpu_models.jsonl"), rows("ablations/cube5b_gpu_models.jsonl")
+if ab_cpu and ab_gpu:
+    gpu_by = {r["id"]: r for r in ab_gpu}
+    alines, longer, total = [], 0, 0
+    for N in sorted({r["N"] for r in ab_cpu}):
+        cs = [r for r in ab_cpu if r["N"] == N]
+        gs = [gpu_by[r["id"]] for r in cs if r["id"] in gpu_by]
+        hc = [r["htm"] for r in cs if r["solved"]]
+        hg = [r["htm"] for r in gs if r["solved"]]
+        longer += sum(g["htm"] > c["htm"] for c, g in zip(cs, gs) if c["solved"] and g["solved"])
+        total += len(gs)
+        alines.append(f"{N} & {fmt(np.mean(hc))} & {fmt(np.mean(hg))} & {len(hg)}/{len(gs)} & "
+                      f"{fmt(np.mean([r['time_s'] for r in cs]), 0)} & {fmt(np.mean([r['time_s'] for r in gs]), 0)} \\\\")
+        macro(f"AbCpu{words[N]}", fmt(np.mean(hc)))
+        macro(f"AbGpu{words[N]}", fmt(np.mean(hg)))
+    (GEN / "tab_5b_cpu_gpu.tex").write_text("\n".join(alines) + "\n\\bottomrule\n")
+    macro("AbGpuLonger", f"{longer}/{total}")
+    slow = []  # per size: mean time with GPU-trained networks / mean time with CPU-trained ones
+    for N in sorted({r["N"] for r in ab_cpu}):
+        cs = [r for r in ab_cpu if r["N"] == N]
+        gs = [gpu_by[r["id"]] for r in cs if r["id"] in gpu_by]
+        slow.append(np.mean([r["time_s"] for r in gs]) / np.mean([r["time_s"] for r in cs]))
+    macro("AbSlowMin", f"{min(slow):.1f}")
+    macro("AbSlowMax", f"{max(slow):.0f}")
+colab = rows("ablations/cube5b_gpu_models_colab_t4.jsonl")
+if colab:
+    old = by_id(m5b_cu)
+    pairs = [(r, old[r["id"]]) for r in colab if r["id"] in old]
+    macro("ColabTried", len(pairs))
+    macro("ColabFailed", sum(not r["solved"] for r, _ in pairs))
+    macro("ColabLonger", sum(r["solved"] and r["htm"] > o["htm"] for r, o in pairs))
+    macro("ColabMaxN", max(r["N"] for r, _ in pairs))
+
 # ------------------------------------------------------------------ lower bounds
 lb_lines = []
 for N in (6, 8, 10, 15, 20):

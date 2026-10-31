@@ -204,6 +204,66 @@ gave the same pattern (\AblCubeNoCoarseTablesNeHTM{} and \AblCubeNoCoarseTablesN
 two states per size we read these cube differences as indicative only; the clearest cube effect is
 speed.
 
+\subsection{CPU-trained versus GPU-trained cluster networks}
+\label{sec:cpugpu}
+
+\FiveB's cluster networks (\S\ref{sec:5b}) were trained twice. The \emph{CPU-trained} set, used for
+every other \FiveB result in this paper, has width \CpuHidden{} (\CpuParams{}M parameters per network) and
+was trained for \CpuSteps{} steps per cluster type on a two-core CPU (\CpuTrainMin{} minutes each). The
+\emph{GPU-trained} set has width \GpuHidden{} (\GpuParams{}M parameters) and was trained for \GpuSteps{}
+steps per cluster type on a Colab T4 GPU (\GpuTrainMin{} minutes each), with the same architecture
+(two residual blocks), data generator, walk lengths, loss and optimiser. The two sets therefore differ in
+width and in training length, not only in hardware: the comparison below is between two trained model sets,
+and the GPU is what made the larger one affordable. Both sets are combined with the same exact coarse
+tables by $\max$, and corners use the tables alone in both, so the corner networks do not affect search.
+
+\begin{table}[t]
+\caption{The two sets of \FiveB cluster networks as distance predictors, on fresh random walks of each
+projected cluster (seeded). $\rho$: Spearman correlation of the estimate with the walk depth (higher is
+better); ``excess'': mean amount by which the estimate exceeds the exact coarse-table lower bound on states
+at depth $\le5$ (lower means less overestimation near the goal); loss: final training MSE.
+$^\dagger$Not used in search (corners use the tables alone).}
+\label{tab:5bmodels}
+\small\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+ & \multicolumn{2}{c}{$\rho$} & \multicolumn{2}{c}{excess} & \multicolumn{2}{c}{loss} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+Cluster & CPU & GPU & CPU & GPU & CPU & GPU \\
+\midrule
+\input{generated/tab_5b_models.tex}
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\caption{\FiveB with each set of cluster networks on the same cube instances, the same CPU, the same code
+and the same 1,800\,s budget; only the networks differ. Mean HTM over solved states and mean seconds per
+state.}
+\label{tab:5bcpugpu}
+\small\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}rrrrrr@{}}
+\toprule
+$N$ & HTM (CPU-trained) & HTM (GPU-trained) & solved (GPU) & s (CPU) & s (GPU) \\
+\midrule
+\input{generated/tab_5b_cpu_gpu.tex}
+\end{tabular}
+\end{table}
+
+As predictors, the GPU-trained networks are better for every cluster type (Table~\ref{tab:5bmodels}): their
+estimates rank random-walk states closer to their true depth, their training loss is lower, and they
+overestimate less near the goal. As search heuristics they are worse (Table~\ref{tab:5bcpugpu}). With
+everything else fixed, \FiveB's solutions were longer with the GPU-trained networks on \AbGpuLonger{} cube
+states (on average \AbGpuFour{} against \AbCpuFour{} moves on the \Cu{4} and \AbGpuSix{} against
+\AbCpuSix{} on the \Cu{6}), shorter only on the \Cu{5} (\AbGpuFive{} against \AbCpuFive{}), and each solve
+took \AbSlowMin{} to \AbSlowMax{} times as long on average per size. The Colab run of the same networks on a T4 confirms the picture: on \ColabTried{} cube states up to
+the \Cu{\ColabMaxN}, its solutions were longer than those of the CPU-trained networks on all
+\ColabLonger{} states it solved, and \ColabFailed{} states failed when a wing stage exhausted its widest beam.
+We therefore keep the CPU-trained networks. A network that fits walk length more closely is not a better
+beam-search heuristic here, which agrees with the corner ablation above: what the search needs is a signal
+that ranks the few children of each beam step correctly near the goal, and walk length, which overestimates
+the true distance, is only a proxy for it. With two states per size this is a consistent but small-sample
+result.
+
 \subsection{Scaling with $N$ and lower bounds}
 \label{sec:scaling}
 

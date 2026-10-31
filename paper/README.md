@@ -34,6 +34,9 @@ Scripts write to `results/paper/`; copy the files into `paper/results/` before `
 | `m5b_square.jsonl`, `m4_square_W*.jsonl`, `m5a_square*.jsonl`, `ablations/*`, `optimal_square.json` | scripts above, Oct 2026 | `618e560` (main) |
 | `m5b_cube.jsonl`, `m5b_cube_15_20.jsonl` | cube sweep, Oct 16 2026 | `a40c343` |
 | `m2_reduction_*.jsonl`, `m3_demaine_*.jsonl`, `m5c_schedule_*.jsonl`, `m1_*.jsonl`, `ablations/cube5c_*` | `streamC.sh`, Oct 22-27 2026, 4-core CPU | recorded per row (`full_proj` branch) |
+| `ablations/m5b_models.json` | `scripts/m5b_model_compare.py` (CPU-trained vs GPU-trained 5B networks) | `main` |
+| `ablations/cube5b_cpu_models.jsonl`, `ablations/cube5b_gpu_models.jsonl` | `scripts/m5b_model_ab.py`, Oct 31 2026, 4-core CPU | `main` |
+| `ablations/cube5b_gpu_models_colab_t4.jsonl` | Shaurya's run of `notebooks/train_gpu_colab.ipynb` §6, Colab T4 | `a0c533d` |
 | `gods_square.json` | `gods_square.py` (N = 5 from the Oct 22 run of the same function) | `full_proj` |
 
 The cube rows record `a40c343` because they ran on the uncommitted working tree that was
