@@ -1,4 +1,4 @@
-# Status (2026-10-22)
+# Status (2026-10-31)
 
 Summary: **all six methods are implemented, plus a new one, Method 5C** (net-gain scheduling
 of bulk commutators), which is now the best method for the Cube at every N ≥ 5 and the best (tied with Method 3 at
@@ -254,6 +254,47 @@ solved, at or below scramble length; depth 18: solved in 24–28) but **0 of 10 
 1024 or 4096, and 0 of 4 at W = 16384 (900 s each). The weights are `cube3.large.pt` (16 MB, git-ignored).
 The 21.14 QTM check needs the GPU run: `DEVICE=cuda bash experiments/m4_cayleypy.sh`
 (8192 epochs × 1M, then W up to 2¹⁸; `--kw '{"tier": "host"}'` for wider).
+
+## External baselines: Kaggle Santa 2023 (KMCoders) and dwalton76
+`rubiks/bench/santa2023.py` loads the competition's standard-goal cube puzzles (187 instances, N = 2..10, 19, 33;
+downloaded, not committed) with a sticker / move mapping derived from the move permutations; KMCoders' published
+final submission replays to the exact goal on all of them. Santa counts every slice quarter turn: our QTM.
+All methods below solve to Santa's exact goal (`exact_orientation=True`). Mean QTM (`docs/results/santa/`):
+
+| N | n | KMCoders (published) | dwalton76 | Method 6 | 5C | 3 | 2 |
+|---|---|---|---|---|---|---|---|
+| 2 | 20 | 10.2 | - | 10.2 | 29.4 | 29.4 | 29.4 |
+| 3 | 82 | 22.2 | - | 32.0 | 32.0 | 32.0 | 32.0 |
+| 4 | 43 | 66.7 | 88.6 | 109.4 | 217.5 | 229.3 | 266.9 |
+| 5 | 19 | 97.1 | 160.2 | 159.3 | 282.5 | 296.3 | 361.1 |
+| 6 | 6 | 161.0 | 324.0 | 276.0 | 503.0 | 534.7 | 696.3 |
+| 7 | 4 | 208.8 | 539.0 | 356.2 | 593.8 | 680.8 | 880.2 |
+| 8 | 3 | 291.3 | - | 468.7 | 856.0 | 993.3 | 1297.3 |
+| 9 | 3 | 354.7 | - | 572.7 | 1020.0 | 1188.0 | 1594.0 |
+| 10 | 4 | 461.5 | - | 743.0 | 1314.5 | 1597.0 | 2107.5 |
+| 19 | 3 | 1620.0 | - | 2484.7 | 4710.7 | 6300.7 | 8188.7 |
+| 33 | 1 | 4719 | - | - | - | - | - |
+
+* **Method 6** is our implementation of the KMCoders method (optimal QTM corners, wing parity, annealing over
+  inner-slice moves inserted anywhere, 4-move commutators and 3-cycles inserted at their cheapest time). It is
+  1.5-1.7x KMCoders' lengths for N >= 4 (1.53x at N = 19) and the best non-KMCoders method from N = 6 up.
+  Not yet reproduced from KMCoders: an optimal 3x3x3 for odd N, 6-move commutators, exact minimum-3-rot counts,
+  beam search over 3-rot insertions and their compute budget (Rust, long runs).
+* **dwalton76** (rubiks-cube-NxNxN-solver, run as a subprocess; its wide turns expanded to slice turns) is better
+  than Method 6 at N = 4, equal at 5 and worse from 6 (its lookup tables, ~8 GB for N <= 7, limited us to N <= 7).
+* Nobody here beats KMCoders yet.
+
+## 20 states per size, 95% confidence intervals (`docs/results/stats/`)
+Methods 2, 3 and 5C on 20 random states per size (cubes N = 3-10, Squares N = 3-20); every state solved. Paired
+5C - Method 3 difference per state (mean +- 95% CI): cube N = 4: -2.8 +- 3.4 (not significant), 5: -9.7 +- 4.8,
+6: -36.1 +- 8.7, 7: -60.6 +- 10.6, 8: -106.9 +- 13.1, 9: -188.2 +- 17.3, 10: -255.6 +- 18.6 (-17.2%). Square: 0 for
+N <= 5, small but significant from N = 12 (-1% to -4%).
+
+## Novelty check: God's numbers of the Rubik's Square
+The 3x3x1 (the "Floppy Cube") agrees with published values: 192 positions up to whole-puzzle rotation (our 768 / 4),
+God's number 6 with any orientation allowed and 8 with the exact orientation, matching the two published figures.
+For the 4x4x1 (82,944 states, God's number 10) and 5x5x1 (10,616,832 states, 12) we found no published value
+(web search, Oct 2026): they appear to be new, to our knowledge.
 
 ## Method 5B with GPU-trained cluster models (Colab T4, Shaurya)
 Retrained cluster MLPs (width 512, 20k steps) are better walk-depth predictors but worse beam-search
