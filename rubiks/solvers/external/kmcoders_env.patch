@@ -1,0 +1,62 @@
+diff --git a/solution/src/bin/solve_cube.rs b/solution/src/bin/solve_cube.rs
+index cacd7d6..8c4b981 100644
+--- a/solution/src/bin/solve_cube.rs
++++ b/solution/src/bin/solve_cube.rs
+@@ -203,7 +203,7 @@ fn main() {
+             }
+         }
+     }
+-    let mut rng = rand_pcg::Pcg64Mcg::seed_from_u64(89043280);
++    let mut rng = rand_pcg::Pcg64Mcg::seed_from_u64(89043280 ^ std::env::var("KMC_SEED").ok().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0));
+     let mut moves = vec![];
+     for i in 1..n - 1 {
+         if i * 2 + 1 == n {
+@@ -998,7 +998,7 @@ const AVG_INIT: f64 = 1.5;
+ 
+ fn init_optimize(input: &mut Input, out: &mut Vec<usize>) {
+     let n = input.n;
+-    let mut rng = rand_pcg::Pcg64Mcg::seed_from_u64(89043280);
++    let mut rng = rand_pcg::Pcg64Mcg::seed_from_u64(89043280 ^ std::env::var("KMC_SEED").ok().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0));
+     let mut start = input.start.clone();
+     for &op in out.iter().rev() {
+         apply_loop(input, &mut start, (op + input.m) % (input.m * 2));
+@@ -1051,7 +1051,7 @@ fn init_optimize(input: &mut Input, out: &mut Vec<usize>) {
+         }
+     }
+     dbg!(out.len());
+-    const TL: i32 = 20000000;
++    let TL: i32 = std::env::var("KMC_TL").ok().and_then(|s| s.parse().ok()).unwrap_or(20000000);
+     let T0 = 3.0;
+     let T1 = 0.0;
+     let mut score = apply_loops(&input, &mut start.clone(), &out) as f64 * AVG_INIT + out.len() as f64;
+diff --git a/solution/src/bin/solve_cube_beam.rs b/solution/src/bin/solve_cube_beam.rs
+index 74abfc1..aace542 100644
+--- a/solution/src/bin/solve_cube_beam.rs
++++ b/solution/src/bin/solve_cube_beam.rs
+@@ -212,7 +212,7 @@ fn main() {
+     let n2 = input.n2 as u16;
+     let mut last_time = get_time();
+     let mut last_large_move = 0;
+-    let mut rng = rand_pcg::Pcg64Mcg::seed_from_u64(5340980);
++    let mut rng = rand_pcg::Pcg64Mcg::seed_from_u64(5340980 ^ std::env::var("KMC_SEED").ok().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0));
+     let mut moves = vec![];
+     for i in 1..n - 1 {
+         if i * 2 + 1 == n {
+@@ -1041,7 +1041,7 @@ const AVG_INIT: f64 = 1.5;
+ 
+ fn init_optimize(input: &mut Input, out: &mut Vec<usize>) {
+     let n = input.n;
+-    let mut rng = rand_pcg::Pcg64Mcg::seed_from_u64(89043280);
++    let mut rng = rand_pcg::Pcg64Mcg::seed_from_u64(89043280 ^ std::env::var("KMC_SEED").ok().and_then(|s| s.parse::<u64>().ok()).unwrap_or(0));
+     let mut start = input.start.clone();
+     for &op in out.iter().rev() {
+         apply_loop(input, &mut start, (op + input.m) % (input.m * 2));
+@@ -1094,7 +1094,7 @@ fn init_optimize(input: &mut Input, out: &mut Vec<usize>) {
+         }
+     }
+     dbg!(out.len());
+-    const TL: i32 = 20000000;
++    let TL: i32 = std::env::var("KMC_TL").ok().and_then(|s| s.parse().ok()).unwrap_or(20000000);
+     let T0 = 3.0;
+     let T1 = 0.0;
+     let mut score = apply_loops(&input, &mut start.clone(), &out) as f64 * AVG_INIT + out.len() as f64;

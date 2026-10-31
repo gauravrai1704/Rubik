@@ -14,7 +14,7 @@ import numpy as np
 
 from ...engine import PuzzleSpec, metrics
 from ..base import Budget, Solver, SolveResult, get_solver, register
-from ..symmetry import map_back, rotated
+from ..symmetry import map_back, rotated, symmetries
 
 
 @register("m7_portfolio")
@@ -24,13 +24,13 @@ class SymmetryPortfolio(Solver):
         super().__init__(puzzle, budget)
         if puzzle.kind != "cube":
             raise ValueError("Method 7 rotates cubes")
-        self.copies = min(copies, len(puzzle.rotations))
+        self.copies = min(copies, len(symmetries(puzzle)))
         self.workers = workers
         self.inner = get_solver(inner, puzzle, budget, **(inner_kwargs or {}))
         self.inner_name = inner
-        # identity first, then the other rotations in a fixed order
-        ident = int(np.nonzero((puzzle.rotations == np.arange(puzzle.num_stickers)).all(1))[0][0])
-        self.order = [ident] + [r for r in range(len(puzzle.rotations)) if r != ident]
+        # identity, its mirror image, then the other rotations each followed by its mirror image
+        n_rot = len(puzzle.rotations)
+        self.order = [0, n_rot] + [x for r in range(1, n_rot) for x in (r, n_rot + r)]
 
     def _one(self, state, r):
         P = self.puzzle

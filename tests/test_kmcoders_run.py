@@ -20,7 +20,7 @@ def test_rotated_copy_maps_back(N, rng):
     P = cube(N)
     s = random_state(P, rng)
     S = get_solver("m2_reduction", P, Budget(wall_time_s=60), exact_orientation=True)
-    for r in (0, 7, 23):
+    for r in (0, 7, 23, 24, 31, 47):
         s2 = rotated(P, s, r)
         m = S.solve(s2).moves
         assert np.array_equal(P.apply(s2, m), P.solved)

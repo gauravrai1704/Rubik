@@ -56,7 +56,10 @@ def santa_input(P: PuzzleSpec, state: np.ndarray, pid: int) -> str:
 @register("kmcoders")
 class KMCodersRun(Solver):
     def __init__(self, puzzle: PuzzleSpec, budget: Budget | None = None, root: str | None = None,
-                 binary: str = "solve_cube", stage1: str = "kociemba", **kwargs):
+                 binary: str = "solve_cube", stage1: str = "kociemba", seed: int = 0,
+                 sa_iters: int | None = None, **kwargs):
+        """``seed`` (XORed into their fixed seeds; 0 = their program unchanged) and ``sa_iters`` (stage-2
+        annealing iterations, theirs: 20M) need the two-line patch ``kmcoders_env.patch``."""
         super().__init__(puzzle, budget)
         if puzzle.kind != "cube":
             raise ValueError("KMCoders' solver is for cubes")
@@ -67,6 +70,11 @@ class KMCodersRun(Solver):
         if stage1 not in ("kociemba", "optimal"):
             raise ValueError("stage1: 'kociemba' or 'optimal'")
         self.binary, self.stage1 = binary, stage1
+        self.env = dict(os.environ)
+        if seed:
+            self.env["KMC_SEED"] = str(seed)
+        if sa_iters:
+            self.env["KMC_TL"] = str(int(sa_iters))
         self.map = santa2023.santa_map(puzzle.N)
 
     def _write_corner_cache(self, state, pid) -> int:
@@ -105,12 +113,18 @@ class KMCodersRun(Solver):
     def solve(self, state: np.ndarray) -> SolveResult:
         t0 = time.time()
         pid = next(_ids)
-        info = {"binary": self.binary}
+        info = {"binary": self.binary, "seed": int(self.env.get("KMC_SEED", 0)),
+                "sa_iters": int(self.env.get("KMC_TL", 20_000_000))}
         try:
             if self.puzzle.N % 2 == 1 and self.puzzle.N > 3:
                 info["stage1_qtm"] = self._write_corner_cache(state, pid)
+            import resource
+
+            c0 = resource.getrusage(resource.RUSAGE_CHILDREN)
             r = subprocess.run([str(self.exe)], input=santa_input(self.puzzle, state, pid), cwd=self.root,
-                               capture_output=True, text=True, timeout=self.budget.wall_time_s)
+                               env=self.env, capture_output=True, text=True, timeout=self.budget.wall_time_s)
+            c1 = resource.getrusage(resource.RUSAGE_CHILDREN)
+            info["cpu_s"] = round(c1.ru_utime + c1.ru_stime - c0.ru_utime - c0.ru_stime, 2)
         finally:
             for f in itertools.chain((self.root / "cache").glob(f"*/{pid:04d}.txt"),
                                      (self.root / "cache").glob(f"*/{pid:04d}_*")):

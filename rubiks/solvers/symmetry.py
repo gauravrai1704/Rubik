@@ -6,6 +6,10 @@ puzzle seen from another side, with the same exact goal. A solution of ``s'`` ma
 ``s`` move by move (a rotation sends every slice turn to a slice turn), with the same length. A
 deterministic solver gives a different answer on each of the 24 copies, so the copies are a free source
 of diverse runs (a "symmetry ensemble"), even for a program whose random seed is fixed.
+
+Mirror images give 24 more: reflecting the cube (x -> -x) maps the state to a legal state of the mirrored
+puzzle, and every slice quarter turn to the mirrored slice's opposite quarter turn, so a solution maps
+back with the same length too. ``symmetries(P)`` lists all 48 (rotations first, identity at index 0).
 """
 from __future__ import annotations
 
@@ -17,8 +21,26 @@ from ..engine import PuzzleSpec
 from ..engine.puzzle import Move
 
 
+@lru_cache(maxsize=16)
+def symmetries(P: PuzzleSpec) -> np.ndarray:
+    """Sticker permutations of the 24 rotations and, for cubes, their 24 mirror images."""
+    S = P.num_stickers
+    ident = np.arange(S)
+    rots = [r for r in P.rotations if not np.array_equal(r, ident)]
+    out = [ident] + rots
+    if P.kind == "cube":
+        look = {(tuple(int(v) for v in p), tuple(int(v) for v in n)): i
+                for i, (p, n) in enumerate(zip(P.sticker_pos, P.sticker_normal))}
+        flip = np.array([1 if a else -1 for a in (False, True, True)])
+        M = np.array([look[(tuple(int(v) for v in p * flip), tuple(int(v) for v in n * flip))]
+                      for p, n in zip(P.sticker_pos, P.sticker_normal)])
+        out += [M[r] for r in out]
+    return np.array(out)
+
+
 def rotated(P: PuzzleSpec, state: np.ndarray, r: int) -> np.ndarray:
-    R = P.rotations[r]
+    """The state seen through symmetry ``r`` (an index into :func:`symmetries`)."""
+    R = symmetries(P)[r]
     src, dst = P.solved[R], P.solved
     sigma = np.empty(max(int(P.solved.max()), int(src.max())) + 1, dtype=np.int64)
     sigma[src] = dst
@@ -28,7 +50,7 @@ def rotated(P: PuzzleSpec, state: np.ndarray, r: int) -> np.ndarray:
 @lru_cache(maxsize=64)
 def _move_map(P: PuzzleSpec, r: int) -> tuple[int, ...]:
     """Engine move j on the rotated copy == engine move out[j] on the original."""
-    R = P.rotations[r]
+    R = symmetries(P)[r]
     Rinv = np.argsort(R)
     look = {p.tobytes(): i for i, p in enumerate(P.move_perms.astype(np.int64))}
     out = []
