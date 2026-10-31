@@ -43,7 +43,8 @@ def main(argv=None) -> None:
     mk = sub.add_parser("make", help="generate benchmark datasets")
     mk.add_argument("--puzzle", choices=["cube", "square"], required=True)
     mk.add_argument("--N", required=True, help="e.g. 5 or 3-20 or 3,5,10")
-    mk.add_argument("--depth", default="random", help="scramble length, or 'random'")
+    mk.add_argument("--depth", default="random",
+                    help="scramble length, 'random', or 'santa' (Kaggle Santa 2023 cube instances; downloaded)")
     mk.add_argument("--count", type=int, default=None, help="default: 100 for N<=7, else 20")
     mk.add_argument("--seed", type=int, default=0)
 
@@ -62,7 +63,14 @@ def main(argv=None) -> None:
     sm.add_argument("files", nargs="+")
 
     a = ap.parse_args(argv)
-    if a.cmd == "make":
+    if a.cmd == "make" and a.depth == "santa":
+        from . import santa2023
+
+        for N in parse_range(a.N):
+            ins = santa2023.instances(N)
+            p = datasets.save(ins, datasets.path_for(a.puzzle, N, "santa"))
+            print(f"wrote {len(ins)} Santa 2023 instances to {p}")
+    elif a.cmd == "make":
         depth = a.depth if a.depth == "random" else int(a.depth)
         name = "random" if depth == "random" else f"d{depth}"
         for N in parse_range(a.N):

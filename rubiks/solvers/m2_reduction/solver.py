@@ -33,7 +33,7 @@ from ...engine import PuzzleSpec, canonicalize
 from ...engine.orbits import clusters
 from ...engine.puzzle import Move
 from ..base import Budget, Solver, SolveResult, register
-from ..cluster_tools import CycleLibrary, greedy_solve, orient, parity, piece_permutation
+from ..cluster_tools import CycleLibrary, greedy_solve, parity, piece_permutation, prepare
 from ..square_plan import square_plan
 from ..three_stage import solve_3x3_stage
 
@@ -124,8 +124,9 @@ def cube_stages(puzzle: PuzzleSpec, cs: ClusterSolver):
 
 @register("m2_reduction")
 class ReductionSolver(Solver):
-    def __init__(self, puzzle: PuzzleSpec, budget: Budget | None = None, **kwargs):
+    def __init__(self, puzzle: PuzzleSpec, budget: Budget | None = None, exact_orientation: bool = False, **kwargs):
         super().__init__(puzzle, budget)
+        self.exact_orientation = exact_orientation  # Kaggle Santa: the exact solved state, not a rotation
         if puzzle.kind == "cube":
             self.cs = ClusterSolver(puzzle)
             self.stages = cube_stages(puzzle, self.cs)
@@ -136,6 +137,7 @@ class ReductionSolver(Solver):
 
     def solve(self, state: np.ndarray) -> SolveResult:
         t0 = time.time()
-        s, _ = orient(self.puzzle, state)
+        s, pre = prepare(self.puzzle, state, self.exact_orientation)
         moves, info = run_stages(self.puzzle, s, self.stages)
+        moves = pre + moves
         return SolveResult(moves=canonicalize(moves), wall_time_s=time.time() - t0, info=info)

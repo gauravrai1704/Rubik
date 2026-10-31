@@ -28,7 +28,7 @@ import numpy as np
 from ...engine import PuzzleSpec, canonicalize
 from ...engine.orbits import clusters
 from ..base import Budget, Solver, SolveResult, register
-from ..cluster_tools import CycleLibrary, orient
+from ..cluster_tools import CycleLibrary, prepare
 from ..m2_reduction.solver import CENTER_KINDS, run_stages, wing_parity
 from ..square_plan import square_plan
 from ..three_stage import solve_3x3_stage
@@ -54,8 +54,9 @@ class BatchedKinds:
 
 @register("m3_demaine")
 class DemaineSolver(Solver):
-    def __init__(self, puzzle: PuzzleSpec, budget: Budget | None = None, setup_depth: int = 1, **kwargs):
+    def __init__(self, puzzle: PuzzleSpec, budget: Budget | None = None, setup_depth: int = 1, exact_orientation: bool = False, **kwargs):
         super().__init__(puzzle, budget)
+        self.exact_orientation = exact_orientation  # Kaggle Santa: the exact solved state, not a rotation
         P = puzzle
         if P.kind == "square":
             plan = square_plan(P.N)
@@ -85,8 +86,9 @@ class DemaineSolver(Solver):
 
     def solve(self, state: np.ndarray) -> SolveResult:
         t0 = time.time()
-        s, _ = orient(self.puzzle, state)
+        s, pre = prepare(self.puzzle, state, self.exact_orientation)
         moves, info = run_stages(self.puzzle, s, self.stages)
+        moves = pre + moves
         if self.puzzle.kind == "square":
             info["batching"] = dict(self._sq_stats)
         else:

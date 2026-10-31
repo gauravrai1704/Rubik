@@ -13,3 +13,6 @@ checkpoints/**/*.large.pt
 *.beam
 # Method 1 pattern databases (~170 MB per metric), rebuilt on first use
 checkpoints/m1/
+# Santa 2023 data, downloaded on use (Kaggle terms)
+data/santa2023/
+data/cube/*/santa.jsonl

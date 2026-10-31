@@ -17,7 +17,7 @@ import numpy as np
 from ...engine import PuzzleSpec, canonicalize
 from ...engine.orbits import clusters
 from ..base import Budget, Solver, SolveResult, register
-from ..cluster_tools import CycleLibrary, orient
+from ..cluster_tools import CycleLibrary, prepare
 from ..m2_reduction.solver import CENTER_KINDS, run_stages, wing_parity
 from ..m3_demaine.batching import TypeBank, center_templates, wing_templates
 from ..m3_demaine.solver import DemaineSolver
@@ -46,12 +46,14 @@ class ScheduledKinds:
 @register("m5c_schedule")
 class ScheduledSolver(Solver):
     def __init__(self, puzzle: PuzzleSpec, budget: Budget | None = None, setup_depth: int = 1,
-                 lookahead: int | None = None, beam: int = 4, top_types: int = 24, share_setups: bool = True, **kwargs):
+                 lookahead: int | None = None, beam: int = 4, top_types: int = 24, share_setups: bool = True,
+                 exact_orientation: bool = False, **kwargs):
         super().__init__(puzzle, budget)
+        self.exact_orientation = exact_orientation  # Kaggle Santa: the exact solved state, not a rotation
         P = puzzle
         self._m3 = None
         if P.kind == "cube" and P.N == 3:
-            self._m3 = DemaineSolver(P, budget)  # nothing to schedule: Method 3 as is
+            self._m3 = DemaineSolver(P, budget, exact_orientation=exact_orientation)  # nothing to schedule: Method 3 as is
             return
         if P.kind == "square":
             from ..square_plan import square_plan
@@ -91,8 +93,9 @@ class ScheduledSolver(Solver):
             r.info["delegated"] = "m3_demaine"
             return r
         t0 = time.time()
-        s, _ = orient(self.puzzle, state)
+        s, pre = prepare(self.puzzle, state, self.exact_orientation)
         moves, info = run_stages(self.puzzle, s, self.stages)
+        moves = pre + moves
         if self.puzzle.kind == "square":
             info["schedule"] = dict(self._sq_stats)
         else:

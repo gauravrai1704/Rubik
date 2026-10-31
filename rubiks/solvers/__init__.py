@@ -23,7 +23,8 @@ def load_all() -> None:
         return
     import importlib
 
-    for mod in ("m1_idastar", "m2_reduction", "m3_demaine", "m4_cayleypy", "m5a_tokens", "m5b_stages", "m5c_schedule"):
+    for mod in ("m1_idastar", "m2_reduction", "m3_demaine", "m4_cayleypy", "m5a_tokens", "m5b_stages", "m5c_schedule",
+                "external"):
         importlib.import_module(f"{__name__}.{mod}")
     _LOADED = True
 

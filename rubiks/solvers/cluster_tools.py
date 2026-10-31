@@ -60,6 +60,44 @@ def orient(puzzle: PuzzleSpec, state: np.ndarray) -> tuple[np.ndarray, np.ndarra
     return best
 
 
+def exact_orientation_moves(puzzle: PuzzleSpec, state: np.ndarray) -> list[Move]:
+    """Moves that bring an odd cube's fixed centers to the reference orientation (middle-slice quarter
+    turns, shortest by BFS over the 24 orientations), for benchmarks such as Kaggle Santa 2023 that
+    require the exact solved state rather than any rotation of it. Empty for even N."""
+    fixed = [c for c in clusters(puzzle) if c.kind == "center_fixed"]
+    if not fixed:
+        return []
+    st = np.concatenate([c.stickers for c in fixed])
+    mid = puzzle.N // 2
+    gens = [Move(a, mid, t) for a in range(3) for t in (1, 2, 3)]
+    start = np.asarray(state)[st]
+    goal = puzzle.solved[st]
+    sub = {m: np.searchsorted(st, puzzle.move_perms[puzzle.move_index[m]][st]) for m in gens}
+    frontier, seen = [(start, [])], {start.tobytes()}
+    while frontier:
+        nxt = []
+        for x, path in frontier:
+            if np.array_equal(x, goal):
+                return path
+            for m, p in sub.items():
+                y = x[p]
+                if y.tobytes() not in seen:
+                    seen.add(y.tobytes())
+                    nxt.append((y, path + [m]))
+        frontier = nxt
+    raise ValueError("fixed centers cannot reach the reference orientation")
+
+
+def prepare(puzzle: PuzzleSpec, state: np.ndarray, exact: bool = False) -> tuple[np.ndarray, list[Move]]:
+    """The state a staged solver works on, and moves to prepend to its answer. ``exact=False``: relabel
+    colours (:func:`orient`, the solution may end in any rotation). ``exact=True``: no relabelling;
+    the answer must reach ``puzzle.solved`` itself (odd cubes first turn their fixed centers home)."""
+    if not exact:
+        return orient(puzzle, state)[0], []
+    pre = exact_orientation_moves(puzzle, state) if puzzle.kind == "cube" else []
+    return puzzle.apply(np.asarray(state), pre), pre
+
+
 # ------------------------------------------------------------------ slots and pieces
 def _compose(perms: np.ndarray, seq) -> np.ndarray:
     """Permutation of a move sequence: ``state[result] == apply(state, seq)``."""
