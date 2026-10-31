@@ -284,15 +284,20 @@ class CycleLibrary:
     ``ops``: list of (slot cycle, sequence); ``local``: (T, K) local sticker permutations."""
 
     def __init__(self, puzzle: PuzzleSpec, cluster: Orbit, bases: list[list[int]] | None = None,
-                 setup_moves: list[int] | None = None, max_depth: int = 4):
+                 setup_moves: list[int] | None = None, max_depth: int = 4, metric: str = "htm"):
+        """``metric="qtm"``: quarter-turn setups only, more base commutators, and for every cycle the
+        sequence with the fewest quarter turns found (Method 6; Kaggle Santa's metric)."""
         self.puzzle, self.cluster = puzzle, cluster
         self.slots = Slots(puzzle, cluster)
-        bases = bases if bases is not None else pure_three_cycles(puzzle, cluster)
+        qtm = metric == "qtm"
+        mv = puzzle.moves
+        cost = (lambda q: sum(2 if mv[m].turn == 2 else 1 for m in q)) if qtm else len
+        bases = bases if bases is not None else pure_three_cycles(puzzle, cluster, limit=64 if qtm else 12)
         if not bases:
             raise ValueError(f"no pure 3-cycles found for cluster {cluster.index} ({cluster.kind})")
         inv = puzzle.inverse_move
         G = [int(m) for m in (setup_moves if setup_moves is not None else cluster.gen_moves)]
-        G = [m for m in G if int(m) in self.slots.local]
+        G = [m for m in G if int(m) in self.slots.local and (not qtm or mv[m].turn != 2)]
         Pg = np.stack([self.slots.local[m] for m in G])
         Pgi = np.stack([self.slots.local[int(inv[m])] for m in G])
         n = self.slots.n
@@ -302,11 +307,12 @@ class CycleLibrary:
         for b in bases + [[int(inv[m]) for m in reversed(b)] for b in bases]:
             lp = self.slots.local_perm(b)
             cyc = self.slots.slot_cycle(lp)
-            if cyc is not None and cyc not in ops:
+            if cyc is not None and (cyc not in ops or cost(b) < cost(ops[cyc][0])):
+                if cyc not in ops:
+                    frontier.append(cyc)
                 ops[cyc] = (list(b), lp)
-                frontier.append(cyc)
         for _ in range(max_depth):
-            if len(ops) >= full or not frontier:
+            if (len(ops) >= full and not qtm) or not frontier:
                 break
             nxt = []
             for cyc in frontier:
@@ -314,15 +320,19 @@ class CycleLibrary:
                 cand = np.take_along_axis(Pg[:, lp], Pgi, 1)  # (G, K): g, seq, g'
                 for gi in range(len(G)):
                     c2 = self.slots.slot_cycle(cand[gi])
-                    if c2 is not None and c2 not in ops:
-                        ops[c2] = ([G[gi]] + seq + [int(inv[G[gi]])], cand[gi])
-                        nxt.append(c2)
+                    if c2 is None:
+                        continue
+                    new = [G[gi]] + seq + [int(inv[G[gi]])]
+                    if c2 not in ops or (qtm and cost(new) < cost(ops[c2][0])):
+                        if c2 not in ops:
+                            nxt.append(c2)
+                        ops[c2] = (new, cand[gi])
             frontier = nxt
         self.complete = len(ops) >= full
         self.cycles = list(ops)
         self.seqs = [ops[c][0] for c in self.cycles]
         self.local = np.stack([ops[c][1] for c in self.cycles])
-        self.cost = np.array([len(s) for s in self.seqs], dtype=np.float64)
+        self.cost = np.array([cost(s) for s in self.seqs], dtype=np.float64)
 
 
 def greedy_solve(lib: CycleLibrary, local_state: np.ndarray, max_steps: int = 400) -> tuple[list[int], np.ndarray]:
