@@ -37,7 +37,7 @@ class SymmetryPortfolio(Solver):
         res = self.inner.solve(rotated(P, state, r))
         moves = map_back(P, res.moves, r)
         ok = np.array_equal(P.apply(np.asarray(state), moves), P.solved)
-        return r, moves, ok
+        return r, moves, ok, res.info
 
     def solve(self, state: np.ndarray) -> SolveResult:
         t0 = time.time()
@@ -45,10 +45,11 @@ class SymmetryPortfolio(Solver):
         rs = self.order[:self.copies]
         with ThreadPoolExecutor(self.workers) as ex:
             runs = list(ex.map(lambda r: self._one(state, r), rs))
-        lens = {r: metrics(m, P)["qtm"] if ok else None for r, m, ok in runs}
-        good = [(lens[r], i, m) for i, (r, m, ok) in enumerate(runs) if ok]
+        lens = {r: metrics(m, P)["qtm"] if ok else None for r, m, ok, _ in runs}
+        good = [(lens[r], i, m) for i, (r, m, ok, _) in enumerate(runs) if ok]
         if not good:
             return SolveResult(moves=[], wall_time_s=time.time() - t0, info={"copies": lens})
         _, i, best = min(good, key=lambda x: (x[0], x[1]))
         return SolveResult(moves=best, wall_time_s=time.time() - t0,
-                           info={"inner": self.inner_name, "copies": [lens[r] for r in rs], "best_copy": i})
+                           info={"inner": self.inner_name, "copies": [lens[r] for r in rs], "best_copy": i,
+                                 "copy_info": [inf for *_, inf in runs]})

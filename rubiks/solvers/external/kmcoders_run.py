@@ -119,4 +119,12 @@ class KMCodersRun(Solver):
         if r.returncode != 0 or not out:
             raise RuntimeError("KMCoders' solver failed: " + r.stderr[-300:])
         text = out[-1].strip()  # the program prints improving solutions; the last is its answer
+        import re
+
+        sa = re.findall(r"^0\.99: (-?[\d.]+)$", r.stderr, re.M)  # stage-2 annealing objective at its end
+        first = re.search(r"^[\d.]+: len = (\d+), diff = (\d+)", r.stderr, re.M)  # state entering stage 3
+        if sa:
+            info["stage2_score"] = float(sa[-1])
+        if first:
+            info["stage3_start"] = {"len": int(first.group(1)), "diff": int(first.group(2))}
         return SolveResult(moves=self.map.moves_to_engine(text), wall_time_s=time.time() - t0, info=info)
