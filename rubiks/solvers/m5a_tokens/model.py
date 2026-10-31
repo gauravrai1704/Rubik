@@ -155,7 +155,7 @@ def save(model: ClusterTokenModel, path, meta: dict) -> None:
 
 
 def load(path, device: str = "cpu") -> tuple[ClusterTokenModel, dict]:
-    ck = torch.load(path, map_location=device, weights_only=False)
+    ck = torch.load(path, map_location=device, weights_only=True)  # never unpickle code from a checkpoint
     model = ClusterTokenModel(ModelConfig(**ck["cfg"]), ck["type_sizes"])
     model.load_state_dict(ck["state_dict"])
     return model.to(device).eval(), ck.get("meta", {})

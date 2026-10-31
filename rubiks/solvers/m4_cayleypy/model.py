@@ -156,7 +156,7 @@ def save(model: ResMLP, path, meta: dict) -> None:
 
 
 def load(path, device: str = "cpu") -> tuple[ResMLP, dict]:
-    ck = torch.load(path, map_location=device, weights_only=False)
+    ck = torch.load(path, map_location=device, weights_only=True)  # never unpickle code from a checkpoint
     model = ResMLP(ResMLPConfig(**ck["cfg"]))
     model.load_state_dict(ck["state_dict"])
     return model.to(device).eval(), ck.get("meta", {})

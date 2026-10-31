@@ -114,7 +114,7 @@ def main(argv=None) -> None:
     state_path = Path(a.state) if a.state else Path(a.out).with_suffix(".state")
     start = 1
     if state_path.exists():  # resume (e.g. after a Colab disconnect)
-        st = torch.load(state_path, map_location=dev, weights_only=False)
+        st = torch.load(state_path, map_location=dev, weights_only=True)  # never unpickle code from a checkpoint
         model.load_state_dict(st["model"])
         opt.load_state_dict(st["opt"])
         sched.load_state_dict(st["sched"])

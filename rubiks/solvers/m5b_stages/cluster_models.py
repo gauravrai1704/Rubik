@@ -246,7 +246,7 @@ def load_mlp(signature: str, kind: str, device: str = "cpu", root: Path = CKPT_D
     path = root / f"{kind}_{signature}.pt"
     if not path.exists():
         return None
-    ck = torch.load(path, map_location=device, weights_only=False)
+    ck = torch.load(path, map_location=device, weights_only=True)  # never unpickle code from a checkpoint
     m = ck["meta"]
     model = ClusterMLP(m["K"], 6, m["hidden"], m["blocks"])
     model.load_state_dict(ck["state_dict"])

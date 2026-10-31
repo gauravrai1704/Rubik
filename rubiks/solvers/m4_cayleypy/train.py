@@ -67,7 +67,7 @@ def train(puzzle: str, N: int, preset: str = "small", n1: int | None = None, n2:
     state_path = Path(state) if state else (Path(out).with_suffix(".state") if out else None)
     first, log, seen, prior_time = 1, [], 0, 0.0
     if state_path is not None and state_path.exists():  # resume (e.g. after a Colab disconnect)
-        st = torch.load(state_path, map_location=dev, weights_only=False)
+        st = torch.load(state_path, map_location=dev, weights_only=True)  # never unpickle code from a checkpoint
         model.load_state_dict(st["model"])
         opt.load_state_dict(st["opt"])
         gen.set_state(st["gen"].cpu())
