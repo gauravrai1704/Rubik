@@ -255,6 +255,12 @@ solved, at or below scramble length; depth 18: solved in 24–28) but **0 of 10 
 The 21.14 QTM check needs the GPU run: `DEVICE=cuda bash experiments/m4_cayleypy.sh`
 (8192 epochs × 1M, then W up to 2¹⁸; `--kw '{"tier": "host"}'` for wider).
 
+## Method 5B with GPU-trained cluster models (Colab T4, Shaurya)
+Retrained cluster MLPs (width 512, 20k steps) are better walk-depth predictors but worse beam-search
+heuristics: on the same CPU, code and instances, solutions were longer at N = 3, 4, 6 (shorter at N = 5)
+and 3-20x slower; on the Colab run 2 of 14 cube states failed in wing stages. Kept as an option in
+`checkpoints/m5b_gpu/` (README there); the CPU models stay the default.
+
 ## Known limitations
 * Random states come from long random walks, not an exact uniform sampler.
 * The checker enforces necessary conditions (property-tested); wing and center rules are
