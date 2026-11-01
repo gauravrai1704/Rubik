@@ -20,6 +20,6 @@ states per N, beam width 4096, CPU (`docs/results/m4_square_cpu_vs_gpu_large.jso
 
 Every state solved by both. Optimal lengths (Method 1) are 3.75 / 6.70 / 8.95 at N = 3 / 4 / 5, so
 both models are optimal or within 0.15 there. The larger model only pays off at N = 8 (-7%), so it is
-the default there: `find_checkpoints` prefers `checkpoints/m4/square8.large.pt` when that file exists
-(copy it from the Drive folder); for N <= 7 keep the CPU models.
+the default there: `checkpoints/m4/square8.large.pt` is committed (5 MB, like `cube3.large.pt`) and
+`find_checkpoints` prefers it; for N <= 7 the CPU models stay the default.
 `docs/results/m4_square_W4096_colab_t4.jsonl` is the notebook's own evaluation on the T4 (10 states per N).
