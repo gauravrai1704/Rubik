@@ -1,4 +1,4 @@
-# NxN Rubik's — nine solvers, one engine
+# NxNxN Rubik's — nine solvers, one engine
 
 Solvers for the **N×N×1 Rubik's Square** and the **N×N×N Rubik's Cube** for every
 N from 3 to 20, benchmarked on one shared engine. Methods 1–4 are established techniques
