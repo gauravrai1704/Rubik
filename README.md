@@ -18,7 +18,7 @@ Kaggle Santa 2023 solution (see *External baselines* below). The full spec is th
 | 5B | Learned search inside reduction stages | Gaurav | `rubiks/solvers/m5b_stages` | implemented; 100% solved on Square N = 3–20 and Cube N = 3–20 (solutions still long) |
 | 5C | **New:** net-gain scheduling of bulk commutators | Gaurav | `rubiks/solvers/m5c_schedule` | implemented; best method on the Cube for N ≥ 5 (20×20×20: 4,925 HTM, −26% vs Method 3) and on the Square for N ≥ 9 |
 | 6 | KMCoders-style insertion method, our implementation | Gaurav | `rubiks/solvers/m6_kmcoders` | implemented; best of our from-scratch methods on Santa 2023 cubes for N ≥ 6 (1.5–1.7× KMCoders' published lengths) |
-| 7 | **New:** symmetry portfolio around KMCoders' own solver | Gaurav | `rubiks/solvers/m7_portfolio` | in progress; on Santa 4×4×4 (10 puzzles) **62.7 QTM vs KMCoders' published 63.5** (3 wins, 4 ties, 3 losses); 5×5×5 102.0 vs 100.7 with a Kociemba 3×3×3 stage, rerun with an optimal one (`nxopt`) under way |
+| 7 | **New:** symmetry portfolio around KMCoders' own solver | Gaurav | `rubiks/solvers/m7_portfolio` | in progress; on Santa 4×4×4 (10 puzzles) **62.7 QTM vs KMCoders' published 63.5** (3 wins, 4 ties, 3 losses); **5×5×5 (3 puzzles) 95.3 vs 100.7, shorter on all three** with an optimal 3×3×3 stage (`nxopt`) |
 | — | Engine, checker, beam search, harness | Gaurav | `rubiks/engine`, `rubiks/search`, `rubiks/bench` | implemented, tested |
 
 Each method's folder has a `README.md` with its spec, what was built, and a done-when checklist. Measured results so far: [docs/STATUS.md](docs/STATUS.md).
@@ -91,12 +91,13 @@ solver, with their beam variant and a shortened stage 2) is the first to reach i
 
 | | Santa 4×4×4, 10 puzzles | Santa 5×5×5, 3 puzzles |
 |---|---|---|
-| KMCoders published | 63.5 | **100.7** |
-| Method 7 | **62.7** (3 wins / 4 ties / 3 losses) | 102.0 (1 win / 2 losses), Kociemba 3×3×3 stage |
+| KMCoders published | 63.5 | 100.7 |
+| Method 7 | **62.7** (3 wins / 4 ties / 3 losses) | **95.3** (3 wins), optimal 3×3×3 stage via `nxopt` (102.0 with Kociemba's) |
 | their program, one run | 77.1 | 114.2 (all 19) |
 
-About 25-30 CPU-minutes per puzzle. For odd N their submission used an optimal 3×3×3 solver; with
-`nxopt` our 3×3×3 stage drops from 34 to 24 QTM on puzzle 210 (rerun in progress). How far all of this is
+About 25-45 CPU-minutes per puzzle. For odd N their submission used an optimal 3×3×3 solver; with
+`nxopt` our 3×3×3 stage drops from 34 to 24 QTM on puzzle 210, which is what puts Method 7 ahead at N = 5.
+Small samples so far (10 and 3 puzzles); N ≥ 6 not yet run. How far all of this is
 from optimal: `rubiks/analysis/counting_bound.py` gives a lower bound of 36.8 QTM at N = 4 and 1,855 at
 N = 33, so KMCoders' published lengths are 1.8-2.5x the bound (`docs/STATUS.md`).
 

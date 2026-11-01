@@ -331,7 +331,10 @@ embodies a large best-of-many search. Their stage-2 annealing (20M steps, ~3/4 o
 N = 5 (24 copies, same cheap setting, Kociemba for the 3x3x3 stage where KMCoders used an optimal solver),
 puzzles 210 / 212 / 213: 101 / 103 / **102** against 99 / 99 / 104 published (mean 102.0 vs 100.7, 1 win),
 ~30 CPU-minutes each (`m7_beam_sa1M_24copies_N5.jsonl`). The stage-1 gap is the likely cause: Kociemba gave
-34 QTM on puzzle 210 where an optimal 3x3x3 solution is typically ~21.
+34 QTM on puzzle 210 where an optimal 3x3x3 solution is typically ~21. With Rokicki's `nxopt` (optimal QTM)
+for that stage, the same 24-copy portfolio gives **93 / 95 / 98 against 99 / 99 / 104: shorter than the published
+solution on all three, mean 95.3 vs 100.7 (-5.3%)**, 34-46 CPU-minutes per puzzle
+(`m7_beam_sa1M_24copies_nxopt_N5.jsonl`).
 Tried and dropped: annealing polish of finished solutions (0 moves saved) and ruin-and-recreate local search
 around their greedy stage 3 (`solve_cube_lns`, no improvement in 21 rounds).
 

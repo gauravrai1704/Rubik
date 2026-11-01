@@ -334,7 +334,9 @@ spread over \MsevenSpreadMinFour{}--\MsevenSpreadMaxFour{} quarter turns (all co
 published solution sits in the lower tail of that spread. Figure~\ref{fig:m7portfolio} shows the best of $k$ random copies: the mean
 falls quickly at first and is still falling at $k=48$, so more copies (or seeds) should help further. On the \Cu{5}, with
 Kociemba's central \Cu{3}, the 24-copy portfolio averages \MsevenKociembaFive{} against \MsevenPubFive{}; with \texttt{nxopt}'s optimal
-stage the portfolio averages \MsevenNxoptMean{} against \MsevenNxoptPubMean{} on the \MsevenNxoptDone{} puzzle(s) finished at the time of writing (the remaining \Cu{5} runs were in progress).
+stage it averages \MsevenNxoptMean{} against \MsevenNxoptPubMean{}: shorter than the published solution on all
+\MsevenNxoptDone{} puzzles, by 4--6 quarter turns each, at \MsevenCpuMinFive{} CPU-minutes per puzzle. The optimal central stage
+alone saves about 10 quarter turns per copy (34 to 24 on puzzle 210), more than the portfolio's gap to B1 at $N=4$.
 
 \begin{figure}[t]
 \centering

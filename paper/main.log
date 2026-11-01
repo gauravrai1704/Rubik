@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.10.25)  1 NOV 2026 08:10
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.10.25)  1 NOV 2026 08:21
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1260,38 +1260,38 @@ Package caption Info: End \AtBeginDocument code.
 
 Excluding 'CCSXML' comment.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 17.28pt on input line 107.
+(Font)              scaled to size 17.28pt on input line 108.
 LaTeX Font Info:    Trying to load font information for T1+LinuxBiolinumT-TLF o
-n input line 107.
+n input line 108.
 
 (/usr/share/texlive/texmf-dist/tex/latex/libertine/T1LinuxBiolinumT-TLF.fd
 File: T1LinuxBiolinumT-TLF.fd 2017/03/20 (autoinst) Font definitions for T1/Lin
 uxBiolinumT-TLF.
 )
 LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/m/n' will be
-(Font)              scaled to size 17.28pt on input line 107.
+(Font)              scaled to size 17.28pt on input line 108.
 Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `LinuxBiolinumT-TLF' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/b/n' will be
-(Font)              scaled to size 17.28pt on input line 107.
+(Font)              scaled to size 17.28pt on input line 108.
 LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/b/n' will be
-(Font)              scaled to size 9.0pt on input line 107.
+(Font)              scaled to size 9.0pt on input line 108.
 LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/b/n' will be
-(Font)              scaled to size 12.0pt on input line 107.
+(Font)              scaled to size 12.0pt on input line 108.
 LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/m/n' will be
-(Font)              scaled to size 12.0pt on input line 107.
+(Font)              scaled to size 12.0pt on input line 108.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 12.0pt on input line 107.
+(Font)              scaled to size 12.0pt on input line 108.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 10.0pt on input line 107.
+(Font)              scaled to size 10.0pt on input line 108.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/b/n' will be
-(Font)              scaled to size 9.0pt on input line 107.
+(Font)              scaled to size 9.0pt on input line 108.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/b/n' will be
-(Font)              scaled to size 10.95pt on input line 107.
+(Font)              scaled to size 10.95pt on input line 108.
 LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 9.0pt on input line 107.
+(Font)              scaled to size 9.0pt on input line 108.
 Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `LinuxLibertineT-TLF' (encoding: OT1).
 (microtype)             For optimal results, create family-specific settings.
@@ -1304,20 +1304,20 @@ File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
 LaTeX Font Info:    Trying to load font information for TS1+LinuxLibertineT-TLF
- on input line 107.
+ on input line 108.
 
 (/usr/share/texlive/texmf-dist/tex/latex/libertine/TS1LinuxLibertineT-TLF.fd
 File: TS1LinuxLibertineT-TLF.fd 2017/03/20 (autoinst) Font definitions for TS1/
 LinuxLibertineT-TLF.
 )
 LaTeX Font Info:    Font shape `TS1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 9.0pt on input line 107.
+(Font)              scaled to size 9.0pt on input line 108.
 Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `LinuxLibertineT-TLF' (encoding: TS1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/it' will be
-(Font)              scaled to size 9.0pt on input line 107.
+(Font)              scaled to size 9.0pt on input line 108.
 
 (./sections/intro.tex
 Underfull \vbox (badness 10000) has occurred while \output is active []
@@ -1496,40 +1496,41 @@ LaTeX Warning: Text page 13 contains only floats.
 <figures/m7_copies.pdf, id=627, 245.718pt x 195.129pt>
 File: figures/m7_copies.pdf Graphic file (type pdf)
 <use figures/m7_copies.pdf>
-Package pdftex.def Info: figures/m7_copies.pdf  used on input line 341.
+Package pdftex.def Info: figures/m7_copies.pdf  used on input line 343.
 (pdftex.def)             Requested size: 241.14749pt x 191.50795pt.
 
 
-Class acmart Warning: A possible image without description on input line 345.
+Class acmart Warning: A possible image without description on input line 347.
 
 <figures/m7_portfolio.pdf, id=628, 245.718pt x 158.99399pt>
 File: figures/m7_portfolio.pdf Graphic file (type pdf)
 <use figures/m7_portfolio.pdf>
-Package pdftex.def Info: figures/m7_portfolio.pdf  used on input line 349.
+Package pdftex.def Info: figures/m7_portfolio.pdf  used on input line 351.
 (pdftex.def)             Requested size: 241.14749pt x 156.0435pt.
 
-Class acmart Warning: A possible image without description on input line 353.
+Class acmart Warning: A possible image without description on input line 355.
 
 (./generated/tab_santa_time_rows.tex)
 <figures/santa_ratio.pdf, id=633, 245.718pt x 238.49101pt>
 File: figures/santa_ratio.pdf Graphic file (type pdf)
 <use figures/santa_ratio.pdf>
-Package pdftex.def Info: figures/santa_ratio.pdf  used on input line 388.
+Package pdftex.def Info: figures/santa_ratio.pdf  used on input line 390.
 (pdftex.def)             Requested size: 241.14749pt x 234.06529pt.
 
 
-Class acmart Warning: A possible image without description on input line 392.
+Class acmart Warning: A possible image without description on input line 394.
 
-) (./sections/closing.tex [14.14 <./figures/scaling.pdf> <./figures/m7_copies.p
-df>])
-Underfull \vbox (badness 10000) has occurred while \output is active []
+) (./sections/closing.tex
+Underfull \vbox (badness 4454) has occurred while \output is active []
 
- [15.15 <./figures/m7_portfolio.pdf>] Processing 'acks' comment. [16.16 <./figu
-res/santa_ratio.pdf>]
+ [14.14 <./figures/scaling.pdf> <./figures/m7_copies.pdf>] [15.15 <./figures/m7
+_portfolio.pdf>]) [16.16 <./figures/santa_ratio.pdf>] Processing 'acks' comment
+.
 \openout3 = `comment.cut'.
 
- Comment 'acks' writing to comment.cut.
-Straight input of comment.cut. (./comment.cut) (./main.bbl
+
+Comment 'acks' writing to comment.cut. Straight input of comment.cut.
+(./comment.cut) (./main.bbl
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/it' will be
 (Font)              scaled to size 7.0pt on input line 47.
 LaTeX Info: Redefining \tempurl on input line 176.
@@ -1552,9 +1553,6 @@ Underfull \hbox (badness 10000) in paragraph at lines 182--189
 []$\T1/LinuxLibertineT-TLF/m/n/7 (+5) https : / / quomodocumque . wordpress . c
 om / 2011 / 07 / 17 / should -[] you -[] be -[] surprised -[]
  []
-
-
-Underfull \vbox (badness 5260) has occurred while \output is active []
 
 LaTeX Info: Redefining \tempurl on input line 407.
 )
@@ -1580,11 +1578,11 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: C9D78A4B91D30FB5D2286F0B82F0CFA7;6889.
  ) 
 Here is how much of TeX's memory you used:
- 33969 strings out of 476106
- 615612 string characters out of 5793932
+ 33972 strings out of 476106
+ 615687 string characters out of 5793932
  1997975 words of memory out of 5000000
  54078 multiletter control sequences out of 15000+600000
- 810502 words of font info for 590 fonts, out of 8000000 for 9000
+ 810775 words of font info for 592 fonts, out of 8000000 for 9000
  220 hyphenation exceptions out of 8191
  90i,19n,131p,1001b,850s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/inconsolata/Inconsolata-zi4
@@ -1605,7 +1603,7 @@ f-dist/fonts/type1/public/newtx/txexs.pfb></usr/share/texlive/texmf-dist/fonts/
 type1/public/newtx/txmiaX.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
 /newtx/txsym.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/newtx/txsys.
 pfb>
-Output written on main.pdf (17 pages, 778517 bytes).
+Output written on main.pdf (17 pages, 778876 bytes).
 PDF statistics:
  936 PDF objects out of 1000 (max. 8388607)
  798 compressed objects within 8 object streams
