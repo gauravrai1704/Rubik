@@ -18,7 +18,7 @@ Kaggle Santa 2023 solution (see *External baselines* below). The full spec is th
 | 5B | Learned search inside reduction stages | Gaurav | `rubiks/solvers/m5b_stages` | implemented; 100% solved on Square N = 3–20 and Cube N = 3–20 (solutions still long) |
 | 5C | **New:** net-gain scheduling of bulk commutators | Gaurav | `rubiks/solvers/m5c_schedule` | implemented; best method on the Cube for N ≥ 5 (20×20×20: 4,925 HTM, −26% vs Method 3) and on the Square for N ≥ 9 |
 | 6 | KMCoders-style insertion method, our implementation | Gaurav | `rubiks/solvers/m6_kmcoders` | implemented; best of our from-scratch methods on Santa 2023 cubes for N ≥ 6 (1.5–1.7× KMCoders' published lengths) |
-| 7 | **New:** symmetry portfolio around KMCoders' own solver | Gaurav | `rubiks/solvers/m7_portfolio` | in progress; best of 8 rotated/mirrored copies is 14% shorter than one run of their program on Santa 4×4×4 (67.9 vs 77.1 QTM), still above their published best-of-many (63.5) |
+| 7 | **New:** symmetry portfolio around KMCoders' own solver | Gaurav | `rubiks/solvers/m7_portfolio` | in progress; on Santa 4×4×4 (10 puzzles) **62.7 QTM vs KMCoders' published 63.5** (3 wins, 4 ties, 3 losses); 5×5×5 102.0 vs 100.7 with a Kociemba 3×3×3 stage, rerun with an optimal one (`nxopt`) under way |
 | — | Engine, checker, beam search, harness | Gaurav | `rubiks/engine`, `rubiks/search`, `rubiks/bench` | implemented, tested |
 
 Each method's folder has a `README.md` with its spec, what was built, and a done-when checklist. Measured results so far: [docs/STATUS.md](docs/STATUS.md).
@@ -64,6 +64,7 @@ python -m rubiks.bench summary results/m5b_stages/square_random.jsonl
 |---|---|---|
 | `santa_kmcoders` | KMCoders' published final Santa 2023 submission, replayed and re-verified | none (data downloaded on first use into `data/santa2023/`, not committed: Kaggle terms) |
 | `kmcoders` | KMCoders' own Rust solver ([wata-orz/santa2023_permutation_puzzle](https://github.com/wata-orz/santa2023_permutation_puzzle)) run once on any cube state | clone it, apply `rubiks/solvers/external/kmcoders_env.patch` (seed and stage-2 length from env vars; defaults unchanged), `cargo build --release` in `solution/`, set `KMCODERS_DIR` |
+| `nxopt` (helper) | [Rokicki's optimal 3×3×3 solver](https://github.com/rokicki/cube20src) (GPL-3), quarter-turn build, for the odd-N 3×3×3 stage (`kmcoders` with `stage1="nxopt"`) | `ctangle nxopt.w; ctangle cubepos.w`, build with `-DQUARTER -DEO1 -DEP3`, set `NXOPT` (and `NXOPT_DIR` for its 1.42 GB table, built on first run) |
 | `dwalton76` | [dwalton76's NxNxN solver](https://github.com/dwalton76/rubiks-cube-NxNxN-solver), wide turns expanded to slice turns | build it, set `DWALTON76_DIR` (lookup tables ~8 GB for N ≤ 7) |
 
 ```bash
@@ -76,14 +77,28 @@ Santa 2023 cubes, mean QTM (Santa's move count; lower is better):
 | N | KMCoders published | KMCoders' program, one run | dwalton76 | Method 6 | 5C | Method 3 | Method 2 |
 |---|---|---|---|---|---|---|---|
 | 4 | **66.7** | 77.0 | 88.6 | 109.4 | 217.5 | 229.3 | 266.9 |
-| 5 | **97.1** | running | 160.2 | 159.3 | 282.5 | 296.3 | 361.1 |
-| 6 | **161** | running | 324 | 276 | 503 | 534.7 | 696.3 |
-| 7 | **208.8** | running | 539 | 356.2 | 593.8 | 680.8 | 880.2 |
+| 5 | **97.1** | 114.2 | 160.2 | 159.3 | 282.5 | 296.3 | 361.1 |
+| 6 | **161** | 179.3 | 324 | 276 | 503 | 534.7 | 696.3 |
+| 7 | **208.8** | 232.8 | 539 | 356.2 | 593.8 | 680.8 | 880.2 |
+| 8 | **291.3** | 310.7 | — | 468.7 | 856 | 993.3 | 1297.3 |
+| 9 | **354.7** | 390.0 | — | 572.7 | 1020 | 1188 | 1594 |
 | 10 | **461.5** | running | — | 743 | 1314.5 | 1597 | 2107.5 |
 | 19 | **1620** | — | — | 2484.7 | 4710.7 | 6300.7 | 8188.7 |
 
-The published column is the best of many competition runs; no method here beats it yet. Method 7 is the
-attempt (`docs/STATUS.md` has the running numbers).
+The published column is the best of many competition runs; one run of their program is 7-18% longer. With
+Method 1-6 and dwalton76 nothing comes close; Method 7 (best of up to 48 rotated / mirrored copies of their
+solver, with their beam variant and a shortened stage 2) is the first to reach it:
+
+| | Santa 4×4×4, 10 puzzles | Santa 5×5×5, 3 puzzles |
+|---|---|---|
+| KMCoders published | 63.5 | **100.7** |
+| Method 7 | **62.7** (3 wins / 4 ties / 3 losses) | 102.0 (1 win / 2 losses), Kociemba 3×3×3 stage |
+| their program, one run | 77.1 | 114.2 (all 19) |
+
+About 25-30 CPU-minutes per puzzle. For odd N their submission used an optimal 3×3×3 solver; with
+`nxopt` our 3×3×3 stage drops from 34 to 24 QTM on puzzle 210 (rerun in progress). How far all of this is
+from optimal: `rubiks/analysis/counting_bound.py` gives a lower bound of 36.8 QTM at N = 4 and 1,855 at
+N = 33, so KMCoders' published lengths are 1.8-2.5x the bound (`docs/STATUS.md`).
 
 ## Training on a GPU (Google Colab)
 
