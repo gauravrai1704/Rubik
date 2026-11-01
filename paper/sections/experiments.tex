@@ -293,13 +293,15 @@ states. A flat line would mean growth at the rate of the worst case. Means over 
 \begin{table*}[t]
 \caption{Santa 2023 cube puzzles (standard one-colour-per-face goal, no wildcards), mean QTM, the competition's score. $n$: puzzles
 per size; bound: counting lower bound (\S\ref{sec:bound}); B1--B3: external baselines (\S\ref{sec:baselines}); a superscript gives the
-number of puzzles run when below $n$; ``--'' = not run. Last column: B1 / bound. \Mseven is in Table~\ref{tab:m7}.}
+number of puzzles run when below $n$ (then the mean is over those puzzles only, so compare \Mseven with the baselines in
+Table~\ref{tab:m7all}, which uses the same puzzles for every column); ``--'' = not run. Bold: the shorter of \Mseven (where it ran
+on every puzzle of that size) and B1. Last column: B1 / bound.}
 \label{tab:santa}
 \small
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{@{}rrr|rrr|rrrr|r@{}}
+\begin{tabular}{@{}rrr|r|rrr|rrrr|r@{}}
 \toprule
-$N$ & $n$ & bound & B1 KMCoders published & B2 KMCoders program, one run & B3 dwalton76 & \Msix & \FiveC & \Mthree & \Mtwo & B1 / bound \\
+$N$ & $n$ & bound & \Mseven (ours) & B1 KMCoders published & B2 KMCoders program, one run & B3 dwalton76 & \Msix & \FiveC & \Mthree & \Mtwo & B1 / bound \\
 \midrule
 \input{generated/tab_santa_rows.tex}
 \end{tabular}}
@@ -324,6 +326,27 @@ stage 2) and of 8 copies (default program); \Cu{5}: 24 copies with Kociemba's an
 \input{generated/tab_m7_rows.tex}
 \end{tabular}
 \end{table}
+
+\begin{table*}[t]
+\caption{\Mseven against every baseline and every other method, on exactly the Santa 2023 puzzles \Mseven was run on (mean QTM,
+the competition's score; bold: shortest). B1: KMCoders' published best-of-many solutions; B2: one run of their program; B3: dwalton76.
+W/T/L: puzzles where \Mseven is shorter than / equal to / longer than B1; last column: \Mseven's saving over B1. Last row: total QTM over
+all these puzzles, i.e.\ the Santa score restricted to them.}
+\label{tab:m7all}
+\small
+\begin{tabular}{@{}lr|r|rrr|rrrr|rr@{}}
+\toprule
+ & run & \Mseven (ours) & B1 published & B2 one run & B3 dwalton76 & \Msix & \FiveC & \Mthree & \Mtwo & W/T/L vs B1 & saving \\
+\midrule
+\input{generated/tab_m7_all_rows.tex}
+\end{tabular}
+\end{table*}
+
+\paragraph{\Mseven beats every baseline.}
+Table~\ref{tab:m7all} compares \Mseven with every baseline and every other method on the same puzzles. It is the shortest method at
+every size it has run: on the \MsevenAllPuzzles{} puzzles, its total is \MsevenAllTotal{} quarter turns against \MsevenAllPubTotal{} for
+KMCoders' published solutions (\MsevenAllTotalGain\% fewer), shorter on \MsevenAllWins{}, equal on \MsevenAllTies{} and longer on
+\MsevenAllLosses{}; one run of their program, dwalton76 and all our other methods are further behind.
 
 \paragraph{\Mseven reaches the published numbers.}
 On the \MsevenNFour{} \Cu{4} puzzles, \Mseven's mean is \MsevenBestFour{} quarter turns against \MsevenPubFour{} for B1 and

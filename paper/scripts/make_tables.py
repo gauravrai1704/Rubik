@@ -476,6 +476,7 @@ import santa_part  # noqa: E402
 
 santa_part.build(macro)
 santa_part.build_more(macro)
+santa_part.build_m7_all(macro)
 
 (GEN / "numbers.tex").write_text("".join(f"\\newcommand{{\\{k}}}{{{v}}}\n" for k, v in sorted(macros.items())))
 

@@ -50,6 +50,30 @@ M7 = {"N4_48": {r["id"]: r for r in rows(S / "m7_beam_sa1M_48copies_N4.jsonl")},
 NS = [4, 5, 6, 7, 8, 9, 10, 19, 33]
 
 
+def _m7_best() -> dict:
+    """Method 7's answer per puzzle: N = 4 best of the 48-copy and 8-copy portfolios, N = 5 the nxopt run, any N the
+    full campaign (experiments/m7_santa.py). Only the paper's configuration counts (not the Kociemba N = 5 run)."""
+    best = {}
+
+    def put(i, q, N):
+        if q is not None and (i not in best or q < best[i]["qtm"]):
+            best[i] = {"id": i, "N": N, "qtm": q, "solved": True}
+
+    a, b = M7["N4_48"], M7["N4_8"]
+    for i in set(a) & set(b):
+        put(i, min(a[i]["qtm"], b[i]["qtm"]), 4)
+    for i, r in M7["N5_24nx"].items():
+        put(i, r["qtm"], 5)
+    for N in range(4, 34):
+        for r in rows(S / f"m7_full_N{N}.jsonl"):
+            if r["solved"]:
+                put(r["id"], r["qtm"], N)
+    return best
+
+
+M7BEST = _m7_best()
+
+
 def bound(N):
     from rubiks.analysis.counting_bound import bound_cube_qtm
 
@@ -68,13 +92,20 @@ def build(macro):
         ids = sorted(i for i, r in pub.items() if r["N"] == N)
         p, n = mean_on(pub, ids)
         b = bound(N)
-        cells = [str(N), str(n), fmt(b, 0), f"\\textbf{{{fmt(p)}}}"]
+        m7, n7 = mean_on(M7BEST, ids)
+        full = {"B1": p}
+        cells = [str(N), str(n), fmt(b, 0), None, None]
         o, no = mean_on(one, ids)
         cells.append(fmt(o) + (f"$^{{{no}}}$" if 0 < no < n else ""))
         for k in ("dwalton76", "M6", "5C", "M3", "M2"):
             m, nm = mean_on(meth[k], ids)
             cells.append(fmt(m) + (f"$^{{{nm}}}$" if 0 < nm < n else ""))
         cells.append(fmt(p / b, 2) if p else "--")
+        # bold: the shortest of Method 7 (if run on every puzzle of this size) and B1
+        m7_full = n7 == n and m7 is not None
+        win7 = m7_full and m7 < p
+        cells[3] = (f"\\textbf{{{fmt(m7)}}}" if win7 else fmt(m7)) + (f"$^{{{n7}}}$" if 0 < n7 < n else "")
+        cells[4] = fmt(p) if win7 else f"\\textbf{{{fmt(p)}}}"
         lines.append(" & ".join(cells) + " \\\\")
     (GEN / "tab_santa_rows.tex").write_text("\n".join(lines) + "\n\\bottomrule\n")
     macro("SantaTotal", sum(1 for r in pub.values() if r["N"] >= 2))
@@ -222,6 +253,53 @@ def build(macro):
         cells.append(str(len(common)))
         ci.append(" & ".join(cells) + " \\\\")
     (GEN / "tab_ci_rows.tex").write_text("\n".join(ci) + "\n\\bottomrule\n")
+
+
+def build_m7_all(macro):
+    lines = []
+    tot = {"M7": 0, "B1": 0}
+    allw = [0, 0, 0]
+    for N in NS:
+        ids = sorted(i for i in M7BEST if M7BEST[i]["N"] == N)
+        if not ids:
+            continue
+        n_all = sum(1 for r in pub.values() if r["N"] == N)
+        vals = {"M7": mean_on(M7BEST, ids)[0], "B1": mean_on(pub, ids)[0]}
+        for k, src in (("B2", one), ("B3", meth["dwalton76"]), ("M6", meth["M6"]), ("5C", meth["5C"]),
+                       ("M3", meth["M3"]), ("M2", meth["M2"])):
+            m, nm = mean_on(src, ids)
+            vals[k] = m if nm == len(ids) else None
+        w = sum(M7BEST[i]["qtm"] < pub[i]["qtm"] for i in ids)
+        t = sum(M7BEST[i]["qtm"] == pub[i]["qtm"] for i in ids)
+        l = len(ids) - w - t
+        allw = [allw[0] + w, allw[1] + t, allw[2] + l]
+        tot["M7"] += sum(M7BEST[i]["qtm"] for i in ids)
+        tot["B1"] += sum(pub[i]["qtm"] for i in ids)
+        lo = min(v for v in vals.values() if v is not None)
+        cell = lambda k: "--" if vals[k] is None else (f"\\textbf{{{fmt(vals[k])}}}" if vals[k] == lo else fmt(vals[k]))
+        gain = 100 * (1 - vals["M7"] / vals["B1"])
+        lines.append(f"\\Cu{{{N}}} & {len(ids)}/{n_all} & " + " & ".join(cell(k) for k in ("M7", "B1", "B2", "B3", "M6", "5C", "M3", "M2"))
+                     + f" & {w}/{t}/{l} & {gain:+.1f}\\% \\\\")
+        tag = {4: "Four", 5: "Five", 6: "Six", 7: "Seven", 8: "Eight", 9: "Nine", 10: "Ten"}.get(N)
+        if tag:
+            macro(f"MsevenAllN{tag}", len(ids))
+            macro(f"MsevenAllMean{tag}", fmt(vals["M7"], 1))
+            macro(f"MsevenAllPub{tag}", fmt(vals["B1"], 1))
+            macro(f"MsevenAllGain{tag}", fmt(gain, 1))
+            macro(f"MsevenAllWTL{tag}", f"{w}/{t}/{l}")
+    if tot["B1"]:
+        g = 100 * (1 - tot["M7"] / tot["B1"])
+        lines.append("\\midrule")
+        lines.append(f"all & {sum(allw)} & \\textbf{{{tot['M7']:,}}} & {tot['B1']:,} & \\multicolumn{{6}}{{l}}{{(total QTM, the Santa score on these puzzles)}} & "
+                     f"{allw[0]}/{allw[1]}/{allw[2]} & {g:+.1f}\\% \\\\")
+        macro("MsevenAllPuzzles", sum(allw))
+        macro("MsevenAllTotal", f"{tot['M7']:,}")
+        macro("MsevenAllPubTotal", f"{tot['B1']:,}")
+        macro("MsevenAllTotalGain", fmt(g, 1))
+        macro("MsevenAllWins", allw[0])
+        macro("MsevenAllTies", allw[1])
+        macro("MsevenAllLosses", allw[2])
+    (GEN / "tab_m7_all_rows.tex").write_text("\n".join(lines) + "\n\\bottomrule\n")
 
 
 def build_more(macro):
