@@ -1,0 +1,126 @@
+%% ---------------------------------------------------------------------
+\subsection{Method 6: the KMCoders pipeline from its write-up (our reproduction)}
+\label{sec:m6}
+
+\emph{Origin.} The cube part of KMCoders' Santa 2023 solution~\cite{kmcoders2024santa}, implemented from their written
+description only, before we looked at their code. It targets the exact Santa goal and the Santa (QTM) metric.
+
+\emph{The insertion identity.} All later stages rest on one observation of KMCoders. For a move sequence
+$a_0\dots a_{T-1}$ let $\mathrm{suf}_t$ be the permutation of the suffix $a_t\dots a_{T-1}$ and $\mathrm{inv}_t$ its
+inverse. Inserting a sequence $B$ before move $t$ turns the final state $F$ into $F[C]$ with
+\begin{equation}
+C=\mathrm{inv}_t\circ B\circ\mathrm{suf}_t ,
+\label{eq:insert}
+\end{equation}
+so a sequence that acts on a few stickers at time $t$ acts on the stickers $\mathrm{inv}_t[\mathrm{support}(B)]$ of the
+final state. With all suffix permutations stored, scoring a candidate at every time is a gather over $\mathrm{inv}$, with no
+replay; inserting where the neighbouring moves cancel the candidate's first or last move makes it shorter.
+
+\emph{Steps.}
+\begin{enumerate}
+\item \emph{Special parts.} Middle-slice turns bring odd cubes' fixed centers home (the Santa goal is exact). For even $N$
+  the corners form a \Cu{2}, solved optimally in QTM with \Mone's corner pattern database (this matches KMCoders' \Cu{2}
+  lengths exactly); for odd $N$ the corners, middle edges and fixed centers form a \Cu{3}, solved by Kociemba's two-phase
+  algorithm (KMCoders used an optimal solver).
+\item \emph{Parity.} Every wing cluster with an odd permutation gets one inner-slice quarter turn.
+\item \emph{Annealing.} Simulated annealing over the move sequence with objective
+  $\text{length (QTM)}+\alpha\cdot\#\text{wrong stickers}$ ($\alpha=2.5$, $6000N^2$ iterations, temperature $2\to0.05$).
+  Only inner, non-middle slice quarter turns may be edited, so special parts stay solved; neighbours insert two moves of
+  one parity class at two times, remove two such moves, move one move to another time, change one move within its class,
+  or swap two adjacent moves. Each keeps every cluster's permutation even and is scored exactly in $O(6N^2)$ with
+  Eq.~\eqref{eq:insert}.
+\item \emph{Commutators.} Greedy insertion of 4-move commutators $[x,y]$ of two slices (inner--inner, inner--face and
+  face--inner), each a pair of 3-cycles: at each step the (commutator, time) pair with the best pieces fixed per move, net of
+  cancellations, over 256 sampled times.
+\item \emph{3-cycles.} Every cluster is finished with pure 3-cycles from a library that is QTM-optimal per 3-cycle (built
+  by breadth-first search over conjugating setups), each inserted at the time where it is cheapest.
+\end{enumerate}
+
+\begin{algorithm}[t]
+\caption{\Msix: KMCoders pipeline (our reproduction from the write-up)}
+\label{alg:m6}
+\small
+\KwIn{state $s$ (exact goal $s^\ast$)}
+\KwOut{move sequence $a$ (quarter turns)}
+$a\leftarrow$ orientation moves $\Vert$ optimal special-part solution $\Vert$ wing parity fixes\;
+$a\leftarrow$ \textsc{Anneal}$(a)$ over parity-preserving inner-slice edits, objective $|a|+\alpha\cdot\mathrm{wrong}(s\cdot a)$\;
+\While{many stickers wrong}{
+  $(B,t)\leftarrow\arg\max$ gain$(B,t)/\mathrm{cost}(B,t)$ over 4-move commutators $B$, sampled times $t$ \tcp*{Eq.~\eqref{eq:insert}}
+  insert $B$ before move $t$; update $\mathrm{suf},\mathrm{inv}$\;}
+\For{each cluster $c$ until solved}{
+  pick a 3-cycle $B$ of $c$'s library and the time $t$ where it is cheapest; insert it\;}
+\Return $a$\;
+\end{algorithm}
+
+\emph{Cost.} Storing $\mathrm{suf}_t$ and $\mathrm{inv}_t$ for all $T$ times takes $O(T\cdot6N^2)$ memory (about 21\,MB at
+$N=19$); an insertion rebuilds the suffixes before it in $O(t\cdot6N^2)$. One greedy round scores $O(\text{times}\times
+\text{candidates})$ gathers. Every 3-cycle fixes $O(1)$ pieces, so solutions have $\Theta(N^2)$ moves.
+\emph{What it leaves out.} Comparing with KMCoders' code shows what the write-up does not describe: their stage 3 also applies
+bulk commutators $[D_I,R_J]$ of whole slice sets $I$, $J$ chosen by annealing (Demaine-style parallel moves), their final stage
+counts the exact minimum number of 3-cycles each cluster still needs and inserts only 3-cycles that lower it, with a beam of
+$10^5$ sequences for small $N$, and they solve odd cubes' central \Cu{3} optimally.
+
+%% ---------------------------------------------------------------------
+\subsection{Method 7: a symmetry portfolio around KMCoders' solver (new)}
+\label{sec:m7}
+
+\emph{Idea.} A deterministic solver that is far from optimal is not equally far on every input: KMCoders' program, run once
+on the same scramble seen from different sides, returns solutions whose lengths differ by \MsevenSpreadMinFour{}--\MsevenSpreadMaxFour{} quarter turns on one \Cu{4} (Figure~\ref{fig:m7copies}).
+The 48 symmetries of the cube turn one scramble into 48 equivalent inputs, and every answer maps back to a solution of the
+original state of the same length. \Mseven runs the solver on $k$ copies and keeps the shortest.
+
+\emph{Symmetric copies.} Let $R$ be a sticker permutation of one of the 24 rotations of the cube, or of one of their 24
+mirror images (rotation composed with the reflection $x\mapsto-x$). Let $\sigma$ be the colour relabelling with
+$\sigma(s^\ast[R])=s^\ast$ for the solved state $s^\ast$. The copy of a state $s$ is $s'=\sigma(s[R])$.
+
+\textbf{Proposition.} \emph{For every move $q$ there is a move $\phi_R(q)$ of the same cost with
+$R\circ q\circ R^{-1}=\phi_R(q)$ (as sticker permutations); for a rotation $\phi_R$ maps a quarter turn of a slice to a quarter
+turn of the image slice, for a mirror image to the opposite quarter turn of the mirrored slice. Hence if $q_1\dots q_L$ solves
+$s'$ exactly, then $\phi_R(q_1)\dots\phi_R(q_L)$ solves $s$ exactly, with the same QTM, HTM and STM.}
+
+\emph{Proof sketch.} A rotation or reflection maps every slab of the cube onto a slab, so conjugating a slab turn by $R$ gives
+a turn of the image slab by the same angle, with the sense reversed for a reflection; the move set is closed under this map and
+costs are preserved. Applying the moves to $s'$ is the gather $s'[q_1\circ\dots\circ q_L]$; substituting $s'=\sigma(s[R])$ and
+$q_i=R^{-1}\phi_R(q_i)R$ telescopes the inner $R^{-1}R$ pairs, so the result is $\sigma(s[\phi_R(q_1)\dots\phi_R(q_L)][R])$, which
+equals $s^\ast$ exactly when $s[\phi_R(q_1)\dots\phi_R(q_L)]=s^\ast$ (because $\sigma(s^\ast[R])=s^\ast$ and $R$ is a bijection).
+The harness verifies every mapped-back solution independently. $\square$
+
+\emph{Steps.}
+\begin{enumerate}
+\item \emph{Inner solver.} KMCoders' program (B2) with three settings: their beam variant (\texttt{solve\_cube\_beam}), which their
+  write-up recommends for small $N$; 1M instead of 20M annealing iterations in their second stage, which takes about three
+  quarters of a \Cu{4} run and did not change lengths measurably at 0.5M, 2M or 20M iterations; and, for odd $N$, an optimal
+  quarter-turn central \Cu{3} from \texttt{nxopt} (Kociemba's answer only defines the position; \texttt{nxopt} solves it
+  optimally), supplied through their cache file. On Santa puzzle 210 this stage drops from 34 to 24 quarter turns.
+\item \emph{Copies.} The identity, its mirror image, then the other 23 rotations each followed by its mirror image, up to $k$.
+\item \emph{Portfolio.} Run the inner solver on each copy (three in parallel), map each answer back, verify it, and keep the
+  shortest in QTM. For the \Cu{4} we also take the shortest over an 8-copy portfolio of the default program (greedy, 20M
+  iterations).
+\end{enumerate}
+
+\begin{algorithm}[t]
+\caption{\Mseven: symmetry portfolio}
+\label{alg:m7}
+\small
+\KwIn{state $s$; inner solver $\mathcal{S}$; number of copies $k$}
+\KwOut{solution of $s$}
+$\mathcal{R}\leftarrow$ (identity, mirror, $R_1$, mirror$(R_1)$, \dots) truncated to $k$\;
+best $\leftarrow\bot$\;
+\ParallelFor{\upshape each $R\in\mathcal{R}$}{
+  $s'\leftarrow\sigma_R(s[R])$\;
+  $q\leftarrow\mathcal{S}(s')$ \tcp*{KMCoders' program, beam variant, short stage 2, optimal \Cu{3} stage}
+  $\mu\leftarrow\phi_R(q)$\;
+  \lIf{$s\cdot\mu=s^\ast$ \textbf{and} $|\mu|_{\mathrm{QTM}}<|\text{best}|_{\mathrm{QTM}}$}{best $\leftarrow\mu$}}
+\Return best\;
+\end{algorithm}
+
+\emph{Cost.} $k$ times the inner solver's CPU time; memory is the inner solver's (plus \texttt{nxopt}'s 1.42\,GB table, shared).
+Measured: \MsevenCpuMinFour{} CPU-minutes per \Cu{4} puzzle for 48 copies and \MsevenCpuMinFive{} per \Cu{5} puzzle for 24
+copies, on a shared 4-core machine. Moves: as KMCoders' method, $\Theta(N^2)$ ($\approx4.4N^2$ in the published data); the
+portfolio lowers the constant, not the exponent.
+
+\emph{What did not help.} Two attempts to improve KMCoders' finished solutions directly found nothing: simulated annealing
+over the free moves of a finished solution (\Msix's annealer with a large $\alpha$) removed no move on two \Cu{4} puzzles, and a
+ruin-and-recreate local search~\cite{shaw1998lns} inside their stage 3 (delete the inner-slice moves of a random window in
+parity-safe pairs, let their greedy repair it, accept if not longer) found no shorter solution in 21 rounds. Their solutions are
+locally tight; diversity of the whole run, not local repair, is what pays.

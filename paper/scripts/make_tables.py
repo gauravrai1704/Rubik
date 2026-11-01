@@ -469,6 +469,14 @@ for N in (6, 8, 10, 15, 20):
                     f"{fmt(c5c, 0)} \\\\")
 (GEN / "tab_lb_rows.tex").write_text("\n".join(lb_lines) + "\n\\bottomrule\n")
 
+import sys  # noqa: E402
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import santa_part  # noqa: E402
+
+santa_part.build(macro)
+santa_part.build_more(macro)
+
 (GEN / "numbers.tex").write_text("".join(f"\\newcommand{{\\{k}}}{{{v}}}\n" for k, v in sorted(macros.items())))
 
 # ------------------------------------------------------------------ figures
@@ -578,5 +586,6 @@ style(ax)
 fig.tight_layout()
 fig.savefig(FIG / "m4_width.pdf")
 plt.close(fig)
+santa_part.figures(plt, style)
 print("wrote", sorted(p.name for p in GEN.iterdir()), sorted(p.name for p in FIG.iterdir()))
 print(macros)

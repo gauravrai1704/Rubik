@@ -1,0 +1,207 @@
+%% =====================================================================
+\section{Methods}
+\label{sec:methods}
+
+We describe the nine methods in the order of their numbers. Each subsection states where the method comes from, its
+steps, its pseudocode, and its cost in moves, time and memory. Table~\ref{tab:methods} summarises them.
+
+\begin{table*}[t]
+\caption{The nine methods. ``Repro.'': our reproduction of a published method; ``new'': ours. Move growth is the
+length of the returned solutions as a function of $N$ (proved for Demaine's construction, empirical otherwise); time is
+per random state on our CPUs at the largest size we ran (details in each subsection and \S\ref{sec:experiments}).}
+\label{tab:methods}
+\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lp{3.9cm}p{2.5cm}p{3.3cm}p{3.1cm}p{4.0cm}@{}}
+\toprule
+\# & Method & Origin & Puzzles, sizes & Moves vs $N$ & Time per state (largest size) \\
+\midrule
+1 & IDA* + pattern databases & repro.\ of Korf~\cite{korf1997optimal} & Square $N\le5$, \Cu{3} scrambles & optimal & seconds (\Sq{5}); random \Cu{3}: none in 30\,min \\
+2 & reduction + two-phase & repro.\ (standard) & both, $N\le20$ & $\Theta(N^2)$ & seconds to minutes (\Cu{20}) \\
+3 & Demaine's parallel algorithm & repro.\ of~\cite{demaine2011algorithms} & both, $N\le20$ & $\Theta(N^2/\log N)$ (theory) & minutes (\Cu{20}) \\
+4 & CayleyPy per-size network & repro.\ of~\cite{chervov2025cayleypy} & Square $N\le8$ (\Cu{3} attempted) & near-optimal where trained & seconds (\Sq{8}, $W{=}4096$) \\
+5A & cluster-token transformer & new & Square $N\le10$ & -- & minutes (\Sq{10}) \\
+5B & cluster-decomposed staged beam & new & both, $N\le20$ & $\Theta(N^2)$ & minutes (\Cu{20}) \\
+5C & net-gain bulk commutators & new & both, $N\le20$ & between $N^2/\log N$ and $N^2$ (empirical) & \FiveCTwentyMin{} min (\Cu{20}) \\
+6 & KMCoders pipeline from its write-up & repro.\ of~\cite{kmcoders2024santa} & cube, $N\le19$ (Santa) & $\Theta(N^2)$ & 14 min (\Cu{19}) \\
+7 & symmetry portfolio around KMCoders' solver & new & cube, $N\le5$ so far (Santa) & as KMCoders, $\approx4.4N^2$ & \MsevenCpuMinFour{} CPU-min (\Cu{4}), \MsevenCpuMinFive{} (\Cu{5}) \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+%% ---------------------------------------------------------------------
+\subsection{Method 1: IDA* with pattern databases (our reproduction)}
+\label{sec:m1}
+
+\emph{Origin.} Korf's optimal \Cu{3} solver~\cite{korf1997optimal}, with pattern databases~\cite{culberson1998pattern};
+for the Square, the same search with an exact per-cluster heuristic, and breadth-first search for God's numbers.
+
+\emph{Steps.}
+\begin{enumerate}
+\item \emph{Pattern databases (\Cu{3}).} Breadth-first search from the solved state over cubie coordinates gives exact
+  distances for three abstractions: the 8 corners ($8!\cdot3^7=88{,}179{,}840$ entries) and two sets of 6 edges
+  ($12!/6!\cdot2^6=42{,}577{,}920$ each). Their move tables are derived from the engine's sticker permutations, and a test
+  checks that the two agree. Largest entries: 11 (corners) and 10 (edges) in HTM.
+\item \emph{Heuristic.} $h(s)=\max$ of the three lookups, admissible and consistent.
+\item \emph{IDA*.} Depth-first iterations with threshold $\theta=h(s_0),\theta+1,\dots$; children are pruned by
+  $g+h>\theta$ and by the canonical move order of \S\ref{sec:engine}. The search runs in Numba, parallel over the root's
+  moves (about $1.2\cdot10^7$ nodes per second on four cores), in HTM or QTM.
+\item \emph{Square.} The heuristic is the maximum over clusters of each cluster's exact distance (from its projection
+  table), admissible because no solution fixes a cluster in fewer moves than it needs alone. Since any of the four
+  solved orientations counts, IDA* runs to each and keeps the shortest.
+\item \emph{God's numbers.} For $N\le5$, breadth-first search from all four solved Squares visits every reachable
+  state and gives the exact distance of each.
+\end{enumerate}
+
+\begin{algorithm}[t]
+\caption{\Mone: IDA* (our reproduction of Korf's solver)}
+\label{alg:m1}
+\small
+\KwIn{state $s_0$; admissible heuristic $h$; canonical successor function}
+\KwOut{an optimal move sequence}
+$\theta\leftarrow h(s_0)$\;
+\While{true}{
+  $(r,\mu)\leftarrow$ \textsc{Dfs}$(s_0, g{=}0, \theta, [\,])$\;
+  \lIf{$r=$ found}{\Return $\mu$}
+  $\theta\leftarrow r$ \tcp*{smallest $g+h$ that exceeded $\theta$}
+}
+\SetKwProg{Fn}{Function}{:}{}
+\Fn{\textsc{Dfs}$(s,g,\theta,\mu)$}{
+  \lIf{$g+h(s)>\theta$}{\Return $(g+h(s),\cdot)$}
+  \lIf{$s$ solved}{\Return (found, $\mu$)}
+  $m\leftarrow\infty$\;
+  \For{each canonical move $a$ after $\mu$'s last move}{
+    $(r,\nu)\leftarrow$ \textsc{Dfs}$(s\cdot a, g+1, \theta, \mu\Vert a)$\;
+    \lIf{$r=$ found}{\Return $(r,\nu)$}
+    $m\leftarrow\min(m,r)$\;}
+  \Return $(m,\cdot)$\;}
+\end{algorithm}
+
+\emph{Cost.} Building the \Cu{3} databases is one breadth-first search over each abstraction (minutes; under 200\,MB
+at 4 bits per entry). IDA* expands $O(b^{\,d-\bar h})$ nodes, with $b\approx13.3$ the canonical HTM branching factor and
+$\bar h$ the typical heuristic value; at $d\approx18$ for a random \Cu{3} this is beyond four cores in 30 minutes.
+Breadth-first search over the \Sq{5} stores $1.06\cdot10^7$ states (about 6\,GB in Python).
+
+%% ---------------------------------------------------------------------
+\subsection{Method 2: reduction with Kociemba's two-phase algorithm (our reproduction)}
+\label{sec:m2}
+
+\emph{Origin.} The standard reduction method for large cubes~\cite{walton2017nxnxn}, with Kociemba's two-phase
+algorithm~\cite{kociemba2phase} for the final \Cu{3}, and Demaine et al.'s lemmas for the Square.
+
+\emph{Steps (cube).} After relabelling colours so that the target is one fixed orientation (for odd $N$ the fixed
+centers decide; for the exact Santa goal, middle-slice turns first bring the fixed centers home):
+\begin{enumerate}
+\item \emph{Wing parity.} Every wing cluster with an odd permutation gets one inner-slice quarter turn (Demaine's
+  Lemma~7), since 3-cycles are even.
+\item \emph{Centers.} Every center cluster is solved with its pure 3-cycles (\S\ref{sec:engine}), greedily: at each
+  step the 3-cycle with the most pieces fixed per move.
+\item \emph{\Cu{3} stage.} Corners, middle edges and fixed centers behave as a \Cu{3} under outer-face turns and are
+  solved by Kociemba's two-phase algorithm; for even $N$ an odd corner permutation (PLL parity) is fixed by one outer
+  quarter turn first.
+\item \emph{Wings.} Every wing cluster is solved with its pure 3-cycles, greedily.
+\end{enumerate}
+Outer-face turns keep center clusters on their faces, and pure 3-cycles keep everything else, so the stages never
+undo each other.
+
+\emph{Steps (Square).} The frame and the edge and cross clusters are solved exactly on their projections (Demaine's
+Lemma~3, $O(N)$ moves), then each interior cluster with its four commutators $c\,r\,c\,r$ (Lemma~2), at most three each.
+
+\begin{algorithm}[t]
+\caption{\Mtwo: reduction (our reproduction), cube}
+\label{alg:m2}
+\small
+\KwIn{state $s$; per-cluster pure 3-cycle libraries $\mathcal{L}_c$}
+\KwOut{move sequence $\mu$}
+$\mu\leftarrow$ orientation moves\;
+\lFor{each wing cluster $c$ with odd permutation}{append one inner-slice quarter turn of $c$ to $\mu$}
+$\mu\leftarrow\mu\,\Vert\,$\textsc{Greedy3Cycles}(center clusters)\;
+$\mu\leftarrow\mu\,\Vert\,$\textsc{TwoPhase}(corners, middle edges, fixed centers)\;
+$\mu\leftarrow\mu\,\Vert\,$\textsc{Greedy3Cycles}(wing clusters)\;
+\Return canonicalise$(\mu)$\;
+\SetKwProg{Fn}{Function}{:}{}
+\Fn{\textsc{Greedy3Cycles}$(F)$}{
+  $\nu\leftarrow[\,]$\;
+  \While{some cluster of $F$ is unsolved}{
+    $\beta\leftarrow\arg\max_{c\in F,\;\beta\in\mathcal{L}_c}$ (pieces of $c$ fixed by $\beta$)$\,/\,|\beta|$\;
+    $s\leftarrow s\cdot\beta$;\quad $\nu\leftarrow\nu\,\Vert\,\beta$\;}
+  \Return $\nu$\;}
+\end{algorithm}
+
+\emph{Cost.} A cube has $\Theta(N^2)$ center clusters of 24 pieces, each needing at most about 12 pure 3-cycles of 8--12
+moves, so solutions have $\Theta(N^2)$ moves. Building the libraries is a breadth-first search over setups for each
+cluster type (seconds); each greedy step scans all clusters' libraries ($O(N^2\cdot 4{,}048)$ lookups).
+
+%% ---------------------------------------------------------------------
+\subsection{Method 3: Demaine's parallel cluster algorithm (our reproduction)}
+\label{sec:m3}
+
+\emph{Origin.} Demaine et al.~\cite{demaine2011algorithms}. On the Square we follow their construction; on the cube,
+where batching by identical configuration is useless at practical sizes, we batch 3-cycles, as the KMCoders write-up
+suggests~\cite{kmcoders2024santa}.
+
+\emph{Steps.} \Mthree shares every stage with \Mtwo except the batching.
+\begin{enumerate}
+\item \emph{Square.} Each interior cluster's optimal word of commutators is read off its exact table; round $t$ applies
+  the $t$-th commutator of every cluster, and the clusters needing the same commutator are covered by blocks of columns
+  $X$ and rows $Y$, each fixed by one bulk sequence $C_X R_Y C_X R_Y$ of $2|X|+2|Y|$ moves (Lemma~4), with Demaine's column
+  groups (Lemmas~5--6).
+\item \emph{Cube, types.} A commutator \emph{type} is an outer-face setup plus a template with layer parameters, such as
+  $[A_i, B\,C_j\,B']$; with layer sets $I$ and $J$ (all slices of $I$ turned together) it applies the same 3-cycle
+  pattern to every cluster $(i,j)\in I\times J$ for $2|I|+2|J|+4$ moves.
+\item \emph{Cube, rounds.} Each round picks the type with the most pieces fixed per move over all clusters and applies it
+  to every block of clusters it helps, or applies one single-cluster 3-cycle when that is better.
+\end{enumerate}
+
+\begin{algorithm}[t]
+\caption{\Mthree: one family of cube clusters (our reproduction with 3-cycle batching)}
+\label{alg:m3}
+\small
+\KwIn{state $s$; type bank $\mathcal{T}$; libraries $\mathcal{L}_c$}
+\KwOut{move sequence $\mu$}
+\While{some cluster unsolved}{
+  \For{each type $t\in\mathcal{T}$}{
+    $H_t\leftarrow$ the layer pairs $(i,j)$ where type $t$ fixes pieces of cluster $(i,j)$ and harms none\;
+    cover $H_t$ by blocks $I\times J\subseteq H_t$; score each by pieces fixed $/(2|I|+2|J|+4)$\;}
+  $\nu\leftarrow$ best block, or the best single 3-cycle if that scores higher\;
+  $s\leftarrow s\cdot\nu$;\quad $\mu\leftarrow\mu\Vert\nu$\;}
+\Return $\mu$\;
+\end{algorithm}
+
+\emph{Cost.} Demaine's construction is $\Theta(N^2/\log N)$; our 3-cycle batching gives no such guarantee, and its blocks
+shrink as clusters diverge (\S\ref{sec:5c}). Each round scores $|\mathcal{T}|$ types over $O(N^2)$ layer pairs.
+
+%% ---------------------------------------------------------------------
+\subsection{Method 4: CayleyPy per-size networks (our reproduction)}
+\label{sec:m4}
+
+\emph{Origin.} Chervov et al.~\cite{chervov2025cayleypy}.
+
+\emph{Steps.}
+\begin{enumerate}
+\item \emph{Data.} Fresh non-backtracking random walks from the solved state; each visited state is labelled with its
+  walk length $k$ (a diffusion distance).
+\item \emph{Model.} One residual MLP per puzzle size on one-hot sticker inputs, trained with MSE to predict $k$.
+\item \emph{Search.} Beam search with hash deduplication (\S\ref{sec:engine}), width $W$, at most 200 steps, scoring
+  children by the network; optionally retried at $2W, 4W, \dots$
+\end{enumerate}
+Square models have 0.25--0.45M parameters and were trained on 4M ($N\le5$) or 10M ($N=6$--8) examples in 1--4 minutes
+each on CPU. A second set of Square models with the ``large'' preset (1.27M parameters at $N=8$, 256M examples) was trained
+on a Colab T4 GPU (\S\ref{sec:m4gpu}). We also trained the paper's 4.0M-parameter \Cu{3} model on 32M examples
+(77 minutes on CPU), 250$\times$ fewer than the paper's 8B.
+
+\begin{algorithm}[t]
+\caption{\Mfour: beam search with a learned distance (our reproduction of CayleyPy)}
+\label{alg:m4}
+\small
+\KwIn{state $s_0$; network $\hat d$; width $W$; step limit $T$}
+\KwOut{move sequence or failure}
+$B\leftarrow\{s_0\}$\;
+\For{$t\leftarrow1$ \KwTo $T$}{
+  $C\leftarrow\{s\cdot a: s\in B,\ a\text{ a move}\}$ minus states seen in the last 3 steps (by hash)\;
+  \lIf{some $c\in C$ is solved}{\Return its path}
+  $B\leftarrow$ the $W$ states of $C$ with the smallest $\hat d$\;}
+\Return failure\;
+\end{algorithm}
+
+\emph{Cost.} Training is $O(\text{examples}\times\text{parameters})$; search is $O(T\,W\,A)$ network evaluations with $A$
+moves ($2N$ for the Square). Each size needs its own model and training run.

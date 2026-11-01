@@ -1,14 +1,15 @@
 # Paper
 
-`main.tex` (acmart, `sigconf,nonacm`) with `results_body.tex`, `references.bib`.
+`main.tex` (acmart, `sigconf,nonacm`) with the section files in `sections/`, `references.bib`.
+`results_body.tex` is the previous results section, kept for reference and no longer included.
 Every table body, figure and in-text number is generated from `paper/results/` by
 `scripts/make_tables.py` into `generated/` and `figures/`; nothing is typed by hand.
 
 ## Rebuild
 ```bash
 pip install -e . matplotlib
-python paper/scripts/make_tables.py
-cd paper && latexmk -pdf main.tex
+python paper/scripts/make_tables.py   # also runs scripts/santa_part.py
+cd paper && pdflatex main && bibtex main && pdflatex main && pdflatex main
 ```
 Needs TeX Live with `acmart`, `libertine`, `newtx` (Ubuntu: `texlive-publishers texlive-fonts-extra texlive-plain-generic`).
 
@@ -38,6 +39,11 @@ Scripts write to `results/paper/`; copy the files into `paper/results/` before `
 | `ablations/cube5b_cpu_models.jsonl`, `ablations/cube5b_gpu_models.jsonl` | `scripts/m5b_model_ab.py`, Oct 31 2026, 4-core CPU | `main` |
 | `ablations/cube5b_gpu_models_colab_t4.jsonl` | Shaurya's run of `notebooks/train_gpu_colab.ipynb` §6, Colab T4 | `a0c533d` |
 | `gods_square.json` | `gods_square.py` (N = 5 from the Oct 22 run of the same function) | `full_proj` |
+| `santa/kmcoders.jsonl`, `santa/m2_reduction.jsonl`, `santa/m3_demaine.jsonl`, `santa/m5c_schedule.jsonl`, `santa/m6_kmcoders.jsonl`, `santa/dwalton76.jsonl` | `python -m rubiks.bench run --dataset santa` (copies of `docs/results/santa/`) | recorded per row |
+| `santa/kmcoders_program_N*.jsonl` | one run of KMCoders' program (`--solver kmcoders`), Nov 2026, shared 4-core CPU | recorded per row |
+| `santa/m7_*.jsonl` | Method 7 experiment scripts (48 / 8 / 24 copies), Nov 2026 | `main` |
+| `stats/*_cube20.jsonl`, `stats/*_square20.jsonl` | Methods 2, 3, 5C on 20 states per size | recorded per row |
+| `m4_square_cpu_vs_gpu_large.jsonl` | Method 4, committed CPU models vs Colab T4 "large" models, same CPU | `main` |
 
 The cube rows record `a40c343` because they ran on the uncommitted working tree that was
 committed next as `ce5b06e`. The engine, search, 5A and 5B code and checkpoints are identical

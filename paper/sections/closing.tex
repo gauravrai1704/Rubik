@@ -1,0 +1,39 @@
+%% =====================================================================
+\section{Limitations}
+\label{sec:limitations}
+
+\begin{itemize}
+\item \emph{\Mseven's evidence is small and its cost is high.} We ran \Mseven on 10 of the 43 Santa \Cu{4} puzzles and a few
+  \Cu{5} puzzles, at about half an hour of CPU per puzzle; its mean is equal to or slightly below the published one, not
+  significantly. We have not run it at $N\ge6$ (each copy takes 4 minutes at $N=6$ and 22 at $N=9$ on our machine), nor on the
+  \Cu{19} and \Cu{33}. We have not yet compared it with an equal-compute portfolio of random seeds of the same program; the
+  seed also changes the answer, and symmetries are one convenient, seed-free source of the same diversity.
+\item \emph{\Mseven builds on KMCoders' code.} Its contribution is the portfolio, the shortened stage and the optimal central
+  stage around their solver; the algorithmic core is theirs (\S\ref{sec:m7}). Their repository carries no licence file, so we
+  release only a wrapper and a two-line patch, not their code.
+\item \emph{Random-state samples.} The main tables use few states per size for large cubes (one each at $N=15$ and 20); the 20-state
+  confidence intervals cover $N\le10$.
+\item \emph{Still above Demaine's rate.} Every method's length divided by $N^2/\ln N$ still rises over the tested range, \FiveC's
+  most slowly; KMCoders' lengths grow as $\approx4.4N^2$. None is shown to reach the $\Theta(N^2/\log N)$ rate in practice.
+\item \emph{The counting bound is a lower bound.} It is valid for the radius around the goal, and we use it as an estimate of
+  typical optimal distances; the Square calibration suggests the truth is 1.5--1.7$\times$ the bound in the worst case. It cannot
+  certify that any single solution is near-optimal.
+\item \emph{Exact search on the \Cu{3}} solves 12-move scrambles but no random state in 30 minutes on four cores, and our \Cu{3}
+  \Mfour model, with 250$\times$ less training data than the original, solved no random state.
+\item \emph{\FiveA's evidence is preliminary}: one small Square model, a CPU budget, and no cube model.
+\item \emph{Checker and sampling.} The checker enforces necessary conditions only, and random states come from long random walks
+  rather than an exact uniform sampler.
+\end{itemize}
+
+%% =====================================================================
+\section{Conclusion}
+
+Decomposing Rubik's puzzles into clusters with $N$-invariant signatures lets one engine run nine solvers on the same instances,
+from exact search to learned heuristics and a competition solver, for every size we can afford. On random states the winner at
+large $N$ is structural: Demaine's idea of fixing many clusters with one shared move sequence, scheduled by net gain rather than
+by unanimous need (\FiveC). On the Santa 2023 puzzles, the competition's own solver is far ahead of everything else, and the
+symmetries of the cube are enough to turn it into a portfolio that reaches its published best-of-many lengths (\Mseven). The
+counting bound says where the remaining room is: little at $N=4$, and a factor that grows like $\log N$ at large $N$, because the
+final stage of every practical method still fixes a few pieces per 3-cycle. Carrying \FiveC's bulk moves into the endgame of the
+insertion method is the natural next step, and the place where the two lines of this work meet. Code, data and result files are
+at \url{https://github.com/gauravrai1704/Rubik}.

@@ -2,7 +2,7 @@
 %%% Do NOT edit. File created by BibTeX with style
 %%% ACM-Reference-Format-Journals [18-Jan-2012].
 
-\begin{thebibliography}{23}
+\begin{thebibliography}{36}
 
 %%% ====================================================================
 %%% NOTE TO THE USER: you can override these defaults by providing
@@ -93,10 +93,10 @@
 \showeprint[arxiv]{2512.23328}
 
 
-\bibitem[Chen({[n.\,d.]})]%
+\bibitem[Chen(2026)]%
         {chen2phase}
 \bibfield{author}{\bibinfo{person}{Shuang Chen}.}
-  \bibinfo{year}{[n.\,d.]}\natexlab{}.
+  \bibinfo{year}{2026}\natexlab{}.
 \newblock \bibinfo{title}{min2phase: An Implementation of {Kociemba's}
   Two-Phase Algorithm}.
 \newblock \bibinfo{howpublished}{\url{https://github.com/cs0x7f/min2phase}}.
@@ -177,15 +177,71 @@
 \showDOI{\tempurl}
 
 
+\bibitem[Ellenberg(2011)]%
+        {ellenberg2011diameter}
+\bibfield{author}{\bibinfo{person}{Jordan Ellenberg}.}
+  \bibinfo{year}{2011}\natexlab{}.
+\newblock \bibinfo{title}{Should You Be Surprised by the Diameter of the
+  $n\times n\times n$ {Rubik's} Group?}
+\newblock \bibinfo{howpublished}{Blog post, Quomodocumque,
+  \url{https://quomodocumque.wordpress.com/2011/07/17/should-you-be-surprised-by-the-diameter-of-the-nxnxn-rubiks-group/}}.
+\newblock
+
+
 \bibitem[Gaurav et~al\mbox{.}(2026)]%
         {rubikrepo}
 \bibfield{author}{\bibinfo{person}{Gaurav}, \bibinfo{person}{Shree},
   \bibinfo{person}{Sunaina}, \bibinfo{person}{Kashvi},
   \bibinfo{person}{Shaurya}, {and} \bibinfo{person}{Sharanya}.}
   \bibinfo{year}{2026}\natexlab{}.
-\newblock \bibinfo{title}{{Rubik}: Six Solvers for {N$\times$N$\times$1} and
+\newblock \bibinfo{title}{{Rubik}: Nine Solvers for {N$\times$N$\times$1} and
   {N$\times$N$\times$N} {Rubik's} Puzzles on One Engine}.
 \newblock \bibinfo{howpublished}{\url{https://github.com/gauravrai1704/Rubik}}.
+\newblock
+
+
+\bibitem[Gomes and Selman(2001)]%
+        {gomes2001portfolios}
+\bibfield{author}{\bibinfo{person}{Carla~P. Gomes} {and} \bibinfo{person}{Bart
+  Selman}.} \bibinfo{year}{2001}\natexlab{}.
+\newblock \showarticletitle{Algorithm Portfolios}.
+\newblock \bibinfo{journal}{\emph{Artificial Intelligence}}
+  \bibinfo{volume}{126}, \bibinfo{number}{1--2} (\bibinfo{year}{2001}),
+  \bibinfo{pages}{43--62}.
+\newblock
+
+
+\bibitem[Gomes et~al\mbox{.}(1998)]%
+        {gomes1998boosting}
+\bibfield{author}{\bibinfo{person}{Carla~P. Gomes}, \bibinfo{person}{Bart
+  Selman}, {and} \bibinfo{person}{Henry Kautz}.}
+  \bibinfo{year}{1998}\natexlab{}.
+\newblock \showarticletitle{Boosting Combinatorial Search Through
+  Randomization}. In \bibinfo{booktitle}{\emph{Proceedings of the Fifteenth
+  National Conference on Artificial Intelligence (AAAI-98)}}.
+  \bibinfo{pages}{431--437}.
+\newblock
+
+
+\bibitem[Huberman et~al\mbox{.}(1997)]%
+        {huberman1997portfolio}
+\bibfield{author}{\bibinfo{person}{Bernardo~A. Huberman},
+  \bibinfo{person}{Rajan~M. Lukose}, {and} \bibinfo{person}{Tad Hogg}.}
+  \bibinfo{year}{1997}\natexlab{}.
+\newblock \showarticletitle{An Economics Approach to Hard Computational
+  Problems}.
+\newblock \bibinfo{journal}{\emph{Science}} \bibinfo{volume}{275},
+  \bibinfo{number}{5296} (\bibinfo{year}{1997}), \bibinfo{pages}{51--54}.
+\newblock
+
+
+\bibitem[Joyner(2008)]%
+        {joyner2008adventures}
+\bibfield{author}{\bibinfo{person}{David Joyner}.}
+  \bibinfo{year}{2008}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{Adventures in Group Theory: {Rubik's} Cube,
+  {Merlin's} Machine, and Other Mathematical Toys} (\bibinfo{edition}{2} ed.)}.
+\newblock \bibinfo{publisher}{Johns Hopkins University Press}.
 \newblock
 
 
@@ -195,6 +251,17 @@
 \newblock \bibinfo{title}{Santa 2023 -- The Polytope Permutation Puzzle}.
 \newblock
   \bibinfo{howpublished}{\url{https://www.kaggle.com/competitions/santa-2023}}.
+\newblock
+
+
+\bibitem[Kirkpatrick et~al\mbox{.}(1983)]%
+        {kirkpatrick1983annealing}
+\bibfield{author}{\bibinfo{person}{Scott Kirkpatrick},
+  \bibinfo{person}{C.~Daniel Gelatt}, {and} \bibinfo{person}{Mario~P. Vecchi}.}
+  \bibinfo{year}{1983}\natexlab{}.
+\newblock \showarticletitle{Optimization by Simulated Annealing}.
+\newblock \bibinfo{journal}{\emph{Science}} \bibinfo{volume}{220},
+  \bibinfo{number}{4598} (\bibinfo{year}{1983}), \bibinfo{pages}{671--680}.
 \newblock
 
 
@@ -209,10 +276,22 @@
 \newblock
 
 
-\bibitem[Kociemba({[n.\,d.]})]%
+\bibitem[Kociemba(2026a)]%
+        {kociemba2qtm}
+\bibfield{author}{\bibinfo{person}{Herbert Kociemba}.}
+  \bibinfo{year}{2026}\natexlab{a}.
+\newblock \bibinfo{title}{Cube Explorer and Optimal Solvers for the {Rubik's}
+  Cube}.
+\newblock \bibinfo{howpublished}{\url{http://kociemba.org/download.htm}}.
+\newblock
+\newblock
+\shownote{Accessed November 2026}.
+
+
+\bibitem[Kociemba(2026b)]%
         {kociemba2phase}
 \bibfield{author}{\bibinfo{person}{Herbert Kociemba}.}
-  \bibinfo{year}{[n.\,d.]}\natexlab{}.
+  \bibinfo{year}{2026}\natexlab{b}.
 \newblock \bibinfo{title}{The Two-Phase Algorithm}.
 \newblock \bibinfo{howpublished}{\url{https://kociemba.org/cube.htm}}.
 \newblock
@@ -242,6 +321,16 @@
 \newblock
 
 
+\bibitem[Kunkle and Cooperman(2007)]%
+        {kunkle2007twentysix}
+\bibfield{author}{\bibinfo{person}{Daniel Kunkle} {and} \bibinfo{person}{Gene
+  Cooperman}.} \bibinfo{year}{2007}\natexlab{}.
+\newblock \showarticletitle{Twenty-Six Moves Suffice for {Rubik's} Cube}. In
+  \bibinfo{booktitle}{\emph{Proceedings of the 2007 International Symposium on
+  Symbolic and Algebraic Computation (ISSAC)}}. \bibinfo{pages}{235--242}.
+\newblock
+
+
 \bibitem[Lee et~al\mbox{.}(2019)]%
         {lee2019settransformer}
 \bibfield{author}{\bibinfo{person}{Juho Lee}, \bibinfo{person}{Yoonho Lee},
@@ -252,6 +341,16 @@
   Permutation-Invariant Neural Networks}. In
   \bibinfo{booktitle}{\emph{Proceedings of the 36th International Conference on
   Machine Learning (ICML)}}.
+\newblock
+
+
+\bibitem[Lowerre(1976)]%
+        {lowerre1976harpy}
+\bibfield{author}{\bibinfo{person}{Bruce~T. Lowerre}.}
+  \bibinfo{year}{1976}\natexlab{}.
+\newblock \emph{\bibinfo{title}{The {HARPY} Speech Recognition System}}.
+\newblock \bibinfo{thesistype}{Ph.\,D. Dissertation}. \bibinfo{school}{Carnegie
+  Mellon University}.
 \newblock
 
 
@@ -273,6 +372,27 @@
 \showeprint[arxiv]{1910.07113}
 
 
+\bibitem[Rokicki(2026)]%
+        {rokicki2018nxopt}
+\bibfield{author}{\bibinfo{person}{Tomas Rokicki}.}
+  \bibinfo{year}{2026}\natexlab{}.
+\newblock \bibinfo{title}{cube20src: {nxopt}, an Optimal Solver for the
+  {Rubik's} Cube in the Half- and Quarter-Turn Metrics}.
+\newblock \bibinfo{howpublished}{\url{https://github.com/rokicki/cube20src}}.
+\newblock
+\newblock
+\shownote{GPL-3.0; accessed November 2026}.
+
+
+\bibitem[Rokicki and Davidson(2014)]%
+        {rokicki2014qtm}
+\bibfield{author}{\bibinfo{person}{Tomas Rokicki} {and} \bibinfo{person}{Morley
+  Davidson}.} \bibinfo{year}{2014}\natexlab{}.
+\newblock \bibinfo{title}{God's Number is 26 in the Quarter-Turn Metric}.
+\newblock \bibinfo{howpublished}{\url{https://www.cube20.org/qtm/}}.
+\newblock
+
+
 \bibitem[Rokicki et~al\mbox{.}(2014)]%
         {rokicki2014diameter}
 \bibfield{author}{\bibinfo{person}{Tomas Rokicki}, \bibinfo{person}{Herbert
@@ -286,6 +406,28 @@
 \urldef\tempurl%
 \url{https://doi.org/10.1137/14097375X}
 \showDOI{\tempurl}
+
+
+\bibitem[Shaw(1998)]%
+        {shaw1998lns}
+\bibfield{author}{\bibinfo{person}{Paul Shaw}.}
+  \bibinfo{year}{1998}\natexlab{}.
+\newblock \showarticletitle{Using Constraint Programming and Local Search
+  Methods to Solve Vehicle Routing Problems}. In
+  \bibinfo{booktitle}{\emph{Principles and Practice of Constraint Programming
+  (CP 98)}} \emph{(\bibinfo{series}{Lecture Notes in Computer Science},
+  Vol.~\bibinfo{volume}{1520})}. \bibinfo{publisher}{Springer},
+  \bibinfo{pages}{417--431}.
+\newblock
+
+
+\bibitem[Singmaster(1981)]%
+        {singmaster1981notes}
+\bibfield{author}{\bibinfo{person}{David Singmaster}.}
+  \bibinfo{year}{1981}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{Notes on {Rubik's} Magic Cube}}.
+\newblock \bibinfo{publisher}{Enslow Publishers}.
+\newblock
 
 
 \bibitem[Takano(2023)]%
@@ -325,10 +467,10 @@
 \newblock
 
 
-\bibitem[Walton({[n.\,d.]})]%
+\bibitem[Walton(2026)]%
         {walton2017nxnxn}
 \bibfield{author}{\bibinfo{person}{Daniel Walton}.}
-  \bibinfo{year}{[n.\,d.]}\natexlab{}.
+  \bibinfo{year}{2026}\natexlab{}.
 \newblock \bibinfo{title}{rubiks-cube-{NxNxN}-solver}.
 \newblock
   \bibinfo{howpublished}{\url{https://github.com/dwalton76/rubiks-cube-NxNxN-solver}}.

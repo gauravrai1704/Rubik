@@ -1,0 +1,81 @@
+%% =====================================================================
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{The cube group and its diameter.}
+The \Cu{3} group and its generalisations are classical objects of group theory~\cite{singmaster1981notes,joyner2008adventures}.
+Upper bounds on the \Cu{3}'s God's number fell from Thistlethwaite's 52 face turns to 26 by
+Kunkle and Cooperman's disk-based search~\cite{kunkle2007twentysix}, and Rokicki, Kociemba, Davidson and
+Dethridge settled it at 20 face turns by solving all $2.2\cdot10^9$ cosets of a subgroup on donated
+computer time~\cite{rokicki2014diameter}; in the quarter-turn metric it is 26~\cite{rokicki2014qtm}. For larger
+cubes the diameter is unknown. Demaine et al.~\cite{demaine2011algorithms} prove that it is $\Theta(N^2/\log N)$
+for both the \Cu{N} and the \Sq{N}: the lower bound is a counting argument (there are $e^{\Theta(N^2)}$ states
+but only $\Theta(N)$ moves, so some state needs $\Omega(N^2/\log N)$ of them), and the matching upper bound
+solves $\Theta(\log N)$ clusters with each shared move sequence. Ellenberg~\cite{ellenberg2011diameter}
+explains why the counting bound is the natural guess, and the CayleyPy authors compute growth functions of
+many Cayley graphs to conjecture diameters~\cite{chervov2025growth}. Demaine, Eisenstat and Rudoy show that
+deciding whether a \Cu{N} state can be solved in $k$ moves is NP-complete~\cite{demaine2018npcomplete}. We use
+the counting argument quantitatively (\S\ref{sec:bound}): with exact state counts and the exact growth of
+canonical quarter-turn words it gives a concrete bound for every $N$ that we can put next to every method.
+
+\paragraph{Optimal and near-optimal \Cu{3} solvers.}
+Thistlethwaite's algorithm and Kociemba's two-phase algorithm~\cite{kociemba2phase} solve the \Cu{3} by
+descending through subgroups; two-phase returns about 20 face turns in milliseconds, and min2phase is a fast
+engineered implementation~\cite{chen2phase}. Korf found the first optimal solutions of random states with
+IDA* and pattern databases~\cite{korf1997optimal}, building on Culberson and Schaeffer's pattern
+databases~\cite{culberson1998pattern}. Rokicki's \texttt{nxopt}~\cite{rokicki2018nxopt} refines this with coset
+pruning tables of up to terabytes, 16-way symmetry and inverse lookups, in the half-turn and the quarter-turn
+metric; Kociemba's Cube Explorer also contains a quarter-turn optimal solver~\cite{kociemba2qtm}. \Mone is our
+reproduction of Korf's solver, and \Mseven uses \texttt{nxopt} for the 3$\times$3$\times$3 stage of odd cubes.
+
+\paragraph{Large-cube solvers.}
+Human and computer solvers for big cubes use \emph{reduction}: solve the centers, pair the edges, and finish
+as a \Cu{3}~\cite{walton2017nxnxn}. Korf's macro-operators~\cite{korf1985macro} formalise the move sequences
+that change one part of the state and restore the rest; commutators $[A,B]=ABA'B'$ are the standard way to
+build them, and conjugates $sCs'$ move their effect anywhere. Demaine et al.'s parallel algorithm batches
+clusters that are in the \emph{same} configuration so that one sequence of slice moves solves all of them;
+at practical sizes a center cluster has about $3\cdot10^{15}$ configurations, so exact matches are rare, and
+\Mthree and \FiveC batch 3-cycles instead. The dwalton76 solver~\cite{walton2017nxnxn} is a mature open
+reduction solver with large lookup tables for $N\le7$ and a general path above; we run it as a baseline.
+
+\paragraph{Kaggle Santa 2023 and KMCoders.}
+The Santa 2023 competition~\cite{kaggle2023santa} asked for short solutions of 398 permutation puzzles: cubes
+from \Cu{2} to \Cu{33}, ``wreaths'' and ``globes'', each given as a start state, a goal state and a set of
+allowed moves, scored by the total number of moves (\S\ref{sec:data}). KMCoders published their solution,
+their final submission and their Rust code~\cite{kmcoders2024santa}. For cubes they solve the special parts
+(corners, and for odd $N$ the central \Cu{3}) optimally, make every remaining cluster an even permutation and
+roughly align it with simulated annealing over elementary moves~\cite{kirkpatrick1983annealing}, then insert
+short commutators and finally 3-cycles at \emph{arbitrary} positions of the move sequence, choosing time and
+sequence greedily or by beam search; their code also applies bulk commutators of slice sets chosen by
+annealing. Their reported lengths are the best of many runs. We reproduce the pipeline from the write-up
+(\Msix), run their program unchanged as a baseline, and build \Mseven around it.
+
+\paragraph{Learned solvers.}
+DeepCubeA~\cite{agostinelli2019deepcubea} learns a cost-to-go function by approximate value iteration and
+searches with batch weighted A*. EfficientCube~\cite{takano2023selfsupervision} trains directly on random
+scrambles from the goal. Q* search~\cite{agostinelli2024qstar} scores all children of a node in one network
+pass and handles large action spaces. CayleyPy~\cite{chervov2025cayleypy} trains a residual MLP to predict the
+length of a random walk from the solved state and searches with very wide beams; it reports over 98\%
+optimal \Cu{3} solutions and the first learned \Cu{4} and \Cu{5} solvers. All of these models are trained per
+puzzle size on the full sticker array. \Mfour is our reproduction of CayleyPy; \FiveA and \FiveB instead
+decompose the puzzle into clusters whose networks are shared by all sizes.
+
+\paragraph{Search techniques we build on.}
+Beam search~\cite{lowerre1976harpy} keeps the $W$ best nodes per depth; \Mfour, \FiveA and \FiveB use it, as
+does KMCoders' final stage. Simulated annealing~\cite{kirkpatrick1983annealing} is KMCoders' second stage and
+\Msix's. Large-neighbourhood search~\cite{shaw1998lns}, which destroys and rebuilds part of a solution, is
+what we tried, without success, on top of KMCoders' greedy stage (\S\ref{sec:m7}). \Mseven belongs to the
+line of work on randomisation and portfolios: run times and solution qualities of search algorithms are
+heavy-tailed over random seeds, so restarts and portfolios of independent runs pay off~\cite{gomes1998boosting,
+huberman1997portfolio,gomes2001portfolios}. The cube's symmetries are usually used to \emph{reduce} search,
+by storing one representative per symmetry class in pattern databases and coset tables~\cite{rokicki2014diameter,
+rokicki2018nxopt}; \Mseven uses them the other way round, as a source of diverse but equivalent inputs to a
+solver whose own randomness is fixed.
+
+\paragraph{Size generalisation and other uses of the cube.}
+Networks that read a problem as a set or sequence of parts, such as pointer
+networks~\cite{vinyals2015pointer} and set transformers~\cite{lee2019settransformer}, can be applied to larger
+instances than they were trained on; \FiveA applies this idea to cubie clusters. The cube also serves as a
+benchmark for robotic manipulation~\cite{openai2019dactyl} and for spatial reasoning in (multimodal) language
+models~\cite{anand2025cubebench,gao2025cubebench}; those works use small cubes and do not target solution
+length at scale.

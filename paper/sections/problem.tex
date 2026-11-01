@@ -1,0 +1,109 @@
+%% =====================================================================
+\section{Problem, Data and Metrics}
+\label{sec:problem}
+
+\paragraph{Puzzles.}
+An \Sq{N} Rubik's Square is an $N\times N$ grid of cubies with a top and a bottom colour, plus side stickers on
+the border. Its $2N$ moves are 180$^\circ$ flips of one row or one column; each move is its own inverse, and
+flips of two rows (or two columns) commute. An \Cu{N} Rubik's Cube has $6N^2$ stickers and $3N$ slices; a
+quarter, half or three-quarter turn of one slice is one move in the half-turn metric, giving $9N$ moves. Given a
+reachable state, the task is to return a short move sequence that solves it. On our random benchmark a state is
+\emph{solved} when every face shows one colour, in any reachable orientation (24 for the cube, 4 for the Square);
+on Santa 2023 the goal is one exact state (below).
+
+\paragraph{Clusters.}
+A cubie can only ever reach the positions in its own cluster, and moves never mix clusters. Table~\ref{tab:clusters}
+lists the cluster types and how many of each an $N$ has; our engine finds them automatically (\S\ref{sec:engine}).
+A \Cu{20} has 2,400 stickers, 9 wing clusters and 81 center clusters, and every one must be solved.
+
+\begin{table}[t]
+\caption{Cubie cluster types. Wings combine two sticker orbits of one layer. Counts are for one
+$N$; $k=\lfloor N/2\rfloor-1$.}
+\label{tab:clusters}
+\small
+\begin{tabular}{@{}llrl@{}}
+\toprule
+Puzzle & Cluster type & Stickers & Count \\
+\midrule
+Cube & corners & 24 & 1 \\
+     & middle edges & 24 & 1 if $N$ odd \\
+     & wing edges & 48 & $k$ \\
+     & centers ($+$, $\times$, oblique) & 24 & $((N-2)^2-[N\text{ odd}])/4$ \\
+     & fixed centers & 6 & 1 if $N$ odd \\
+\midrule
+Square & corner & 16 & 1 \\
+       & edge & 12 & $2k$ \\
+       & interior & 8 & $k^2$ \\
+       & edge-cross, cross, center & 6, 4, 2 & odd $N$ only \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Metrics.}
+We report solution lengths after canonicalisation (merging commuting same-axis moves, \S\ref{sec:engine}) in three
+metrics: the \emph{half-turn metric} (HTM), where a quarter, half or three-quarter turn of one slice counts 1; the
+\emph{quarter-turn metric} (QTM), where a half turn counts 2; and the \emph{slice-turn metric} (STM), where a block
+of adjacent layers turned together counts 1. On the Square all moves are flips, so HTM\,=\,QTM. The Santa 2023 score
+of a cube solution is exactly its QTM: every allowed move is a quarter turn of one slice and costs 1. Random-state
+results are in HTM, Santa results in QTM. To compare sizes we divide lengths by $N^2/\ln N$, the growth rate of
+the diameter, or by the counting bound of \S\ref{sec:bound}.
+
+\subsection{Data}
+\label{sec:data}
+
+\paragraph{Random states (our benchmark).}
+A random state is the end of a long random canonical walk from the solved state (at least $25\times$ the number of
+moves and at least 400 moves), which approximates a uniform random reachable state. Every instance is regenerated
+from a seed and checked by the solvability checker, and every method sees the same instances. The main comparison
+uses 10 Squares per size for $N\le12$, 5 for $13\le N\le20$, 2 cubes per size for $N\le10$ and one each at $N=15$
+and $20$; the statistics of \S\ref{sec:ci} use 20 states per size for cubes $N=3$--10 and every Square size.
+
+\paragraph{Kaggle Santa 2023 (external benchmark).}
+\emph{Santa 2023 -- The Polytope Permutation Puzzle}~\cite{kaggle2023santa} was a Kaggle optimisation competition
+(December 2023 to January 2024). Each of its 398 puzzles is a start state, a goal state and a list of allowed moves
+given as sticker permutations; a submission lists one move sequence per puzzle, and the score is the total number of
+moves, so every quarter turn counts 1. The puzzles are cubes \Cu{2} to \Cu{10}, \Cu{19} and \Cu{33}, ``wreaths'' and
+``globes''. The goal is one exact state: the cube must end in the given orientation, not any rotation of it. Some
+cube puzzles have other goal patterns (checkerboard faces, or every sticker its own label), and some allow a number of
+wrong stickers (``wildcards''). We use the \SantaTotal{} cube puzzles whose goal has one colour per face and no
+wildcards; Table~\ref{tab:santa} gives their number per size. Our adapter derives the map between Santa's sticker
+order and the engine from the move permutations themselves (each Santa move must equal exactly one engine move) and
+checks it by replaying KMCoders' published solutions, which all reach the exact goal in our engine. The puzzle files
+are downloaded on first use and not redistributed.
+
+\subsection{How far from optimal? A counting lower bound}
+\label{sec:bound}
+
+Every state at distance $d$ is the end point of at least one \emph{canonical} move word of length $d$, so if $c(d)$
+counts such words, the radius $L$ around the goal satisfies $\sum_{d\le L}c(d)\ge|G|$, with $|G|$ the number of
+reachable states. For the cube in QTM, a canonical word is a sequence of blocks; a block turns a non-empty set of
+layers of one axis, each by $+1$, $-1$ or $2$ quarter turns, and consecutive blocks use different axes. A block's
+cost generating function is $f(x)=(1+x)^{2N}-1$ and the words have $G(x)=1+3f/(1-2f)$, so $c(d)$ grows like $b^d$ with
+$b=1/x^\ast$, $2f(x^\ast)=1$, i.e.
+\begin{equation}
+b=\Bigl(\bigl(\tfrac32\bigr)^{1/(2N)}-1\Bigr)^{-1},\qquad L\;\ge\;\frac{\ln|G|}{\ln b}-O(1).
+\label{eq:bound}
+\end{equation}
+We count $|G|$ as colour states cluster by cluster: $8!\,3^7$ for the corners, $12!\,2^{11}$ for the middle edges,
+$24!$ for each wing cluster and $24!/(4!)^6$ for each non-fixed center cluster (same-coloured center pieces are
+indistinguishable); parity couplings change $\log_2|G|$ by about one bit per cluster and are ignored. An exact count of
+words agrees with Eq.~\eqref{eq:bound} to within one move (unit tests). Because words are over-counted (different
+canonical words may reach the same state), the bound stays valid. For the Square, row flips commute with row flips and
+column flips with column flips, so canonical words alternate between non-empty sets of rows and of columns, $f(x)=(1+x)^N-1$
+and $b=1/(2^{1/N}-1)$. Table~\ref{tab:cal} calibrates the bound where the truth is known: on the Squares whose exact
+God's numbers we compute by breadth-first search, the true worst case is 1.5--1.7$\times$ the bound. Typical optimal
+distances lie between the bound and the worst case. In this sense the bound turns ``how good is a solution'' into a
+number for every size, including sizes where no optimal solver exists.
+
+\begin{table}[t]
+\caption{Calibrating the counting bound on the Rubik's Square: state counts and exact God's numbers (colour goal, any
+of the 4 solved orientations) from breadth-first search, and the counting bound for $|G|/4$ states.}
+\label{tab:cal}
+\small
+\begin{tabular}{@{}rrrrr@{}}
+\toprule
+$N$ & states & bound & God's number & ratio \\
+\midrule
+\input{generated/tab_cal_rows.tex}
+\end{tabular}
+\end{table}

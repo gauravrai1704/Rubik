@@ -1,0 +1,66 @@
+%% =====================================================================
+\section{Engine and Benchmark}
+\label{sec:engine}
+
+All methods run on one engine~\cite{rubikrepo}. Everything below is generic over cuboid dimensions
+$(d_0,d_1,d_2)$, so the cube $(N,N,N)$ and the Square $(N,N,1)$ come from the same code.
+
+\paragraph{Moves from geometry.}
+Each sticker stores a doubled, centred cubie coordinate and an outward normal. A move rotates every sticker of one
+slab by an integer rotation matrix; looking up the rotated (position, normal) pair gives a permutation $\pi$, and
+applying the move is the gather $s\leftarrow s[\pi]$, $O(6N^2)$ time. A slab whose cross-section is not square, such
+as one row of the Square, only gets 180$^\circ$ turns, and an axis of length 1 gets none. Unit tests check that every
+move has order 4 (or 2) and that each move followed by its inverse is the identity, for every tested $N$.
+
+\paragraph{Canonical form.}
+Moves on the same axis commute. We canonicalise a sequence by merging each same-axis run per layer and sorting by
+layer, and we use the same order to prune search: after a move on axis $a$, layer $\ell$, no move on axis $a$ with
+layer $\le\ell$ is allowed. This removes immediate repeats and every redundant ordering of commuting moves, and it is
+the word model of the counting bound (\S\ref{sec:bound}).
+
+\paragraph{Clusters with $N$-invariant signatures.}
+Union-find over all move permutations gives the sticker orbits; orbits sharing cubies are merged into cubie clusters.
+Inside a cluster, stickers are sorted by face and by the signs and relative magnitudes of their in-face coordinates.
+This order does not depend on $N$, so the moves acting on a cluster induce the same local permutations at every $N$.
+We hash the local generator set and the solved pattern into a \emph{signature}; tests confirm that, for example, every
+$\times$-center cluster of the \Cu{5}, \Cu{7} and \Cu{9} has the same signature. A model trained for one cluster type
+therefore applies at any size.
+
+\paragraph{Projections.}
+Restricting attention to a subset of stickers gives a \emph{projected puzzle}. When it is small we enumerate it by
+breadth-first search from the solved pattern; the resulting table gives exact distances for that subset and doubles
+as an exact membership test.
+
+\paragraph{Solvability checker.}
+A state is accepted only if it passes: global and per-cluster colour counts; membership in the exact projection table
+for every cluster small enough to enumerate (all Square clusters); for cubes, valid corner, middle-edge and wing pieces,
+corner twist $\equiv 0 \pmod 3$ and, for odd $N$ after normalising orientation by the fixed centers, even middle-edge
+flip and equal corner and middle-edge permutation parity; and for the Square, joint consistency of each cross cluster
+with the border clusters it shares moves with. These are necessary conditions. Property tests confirm that the checker
+accepts scrambled states and rejects a single corner twist, a single middle-edge flip, a swap of two corners on odd
+cubes and wrong colour counts.
+
+\paragraph{Harness.}
+Every solver implements one interface and returns engine moves. The harness re-applies the moves, decides
+\emph{solved} itself, and writes one row per instance with lengths in all three metrics, wall time, nodes, memory,
+seed, hardware and git commit. A crash or time-out counts as a failure and stays in the denominator. External programs
+(KMCoders' solver, dwalton76, \texttt{nxopt}) run as subprocesses behind the same interface: their answers are parsed
+into engine moves (wide turns expanded into single-slice turns) and re-verified like any other method's.
+
+\paragraph{Shared beam search.}
+Methods 4, 5A and 5B share one beam search. Per step it expands the beam in chunks, scores children with the
+heuristic, and keeps the $W$ best after removing duplicates by a random 64-bit linear hash (also across the last three
+steps). Only (score, hash, parent, action) is stored per child; the next beam is rebuilt from parents. Beam states are
+packed at 3 bits per sticker and can live on the device, in pinned host memory or on disk. The search accepts
+\emph{macro actions}: fixed move sequences applied as one step and expanded into ordinary moves in the output. A
+heuristic that can score all children of a parent in one pass is used that way, as in Q* search~\cite{agostinelli2024qstar}.
+One step of a width-$W$ search with $A$ actions costs $O(WA)$ heuristic evaluations and $O(WA\cdot N^2)$ sticker work.
+
+\paragraph{Pure 3-cycles for any cluster.}
+Methods 2, 3 and 5C need, for every center and wing cluster of every $N$, move sequences that 3-cycle three of its
+pieces and touch nothing else. We find them automatically. For centers we enumerate commutators $[A, B\,C\,B']$ with
+$A$ and $C$ inner-slice quarter turns on one axis and $B$ an outer face turn; for wings, $[X, Y\,Z\,Y']$ with $X$ an
+inner slice and $Y, Z$ outer faces. A candidate is kept if, applied to the sticker permutation, it moves exactly three
+cubies of one cluster. A conjugate $s\,c\,s'$ of a pure 3-cycle $c$ is again pure, so breadth-first search over setup
+moves $s$ (up to four) extends a few base commutators to every one of the $24\cdot23\cdot22/3=4{,}048$ 3-cycles of a
+cluster, each with a short move sequence.
