@@ -1,0 +1,18 @@
+square8: 1.27M params, 16 moves, kmax 81, 999945 examples/epoch, 256 epochs
+epoch    16 mse 210.606 rmse 14.894 r 0.772 26s
+epoch    32 mse 201.225 rmse 14.582 r 0.783 51s
+epoch    48 mse 190.333 rmse 14.397 r 0.789 77s
+epoch    64 mse 182.809 rmse 13.954 r 0.803 102s
+epoch    80 mse 180.836 rmse 13.788 r 0.808 127s
+epoch    96 mse 179.859 rmse 14.081 r 0.800 153s
+epoch   112 mse 178.643 rmse 13.574 r 0.814 178s
+epoch   128 mse 178.609 rmse 13.348 r 0.821 204s
+epoch   144 mse 178.959 rmse 13.899 r 0.804 229s
+epoch   160 mse 176.018 rmse 13.618 r 0.813 254s
+epoch   176 mse 177.074 rmse 13.215 r 0.825 280s
+epoch   192 mse 175.572 rmse 13.603 r 0.814 305s
+epoch   208 mse 176.654 rmse 13.250 r 0.824 330s
+epoch   224 mse 175.358 rmse 13.399 r 0.820 356s
+epoch   240 mse 177.458 rmse 13.343 r 0.822 381s
+epoch   256 mse 175.854 rmse 13.493 r 0.817 406s
+saved /content/drive/MyDrive/rubik_gpu/m4/square8.large.pt

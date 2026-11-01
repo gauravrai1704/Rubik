@@ -1,0 +1,18 @@
+square6: 1.11M params, 12 moves, kmax 54, 999972 examples/epoch, 256 epochs
+epoch    16 mse 104.893 rmse 10.453 r 0.742 24s
+epoch    32 mse 99.440 rmse 10.042 r 0.765 47s
+epoch    48 mse 96.918 rmse 9.611 r 0.787 71s
+epoch    64 mse 96.311 rmse 10.089 r 0.762 94s
+epoch    80 mse 95.654 rmse 9.914 r 0.772 118s
+epoch    96 mse 95.811 rmse 9.696 r 0.783 141s
+epoch   112 mse 95.624 rmse 9.744 r 0.781 164s
+epoch   128 mse 95.123 rmse 10.163 r 0.759 188s
+epoch   144 mse 95.320 rmse 9.784 r 0.779 211s
+epoch   160 mse 94.535 rmse 9.996 r 0.768 235s
+epoch   176 mse 94.795 rmse 9.590 r 0.788 258s
+epoch   192 mse 94.868 rmse 9.611 r 0.787 282s
+epoch   208 mse 94.174 rmse 9.815 r 0.777 305s
+epoch   224 mse 95.196 rmse 9.555 r 0.790 328s
+epoch   240 mse 94.441 rmse 9.767 r 0.780 352s
+epoch   256 mse 95.083 rmse 9.634 r 0.786 375s
+saved /content/drive/MyDrive/rubik_gpu/m4/square6.large.pt
