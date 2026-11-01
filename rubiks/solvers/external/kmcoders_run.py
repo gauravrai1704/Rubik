@@ -97,8 +97,8 @@ class KMCodersRun(Solver):
         self.exe = self.root / "target" / "release" / binary
         if not self.exe.exists():
             raise FileNotFoundError("set KMCODERS_DIR to a checkout with solution/target/release/" + binary)
-        if stage1 not in ("kociemba", "optimal"):
-            raise ValueError("stage1: 'kociemba' or 'optimal'")
+        if stage1 not in ("kociemba", "nxopt", "optimal"):
+            raise ValueError("stage1: 'kociemba', 'nxopt' (optimal QTM, Rokicki's solver) or 'optimal' (Method 1)")
         self.binary, self.stage1 = binary, stage1
         self.env = dict(os.environ)
         if seed:
@@ -118,10 +118,17 @@ class KMCodersRun(Solver):
         P, N = self.puzzle, self.puzzle.N
         pre = exact_orientation_moves(P, state)
         s = P.apply(np.asarray(state), pre)
-        if self.stage1 == "kociemba":
+        if self.stage1 in ("kociemba", "nxopt"):
             from ..three_stage import solve_3x3_stage
 
-            big = pre + solve_3x3_stage(P, s)
+            koc = solve_3x3_stage(P, s)
+            if self.stage1 == "nxopt":  # Kociemba's answer only defines the position; nxopt solves it optimally
+                from . import nxopt
+
+                small = [Move(m.axis, 0 if m.layer == 0 else 2, m.turn) for m in koc]
+                koc = [Move(m.axis, 0 if m.layer == 0 else N - 1, m.turn) for m in nxopt.optimal_from_solution(
+                    small, self.budget.wall_time_s)]
+            big = pre + koc
         else:
             from ..m1_idastar.cube3 import ida_star
 
