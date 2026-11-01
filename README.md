@@ -95,7 +95,7 @@ solver, with their beam variant and a shortened stage 2) is the first to reach i
 | Method 7 | **62.7** (3 wins / 4 ties / 3 losses) | **95.3** (3 wins), optimal 3×3×3 stage via `nxopt` (102.0 with Kociemba's) |
 | their program, one run | 77.1 | 114.2 (all 19) |
 
-About 25-45 CPU-minutes per puzzle. For odd N their submission used an optimal 3×3×3 solver; with
+About 17-28 CPU-minutes per 4×4×4 puzzle and 28-46 per 5×5×5 puzzle. For odd N their submission used an optimal 3×3×3 solver; with
 `nxopt` our 3×3×3 stage drops from 34 to 24 QTM on puzzle 210, which is what puts Method 7 ahead at N = 5.
 Small samples so far (10 and 3 puzzles); N ≥ 6 not yet run. How far all of this is
 from optimal: `rubiks/analysis/counting_bound.py` gives a lower bound of 36.8 QTM at N = 4 and 1,855 at
