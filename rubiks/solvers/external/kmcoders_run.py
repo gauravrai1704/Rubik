@@ -151,6 +151,11 @@ class KMCodersRun(Solver):
             r = _run_with_rusage([str(self.exe)], santa_input(self.puzzle, state, pid), self.root, self.env,
                                  self.budget.wall_time_s)
             info["cpu_s"] = r.cpu_s
+            log_dir = os.environ.get("KMCODERS_LOG_DIR")
+            if log_dir:  # keep their progress log (per-iteration length / misplaced stickers) for analysis
+                Path(log_dir).mkdir(parents=True, exist_ok=True)
+                (Path(log_dir) / f"N{self.puzzle.N}_{pid}.log").write_text(r.stderr)
+                info["log"] = f"N{self.puzzle.N}_{pid}.log"
         finally:
             for f in itertools.chain((self.root / "cache").glob(f"*/{pid:04d}.txt"),
                                      (self.root / "cache").glob(f"*/{pid:04d}_*")):
