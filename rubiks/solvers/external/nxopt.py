@@ -43,14 +43,48 @@ def _from_nxopt(text: str) -> list[Move]:
     return parse_notation(note, _P3) if note else []
 
 
+class _Server:
+    """One long-lived nxopt process: its pruning table is loaded once and positions are sent one per line.
+    Thread-safe (calls are serialised; nxopt itself is single-threaded per position)."""
+
+    def __init__(self):
+        import threading
+
+        exe = Path(os.environ["NXOPT"])
+        cwd = Path(os.environ.get("NXOPT_DIR", exe.parent))
+        self.p = subprocess.Popen([str(exe), "-t", "1", "-"], cwd=cwd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                  stderr=subprocess.DEVNULL, text=True, bufsize=1)
+        self.lock = threading.Lock()
+
+    def solve(self, scramble: str) -> list[Move]:
+        with self.lock:
+            self.p.stdin.write(scramble + "\n")
+            self.p.stdin.flush()
+            buf = []
+            while True:
+                line = self.p.stdout.readline()
+                if not line:
+                    raise RuntimeError("nxopt exited: " + "".join(buf[-5:]))
+                buf.append(line)
+                if line.startswith("Solved") or line.startswith("Did not solve"):
+                    m = re.match(r"Solved \d+ in (\d+)", line)
+                    if m and int(m.group(1)) > 0:
+                        buf.append(self.p.stdout.readline())
+                    return parse_output("".join(buf[-2:]))
+
+
+_server: _Server | None = None
+
+
 def optimal_from_solution(moves3: list[Move], timeout: float = 3600.0) -> list[Move]:
     """An optimal QTM solution of the 3x3x3 position that ``moves3`` (face turns) solves."""
+    global _server
     inv = [m.inverse() for m in reversed(moves3)]
-    exe = Path(os.environ["NXOPT"])
-    cwd = Path(os.environ.get("NXOPT_DIR", exe.parent))
-    r = subprocess.run([str(exe), "-t", str(os.cpu_count() or 1), "-"], input=_to_nxopt(inv) + "\n",
-                       cwd=cwd, capture_output=True, text=True, timeout=timeout)
-    return parse_output(r.stdout)
+    if not inv:
+        return []
+    if _server is None or _server.p.poll() is not None:
+        _server = _Server()
+    return _server.solve(_to_nxopt(inv))
 
 
 def parse_output(stdout: str) -> list[Move]:
