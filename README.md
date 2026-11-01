@@ -1,10 +1,11 @@
-# NxN Rubik's — seven solvers, one engine
+# NxN Rubik's — nine solvers, one engine
 
 Solvers for the **N×N×1 Rubik's Square** and the **N×N×N Rubik's Cube** for every
 N from 3 to 20, benchmarked on one shared engine. Methods 1–4 are established techniques
 (the course requirement); Methods 5A and 5B are new learned solvers, and 5C a new schedule for
-Demaine's parallel algorithm that is the best method at large N, aimed at a paper in the
-style of CayleyPy (NeurIPS 2025). The full spec is the technical basis document
+Demaine's parallel algorithm that is the best of our original methods at large N, aimed at a paper in the
+style of CayleyPy (NeurIPS 2025). Methods 6 and 7 take on the strongest public baseline, KMCoders' winning
+Kaggle Santa 2023 solution (see *External baselines* below). The full spec is the technical basis document
 ([docs/technical_basis.pdf](docs/technical_basis.pdf)); section numbers below refer to it.
 
 | # | Method | Owner | Package | Status |
@@ -12,10 +13,12 @@ style of CayleyPy (NeurIPS 2025). The full spec is the technical basis document
 | 1 | IDA* + pattern databases | Shree | `rubiks/solvers/m1_idastar` | implemented; optimal on Squares N ≤ 5 and 3×3×3 scrambles (Korf PDBs, parallel IDA*); Square God's numbers 6 / 10 / 12 for N = 3 / 4 / 5 |
 | 2 | Reduction + Kociemba two-phase | Sunaina | `rubiks/solvers/m2_reduction` | implemented; 100% solved on Square and Cube N = 3–20 |
 | 3 | Demaine parallel cluster algorithm | Kashvi | `rubiks/solvers/m3_demaine` | implemented; 100% solved on Square and Cube N = 3–20 |
-| 4 | CayleyPy reproduction | Shaurya | `rubiks/solvers/m4_cayleypy` | implemented; per-N Square models N = 3–8 (shortest of the learned methods); 3×3×3 needs GPU training |
+| 4 | CayleyPy reproduction | Shaurya | `rubiks/solvers/m4_cayleypy` | implemented; per-N Square models N = 3–8 (shortest of the learned methods; the Colab T4 "large" model is the default at N = 8, 7% shorter); 3×3×3 needs GPU training |
 | 5A | Cluster-token transformer, one model for all N | Sharanya | `rubiks/solvers/m5a_tokens` | implemented; small CPU Square model trained, beats 5B at N ≤ 10 |
 | 5B | Learned search inside reduction stages | Gaurav | `rubiks/solvers/m5b_stages` | implemented; 100% solved on Square N = 3–20 and Cube N = 3–20 (solutions still long) |
 | 5C | **New:** net-gain scheduling of bulk commutators | Gaurav | `rubiks/solvers/m5c_schedule` | implemented; best method on the Cube for N ≥ 5 (20×20×20: 4,925 HTM, −26% vs Method 3) and on the Square for N ≥ 9 |
+| 6 | KMCoders-style insertion method, our implementation | Gaurav | `rubiks/solvers/m6_kmcoders` | implemented; best of our from-scratch methods on Santa 2023 cubes for N ≥ 6 (1.5–1.7× KMCoders' published lengths) |
+| 7 | **New:** symmetry portfolio around KMCoders' own solver | Gaurav | `rubiks/solvers/m7_portfolio` | in progress; best of 8 rotated/mirrored copies is 14% shorter than one run of their program on Santa 4×4×4 (67.9 vs 77.1 QTM), still above their published best-of-many (63.5) |
 | — | Engine, checker, beam search, harness | Gaurav | `rubiks/engine`, `rubiks/search`, `rubiks/bench` | implemented, tested |
 
 Each method's folder has a `README.md` with its spec, what was built, and a done-when checklist. Measured results so far: [docs/STATUS.md](docs/STATUS.md).
@@ -55,6 +58,33 @@ python -m rubiks.bench run  --solver m5b_stages --puzzle square --N 3-12 --datas
 python -m rubiks.bench summary results/m5b_stages/square_random.jsonl
 ```
 
+## External baselines (Kaggle Santa 2023, dwalton76)
+
+| Solver name | What it is | Setup |
+|---|---|---|
+| `santa_kmcoders` | KMCoders' published final Santa 2023 submission, replayed and re-verified | none (data downloaded on first use into `data/santa2023/`, not committed: Kaggle terms) |
+| `kmcoders` | KMCoders' own Rust solver ([wata-orz/santa2023_permutation_puzzle](https://github.com/wata-orz/santa2023_permutation_puzzle)) run once on any cube state | clone it, apply `rubiks/solvers/external/kmcoders_env.patch` (seed and stage-2 length from env vars; defaults unchanged), `cargo build --release` in `solution/`, set `KMCODERS_DIR` |
+| `dwalton76` | [dwalton76's NxNxN solver](https://github.com/dwalton76/rubiks-cube-NxNxN-solver), wide turns expanded to slice turns | build it, set `DWALTON76_DIR` (lookup tables ~8 GB for N ≤ 7) |
+
+```bash
+python -m rubiks.bench make --puzzle cube --N 4-10 --depth santa      # the 187 standard-goal Santa cubes
+python -m rubiks.bench run  --solver kmcoders --puzzle cube --N 4 --dataset santa
+```
+
+Santa 2023 cubes, mean QTM (Santa's move count; lower is better):
+
+| N | KMCoders published | KMCoders' program, one run | dwalton76 | Method 6 | 5C | Method 3 | Method 2 |
+|---|---|---|---|---|---|---|---|
+| 4 | **66.7** | 77.0 | 88.6 | 109.4 | 217.5 | 229.3 | 266.9 |
+| 5 | **97.1** | running | 160.2 | 159.3 | 282.5 | 296.3 | 361.1 |
+| 6 | **161** | running | 324 | 276 | 503 | 534.7 | 696.3 |
+| 7 | **208.8** | running | 539 | 356.2 | 593.8 | 680.8 | 880.2 |
+| 10 | **461.5** | running | — | 743 | 1314.5 | 1597 | 2107.5 |
+| 19 | **1620** | — | — | 2484.7 | 4710.7 | 6300.7 | 8188.7 |
+
+The published column is the best of many competition runs; no method here beats it yet. Method 7 is the
+attempt (`docs/STATUS.md` has the running numbers).
+
 ## Training on a GPU (Google Colab)
 
 [`notebooks/train_gpu_colab.ipynb`](notebooks/train_gpu_colab.ipynb) trains every network that needs a GPU
@@ -74,7 +104,7 @@ rubiks/
                Q*-style child scoring), macro-action sets
   bench/       datasets (JSONL), harness (re-verifies every solution), CLI
   solvers/     base interface + registry, one package per method
-tests/         engine, checker, beam, 5A, 5B, harness, methods 1–4 (xfail until done)
+tests/         engine, checker, beam, every method, harness, Santa 2023 adapter, external baselines
 experiments/   one script per experiment E1–E8 (Section 10.3)
 checkpoints/   trained weights (small ones committed; see checkpoints/README.md)
 scripts/       publish_to_github.sh
