@@ -53,6 +53,36 @@ def santa_input(P: PuzzleSpec, state: np.ndarray, pid: int) -> str:
     return "\n".join(lines) + "\n"
 
 
+class _Run:
+    def __init__(self, stdout, stderr, returncode, cpu_s):
+        self.stdout, self.stderr, self.returncode, self.cpu_s = stdout, stderr, returncode, cpu_s
+
+
+def _run_with_rusage(cmd, stdin_text, cwd, env, timeout) -> _Run:
+    """Run a process and return its own CPU time (user + system, all threads), exact even when several
+    runs share the machine: the child is reaped with ``os.wait4``, which reports that child's usage."""
+    import tempfile
+
+    with tempfile.TemporaryFile("w+") as fi, tempfile.TemporaryFile("w+") as fo, tempfile.TemporaryFile("w+") as fe:
+        fi.write(stdin_text)
+        fi.seek(0)
+        p = subprocess.Popen(cmd, stdin=fi, stdout=fo, stderr=fe, cwd=cwd, env=env, text=True)
+        t_end = time.time() + timeout
+        while True:
+            pid, status, ru = os.wait4(p.pid, os.WNOHANG)
+            if pid:
+                break
+            if time.time() > t_end:
+                p.kill()
+                pid, status, ru = os.wait4(p.pid, 0)
+                break
+            time.sleep(0.05)
+        p.returncode = os.waitstatus_to_exitcode(status)
+        fo.seek(0)
+        fe.seek(0)
+        return _Run(fo.read(), fe.read(), p.returncode, round(ru.ru_utime + ru.ru_stime, 2))
+
+
 @register("kmcoders")
 class KMCodersRun(Solver):
     def __init__(self, puzzle: PuzzleSpec, budget: Budget | None = None, root: str | None = None,
@@ -118,13 +148,9 @@ class KMCodersRun(Solver):
         try:
             if self.puzzle.N % 2 == 1 and self.puzzle.N > 3:
                 info["stage1_qtm"] = self._write_corner_cache(state, pid)
-            import resource
-
-            c0 = resource.getrusage(resource.RUSAGE_CHILDREN)
-            r = subprocess.run([str(self.exe)], input=santa_input(self.puzzle, state, pid), cwd=self.root,
-                               env=self.env, capture_output=True, text=True, timeout=self.budget.wall_time_s)
-            c1 = resource.getrusage(resource.RUSAGE_CHILDREN)
-            info["cpu_s"] = round(c1.ru_utime + c1.ru_stime - c0.ru_utime - c0.ru_stime, 2)
+            r = _run_with_rusage([str(self.exe)], santa_input(self.puzzle, state, pid), self.root, self.env,
+                                 self.budget.wall_time_s)
+            info["cpu_s"] = r.cpu_s
         finally:
             for f in itertools.chain((self.root / "cache").glob(f"*/{pid:04d}.txt"),
                                      (self.root / "cache").glob(f"*/{pid:04d}_*")):
