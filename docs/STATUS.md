@@ -302,6 +302,57 @@ heuristics: on the same CPU, code and instances, solutions were longer at N = 3,
 and 3-20x slower; on the Colab run 2 of 14 cube states failed in wing stages. Kept as an option in
 `checkpoints/m5b_gpu/` (README there); the CPU models stay the default.
 
+## Method 7: symmetry portfolio around KMCoders' own solver — first results
+
+KMCoders' Rust solver (`kmcoders`, run once per state through our harness) gives a different answer for each
+of the 48 rotated / mirrored copies of a scramble (`rubiks/solvers/symmetry.py`), and the spread is wide
+(66-90 QTM on one 4x4x4). Method 7 keeps the shortest. Santa 2023 4x4x4, first 10 standard-goal puzzles, QTM
+(`docs/results/santa/m7_*_N4.jsonl`):
+
+| Puzzle | KMCoders published | M7: 48 copies, beam variant, stage 2 = 1M steps | M7: 8 copies, default program | best of both | their program, one run |
+|---|---|---|---|---|---|
+| 150 | 66 | 66 | 66 | 66 | 76 |
+| 151 | 68 | **60** | 70 | **60** | 90 |
+| 152 | 56 | 60 | 72 | 60 | 84 |
+| 153 | 65 | 67 | 69 | 67 | 73 |
+| 154 | 71 | **65** | 71 | **65** | 75 |
+| 155 | 64 | 66 | 64 | 64 | 76 |
+| 157 | 65 | **63** | 73 | **63** | 85 |
+| 158 | 63 | 63 | 65 | 63 | 65 |
+| 159 | 57 | 63 | 57 | 57 | 75 |
+| 161 | 60 | 62 | 72 | 62 | 72 |
+| **mean** | **63.5** | **63.5** | 67.9 | **62.7** | 77.1 |
+
+Best of both portfolios against the published best-of-many submission: 3 wins, 4 ties, 3 losses, mean 62.7 vs
+63.5 (-1.3%). Cost about 25-30 CPU-minutes per 4x4x4 (48 cheap copies: 1,000-1,700 CPU s). Over all 43 Santa
+4x4x4 puzzles one run of their program averages 77.0 against 66.7 published, so their submission already
+embodies a large best-of-many search. Their stage-2 annealing (20M steps, ~3/4 of a run at N = 4) can be cut to
+1M steps without a measurable loss, and their beam variant (`solve_cube_beam`) beats the greedy one at N = 4.
+Tried and dropped: annealing polish of finished solutions (0 moves saved) and ruin-and-recreate local search
+around their greedy stage 3 (`solve_cube_lns`, no improvement in 21 rounds).
+
+## How far from optimal? Counting lower bound
+
+`rubiks/analysis/counting_bound.py`: log|G| / log b, with |G| the number of colour states (cluster by cluster)
+and b the growth rate of canonical quarter-turn words; an exact word count agrees within 1 move. Santa QTM:
+
+| N | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 19 | 33 |
+|---|---|---|---|---|---|---|---|---|---|
+| counting bound | 36.8 | 54.0 | 80.3 | 104.8 | 137.6 | 168.9 | 208.0 | 673.8 | 1854.8 |
+| KMCoders published | 66.7 | 97.1 | 161.0 | 208.8 | 291.3 | 354.7 | 461.5 | 1620 | 4719 |
+| ratio | 1.81 | 1.80 | 2.00 | 1.99 | 2.12 | 2.10 | 2.22 | 2.40 | 2.54 |
+
+KMCoders' lengths are a near-constant 4.3-4.6 n^2 while the bound is Theta(n^2 / log n), so the ratio grows
+like log n: their final stage fixes O(1) pieces per 3-cycle, although their stage 3 already contains
+Demaine-style bulk commutators (a set of slices against a set, chosen by annealing). Calibration on the Rubik's
+Square, where exact God's numbers are known: bound 4 / 6 / 8 against 6 / 10 / 12 for N = 3 / 4 / 5.
+
+## Method 4 with GPU-trained Square models (Colab T4, "large" preset)
+
+Same 20 states per N, same CPU, W = 4096: identical lengths for N = 3-6, +0.2 HTM at N = 7, -1.5 HTM at N = 8
+(20.3 -> 18.8, 12 states shorter, none longer). The large model is now the default at N = 8 only
+(`checkpoints/m4_gpu/README.md`).
+
 ## Known limitations
 * Random states come from long random walks, not an exact uniform sampler.
 * The checker enforces necessary conditions (property-tested); wing and center rules are
