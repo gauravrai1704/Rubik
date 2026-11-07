@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.10.25)  7 NOV 2026 16:16
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.10.25)  7 NOV 2026 19:21
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1570,11 +1570,11 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: CF70E8C537015B160A652AB4B3FC67B0;6181.
  ) 
 Here is how much of TeX's memory you used:
- 33916 strings out of 476106
- 614268 string characters out of 5793932
+ 33919 strings out of 476106
+ 614343 string characters out of 5793932
  1976975 words of memory out of 5000000
  54082 multiletter control sequences out of 15000+600000
- 807078 words of font info for 570 fonts, out of 8000000 for 9000
+ 807351 words of font info for 572 fonts, out of 8000000 for 9000
  220 hyphenation exceptions out of 8191
  90i,19n,131p,1001b,848s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/inconsolata/Inconsolata-zi4
@@ -1594,7 +1594,7 @@ st/fonts/type1/public/newtx/txexs.pfb></usr/share/texlive/texmf-dist/fonts/type
 1/public/newtx/txmiaX.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/new
 tx/txsym.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/newtx/txsys.pfb>
 
-Output written on main.pdf (16 pages, 751151 bytes).
+Output written on main.pdf (16 pages, 751149 bytes).
 PDF statistics:
  900 PDF objects out of 1000 (max. 8388607)
  769 compressed objects within 8 object streams
