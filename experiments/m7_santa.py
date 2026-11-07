@@ -70,7 +70,8 @@ def main(sizes: list[int]) -> None:
                 ok = bool(np.array_equal(P.apply(ins.state, r.moves), P.solved))
                 q = metrics(r.moves, P)["qtm"] if ok else None
                 parts[tag] = {"qtm": q, "copies": r.info.get("copies"),
-                              "cpu_s": [i.get("cpu_s") for i in r.info.get("copy_info", [])]}
+                              "cpu_s": [i.get("cpu_s") for i in r.info.get("copy_info", [])],
+                              "stage1": [i.get("stage1") for i in r.info.get("copy_info", [])]}
                 if ok and (best is None or q < best[0]):
                     best = (q, r.moves)
             row = {"id": ins.id, "N": N, "solver": "m7_portfolio", "solved": best is not None,
