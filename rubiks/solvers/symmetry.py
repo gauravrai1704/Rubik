@@ -23,12 +23,12 @@ from ..engine.puzzle import Move
 
 @lru_cache(maxsize=16)
 def symmetries(P: PuzzleSpec) -> np.ndarray:
-    """Sticker permutations of the 24 rotations and, for cubes, their 24 mirror images."""
+    """Sticker permutations of the rotations (24 for a cube, 4 for a Square) and their mirror images."""
     S = P.num_stickers
     ident = np.arange(S)
     rots = [r for r in P.rotations if not np.array_equal(r, ident)]
     out = [ident] + rots
-    if P.kind == "cube":
+    if P.kind in ("cube", "square"):  # mirror images: reflect x -> -x (a symmetry of both box shapes)
         look = {(tuple(int(v) for v in p), tuple(int(v) for v in n)): i
                 for i, (p, n) in enumerate(zip(P.sticker_pos, P.sticker_normal))}
         flip = np.array([1 if a else -1 for a in (False, True, True)])

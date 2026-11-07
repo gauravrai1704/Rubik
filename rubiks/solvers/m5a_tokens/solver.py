@@ -61,7 +61,9 @@ class TokenStageHeuristic:
 
 
 def find_checkpoint(kind: str) -> Path:
-    p = DEFAULT_CKPT / f"{kind}.pt"
+    p = DEFAULT_CKPT / f"{kind}.large.pt"  # GPU-trained model (Colab T4) when present, else the CPU one
+    if not p.exists():
+        p = DEFAULT_CKPT / f"{kind}.pt"
     if not p.exists():
         raise FileNotFoundError(
             f"no Method 5A checkpoint at {p}. Train one, e.g.\n"

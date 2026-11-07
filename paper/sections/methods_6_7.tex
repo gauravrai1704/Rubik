@@ -61,13 +61,14 @@ counts the exact minimum number of 3-cycles each cluster still needs and inserts
 $10^5$ sequences for small $N$, and they solve odd cubes' central \Cu{3} optimally.
 
 %% ---------------------------------------------------------------------
-\subsection{Method 7: a symmetry portfolio around KMCoders' solver (new)}
+\subsection{Method 7: a symmetry portfolio around deterministic solvers (new, main method)}
 \label{sec:m7}
 
 \emph{Idea.} A deterministic solver that is far from optimal is not equally far on every input: KMCoders' program, run once
 on the same scramble seen from different sides, returns solutions whose lengths differ by \MsevenSpreadMinFour{}--\MsevenSpreadMaxFour{} quarter turns on one \Cu{4} (Figure~\ref{fig:m7copies}).
 The 48 symmetries of the cube turn one scramble into 48 equivalent inputs, and every answer maps back to a solution of the
-original state of the same length. \Mseven runs the solver on $k$ copies and keeps the shortest.
+original state of the same length. \Mseven runs the solver on $k$ copies and keeps the shortest. The same holds for the Rubik's
+Square, whose 4 rotations and their mirror images give 8 copies; there the inner solvers are our own.
 
 \emph{Symmetric copies.} Let $R$ be a sticker permutation of one of the 24 rotations of the cube, or of one of their 24
 mirror images (rotation composed with the reflection $x\mapsto-x$). Let $\sigma$ be the colour relabelling with
@@ -92,7 +93,11 @@ The harness verifies every mapped-back solution independently. $\square$
   quarters of a \Cu{4} run and did not change lengths measurably at 0.5M, 2M or 20M iterations; and, for odd $N$, an optimal
   quarter-turn central \Cu{3} from \texttt{nxopt} (Kociemba's answer only defines the position; \texttt{nxopt} solves it
   optimally), supplied through their cache file. On Santa puzzle 210 this stage drops from 34 to 24 quarter turns.
-\item \emph{Copies.} The identity, its mirror image, then the other 23 rotations each followed by its mirror image, up to $k$.
+\item \emph{Copies.} The identity, its mirror image, then the other rotations each followed by its mirror image, up to $k$
+  (48 for the cube, 8 for the Square).
+\item \emph{Square.} The inner solvers are the strongest we have at each size, and every copy is solved by each of them: \Mfour's
+  per-size network ($W{=}4096$) and \FiveC for $N\le8$, \FiveC and \Mthree above (\Mfour has no models beyond $N=8$). The goal is any
+  solved orientation, which the Proposition also preserves because the symmetries permute the solved orientations.
 \item \emph{Portfolio.} Run the inner solver on each copy (three in parallel), map each answer back, verify it, and keep the
   shortest in QTM. For the \Cu{4} we also take the shortest over an 8-copy portfolio of the default program (greedy, 20M
   iterations).

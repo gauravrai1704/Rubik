@@ -57,11 +57,11 @@ scrambles from the goal. Q* search~\cite{agostinelli2024qstar} scores all childr
 pass and handles large action spaces. CayleyPy~\cite{chervov2025cayleypy} trains a residual MLP to predict the
 length of a random walk from the solved state and searches with very wide beams; it reports over 98\%
 optimal \Cu{3} solutions and the first learned \Cu{4} and \Cu{5} solvers. All of these models are trained per
-puzzle size on the full sticker array. \Mfour is our reproduction of CayleyPy; \FiveA and \FiveB instead
+puzzle size on the full sticker array. \Mfour is our reproduction of CayleyPy; \FiveA instead
 decompose the puzzle into clusters whose networks are shared by all sizes.
 
 \paragraph{Search techniques we build on.}
-Beam search~\cite{lowerre1976harpy} keeps the $W$ best nodes per depth; \Mfour, \FiveA and \FiveB use it, as
+Beam search~\cite{lowerre1976harpy} keeps the $W$ best nodes per depth; \Mfour and \FiveA use it, as
 does KMCoders' final stage. Simulated annealing~\cite{kirkpatrick1983annealing} is KMCoders' second stage and
 \Msix's. Large-neighbourhood search~\cite{shaw1998lns}, which destroys and rebuilds part of a solution, is
 what we tried, without success, on top of KMCoders' greedy stage (\S\ref{sec:m7}). \Mseven belongs to the

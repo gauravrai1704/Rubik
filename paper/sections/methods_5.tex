@@ -2,38 +2,34 @@
 \subsection{Method 5A: one network for every size (new)}
 \label{sec:5a}
 
-\emph{Idea.} Replace the per-size sticker network of \Mfour with one that reads the puzzle as a set of cluster tokens,
-so the same weights apply at every $N$.
+\emph{Idea.} Replace the per-size sticker network of \Mfour with one that reads the puzzle as a set of cluster tokens, so the same
+weights apply at every $N$, and use its per-cluster costs to guide a staged search on sizes too large for full-puzzle beam search.
 
 \emph{Steps.}
 \begin{enumerate}
-\item \emph{Tokens.} Each cluster becomes one token: the one-hot colours of its stickers in the canonical order,
-  projected by a linear map shared by all clusters of the same type, plus a learned embedding of the cluster kind and a
-  small MLP of geometric features (the cluster's two in-face depths divided by $N-1$, and $N/20$).
-\item \emph{Encoder.} A transformer encoder~\cite{vaswani2017attention} without positional order mixes the tokens, since
-  they form a set~\cite{lee2019settransformer}.
-\item \emph{Additive head.} Each token predicts a non-negative cost; the costs are summed and a small global correction is
-  added. A sum matches the structure of the problem, since total distance grows with the number of unsolved clusters,
-  and it extends to any number of tokens. The per-token costs also serve as per-cluster heuristics inside \FiveB.
-\item \emph{Training.} Fresh non-backtracking random walks on every training size, target the walk length $k$, loss on
-  $(\hat k-k)/(N^2/\ln N)$ so that all sizes contribute on one scale.
-\item \emph{Search.} Full-puzzle beam search (Algorithm~\ref{alg:m4} with this network) for $N\le7$; above that, \FiveB's stages
-  with the per-token costs as the stage heuristic.
+\item \emph{Tokens.} Each cluster becomes one token: the one-hot colours of its stickers in the canonical order, projected by a
+  linear map shared by all clusters of the same type, plus a learned embedding of the cluster kind and a small MLP of geometric
+  features (the cluster's two in-face depths divided by $N-1$, and $N/20$).
+\item \emph{Encoder.} A transformer encoder~\cite{vaswani2017attention} without positional order mixes the tokens, since they form a
+  set~\cite{lee2019settransformer}.
+\item \emph{Additive head.} Each token predicts a non-negative cost; the costs are summed and a small global correction is added. A sum
+  matches the structure of the problem, since total distance grows with the number of unsolved clusters, and it extends to any
+  number of tokens.
+\item \emph{Training.} Fresh non-backtracking random walks on every training size ($N=4,\dots,8$), target the walk length $k$, loss on
+  $(\hat k-k)/(N^2/\ln N)$ so that all sizes contribute on one scale. The model in the main table is the GPU-trained one (width 192,
+  four layers, six heads, 20,000 steps of 512 examples on a Colab T4).
+\item \emph{Search, $N\le7$.} Full-puzzle beam search (Algorithm~\ref{alg:m4} with this network).
+\item \emph{Search, $N\ge8$: staged beam search} (Figure~\ref{fig:pipeline}, Algorithm~\ref{alg:staged}). Following Demaine et
+  al.~\cite{demaine2011algorithms}, the Square is solved in stages from the outside in: the \emph{frame} (corner, center and
+  edge-cross clusters), then edge clusters two at a time, then cross and interior clusters three at a time. Each stage adds a few
+  pieces to an exact goal: those pieces, and every piece solved earlier, must show their solved stickers, so later stages cannot
+  undo earlier work. A stage searches only the moves that touch one of its targets plus the macro actions that do: for every row $r$
+  and column $c$, the commutator $c\,r\,c\,r$, which changes only the cluster at their crossing (Demaine's Lemma~2), and the
+  conjugates $r\,c\,r$ and $c\,r\,c$. The stage heuristic is the sum of \FiveA's per-token costs over the stage's target clusters and
+  the earlier clusters its actions can move. If the projection of a stage's goal stickers has at most $10^5$ states, it is enumerated
+  and solved optimally by lookup (the frame always qualifies: for any $N$ it is a \Sq{3}). Each stage starts at width 128 and
+  retries at $4\times$ the width up to 2,048.
 \end{enumerate}
-The model we evaluate has \FiveAParams{} parameters (width 64, two layers, four heads) and was trained for \FiveASteps{}
-steps on Squares with $N\in\{4,\dots,8\}$ only, in \FiveATrainMin{} minutes on CPU. The architecture also has a Q*-style
-move head; we did not evaluate it.
-
-\emph{Cost.} One evaluation is $O(K^2 d+K d^2)$ for $K$ cluster tokens ($K=\Theta(N^2)$) and width $d$; a full-puzzle beam
-step costs $O(W\cdot2N)$ evaluations, which on CPU makes \FiveA several times slower than \FiveB per state.
-
-%% ---------------------------------------------------------------------
-\subsection{Method 5B: cluster-decomposed staged beam search (new)}
-\label{sec:5b}
-
-\FiveB solves the puzzle in a sequence of stages (Figure~\ref{fig:pipeline}, Algorithm~\ref{alg:5b}). Each stage adds a
-few pieces to an exact goal: those pieces, and every piece solved by an earlier stage, must show their solved stickers.
-Each stage is a small search problem with a sharp signal, and later stages cannot silently undo earlier work.
 
 \begin{figure}[t]
 \centering
@@ -41,10 +37,10 @@ Each stage is a small search problem with a sharp signal, and later stages canno
   box/.style={draw=black!55, rounded corners=2pt, align=center, inner sep=2.5pt, minimum height=7mm},
   hl/.style={box, draw=blue!65!black, fill=blue!6, line width=0.7pt},
   ar/.style={-{Stealth[length=1.6mm]}, draw=black!60}, lab/.style={font=\scriptsize, text=black!70}]
-\node[box, text width=21mm] (plan) at (0,0) {stage plan\\{\scriptsize corners, edges, wings,\\centers; 6 pieces each}};
+\node[box, text width=21mm] (plan) at (0,0) {stage plan\\{\scriptsize frame, edges,\\crosses, interiors}};
 \node[box, text width=19mm] (small) at (28mm,0) {projected stage\\$\le 10^5$ states?};
 \node[box, text width=15mm] (bfs) at (54mm,0) {exact BFS:\\optimal moves};
-\node[box, text width=21mm] (inp) at (0,-17mm) {heuristic + actions\\{\scriptsize tables, cluster MLPs;\\verified commutators}};
+\node[box, text width=21mm] (inp) at (0,-17mm) {\FiveA token costs\\{\scriptsize + verified\\commutators}};
 \node[hl, text width=19mm] (beam) at (28mm,-17mm) {beam search\\{\scriptsize widen until found}};
 \node[box, text width=19mm] (apply) at (28mm,-32mm) {apply moves};
 \draw[ar] (plan) -- (small);
@@ -55,55 +51,16 @@ Each stage is a small search problem with a sharp signal, and later stages canno
 \draw[ar] (bfs.south) |- (apply.east);
 \draw[ar] (apply.west) -- node[lab, below]{next stage} ++(-31mm,0) |- (plan.west);
 \end{tikzpicture}
-\caption{\FiveB. Each stage adds a few pieces to an exact goal. Tiny stages are solved optimally by lookup; the rest by
-beam search over single moves and verified commutators, guided by exact abstraction tables and small cluster networks.}
+\caption{\FiveA's staged search for $N\ge8$. Each stage adds a few pieces to an exact goal. Tiny stages are solved optimally by
+lookup; the rest by beam search over single moves and verified commutators, guided by \FiveA's per-cluster costs.}
 \label{fig:pipeline}
 \end{figure}
 
-\emph{Steps.}
-\begin{enumerate}
-\item \emph{Stage plan.} For the Square we follow Demaine et al.~\cite{demaine2011algorithms}: the \emph{frame} (corner,
-  center and edge-cross clusters), then edge clusters two at a time, then cross clusters and interior clusters three at a
-  time, from the outside in. For the cube we use an \emph{edges-first} order: fixed centers, corners, middle edges, wings,
-  then centers, with every wing and center cluster split into stages of 6 pieces. Inner-slice moves never disturb corners,
-  and the commutators below never disturb edges, so the later and more numerous stages have cheap actions that keep
-  earlier work.
-\item \emph{Stage actions.} A move that touches none of the current targets cannot make progress, so each stage searches
-  only the single moves that touch a target plus the macro actions that do. This cuts the branching factor from $O(N^2)$
-  macros to a handful. On the Square, the macros are, for every row $r$ and column $c$, the commutator $c\,r\,c\,r$, which
-  changes only the cluster at their crossing (Demaine's Lemma~2), and the conjugates $r\,c\,r$ and $c\,r\,c$ ($3N^2$ macros).
-  On the cube, $X\,Y\,X'\,Y'$ for an inner-slice quarter turn $X$ and an outer-face quarter turn $Y$ on another axis, which
-  never moves corners, and pure-center commutators $[A, B\,C\,B']$ with $A$ and $C$ inner-slice quarter turns on one axis and
-  $B$ a face turn on another axis; every candidate is applied to the sticker permutation and kept only if it moves center
-  stickers alone (192 for the \Cu{4}, 29,376 for the \Cu{20}). Once every corner and edge is solved, a center stage searches
-  \emph{only} the pure-center commutators.
-\item \emph{Heuristic.} A weighted sum over clusters,
-  \begin{equation}
-  h(s)=\sum_{c\in T} h_c(s) + \lambda_{\text{keep}}\!\!\sum_{c\in P} h_c(s)
-       + \lambda_{\text{ex}}\,\bigl|\{i\in G: s_i\ne s^\ast_i\}\bigr| ,
-  \end{equation}
-  where $T$ are the target clusters, $P$ the earlier clusters that some allowed action can move, $G$ the stage's goal
-  stickers and $s^\ast$ the solved state ($\lambda_{\text{keep}}=1$, $\lambda_{\text{ex}}=0.5$). Each $h_c$, shared by
-  signature across all $N$, is an \emph{exact table} (projected clusters with at most 1.5M states: every Square cluster and
-  the fixed centers), a \emph{coarse abstraction table} (one pair of opposite colours mapped to 1, the rest to 0; pattern
-  databases over a colour abstraction~\cite{culberson1998pattern}: 2,187 states for corners, 126,720 for middle edges,
-  735,471 for every center type; for corners a finer three-class abstraction with 153,090 states), or a \emph{cluster MLP}
-  (hidden width 256, two residual blocks, trained on random walks of the projected cluster for \CpuSteps{} steps in
-  \CpuTrainMin{} minutes on CPU) combined with the coarse tables by $\max$. Six networks (corner, middle edge, wing, three
-  center types) cover every cube size.
-\item \emph{Exact small stages.} If the projection of a stage's goal stickers under its moves has at most 100,000 states,
-  we enumerate it and descend greedily on the exact distances, which is optimal for that stage. The Square frame always
-  qualifies: for any $N$ it is a \Sq{3} with at most 768 states.
-\item \emph{Width schedule.} Each stage starts at width $W_0$ (128 for the Square, 512 for the cube) and, if it fails within
-  its step limit (40 and 60 steps), retries at $4\times$ the width up to $W_{\max}$ (2,048 and 8,192), or further while
-  $W\times|\text{actions}|\le 1.2\cdot 10^6$.
-\end{enumerate}
-
 \begin{algorithm}[t]
-\caption{\FiveB (one state)}
-\label{alg:5b}
+\caption{Staged beam search (\FiveA for $N\ge8$)}
+\label{alg:staged}
 \small
-\KwIn{state $s$, stage plan $S_1,\dots,S_m$}
+\KwIn{state $s$, stage plan $S_1,\dots,S_m$, cost model $h$}
 \KwOut{move sequence $\mu$ with $s\cdot\mu$ solved}
 $\mu\leftarrow[\,]$\;
 \For{$i\leftarrow1$ \KwTo $m$}{
@@ -114,7 +71,7 @@ $\mu\leftarrow[\,]$\;
     $\nu\leftarrow$ optimal moves by greedy descent on its BFS table\;}
   \Else{
     $W\leftarrow W_0$\;
-    \Repeat{$\nu$ found \textbf{or} $W > W_{\max}(|A|)$}{
+    \Repeat{$\nu$ found \textbf{or} $W > W_{\max}$}{
       $\nu\leftarrow$ \textsc{BeamSearch}$(s, A, h, W, \text{goal}=G)$\;
       $W\leftarrow4W$\;}
   }
@@ -124,8 +81,9 @@ $\mu\leftarrow[\,]$\;
 \Return canonicalise$(\mu)$\;
 \end{algorithm}
 
-\emph{Cost.} There are $\Theta(N^2)$ stages, each a beam search of $O(T\,W\,|A|)$ heuristic evaluations, so time grows
-roughly as $N^2$ times the per-stage search; solution length is $\Theta(N^2)$ because clusters are solved a few at a time.
+\emph{Cost.} One evaluation is $O(K^2 d+K d^2)$ for $K=\Theta(N^2)$ cluster tokens and width $d$; a beam step costs $O(W\cdot|A|)$
+evaluations. On a T4 a \Sq{10} takes about 9\,s and a \Sq{14} about 90\,s; on CPU several times longer. There are $\Theta(N^2)$
+stages, so solutions have $\Theta(N^2)$ moves.
 
 %% ---------------------------------------------------------------------
 \subsection{Method 5C: net-gain scheduling of bulk commutators (new)}

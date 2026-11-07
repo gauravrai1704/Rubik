@@ -18,9 +18,8 @@
 \item \emph{The counting bound is a lower bound.} It is valid for the radius around the goal, and we use it as an estimate of
   typical optimal distances; the Square calibration suggests the truth is 1.5--1.7$\times$ the bound in the worst case. It cannot
   certify that any single solution is near-optimal.
-\item \emph{Exact search on the \Cu{3}} solves 12-move scrambles but no random state in 30 minutes on four cores, and our \Cu{3}
-  \Mfour model, with 250$\times$ less training data than the original, solved no random state.
-\item \emph{\FiveA's evidence is preliminary}: one small Square model, a CPU budget, and no cube model.
+\item \emph{Exact search on the \Cu{3}} solves 12-move scrambles but no random state in 30 minutes on four cores. We did not
+  train cube networks at CayleyPy's scale, so \Mfour and \FiveA are evaluated on the Square only.
 \item \emph{Checker and sampling.} The checker enforces necessary conditions only, and random states come from long random walks
   rather than an exact uniform sampler.
 \end{itemize}
@@ -28,7 +27,7 @@
 %% =====================================================================
 \section{Conclusion}
 
-Decomposing Rubik's puzzles into clusters with $N$-invariant signatures lets one engine run nine solvers on the same instances,
+Decomposing Rubik's puzzles into clusters with $N$-invariant signatures lets one engine run eight solvers on the same instances,
 from exact search to learned heuristics and a competition solver, for every size we can afford. On random states the winner at
 large $N$ is structural: Demaine's idea of fixing many clusters with one shared move sequence, scheduled by net gain rather than
 by unanimous need (\FiveC). On the Santa 2023 puzzles, the competition's own solver is far ahead of everything else, and the

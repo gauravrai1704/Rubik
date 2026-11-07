@@ -2,11 +2,11 @@
 \section{Methods}
 \label{sec:methods}
 
-We describe the nine methods in the order of their numbers. Each subsection states where the method comes from, its
+We describe the eight methods in the order of their numbers. Each subsection states where the method comes from, its
 steps, its pseudocode, and its cost in moves, time and memory. Table~\ref{tab:methods} summarises them.
 
 \begin{table*}[t]
-\caption{The nine methods. ``Repro.'': our reproduction of a published method; ``new'': ours. Move growth is the
+\caption{The eight methods. ``Repro.'': our reproduction of a published method; ``new'': ours. Move growth is the
 length of the returned solutions as a function of $N$ (proved for Demaine's construction, empirical otherwise); time is
 per random state on our CPUs at the largest size we ran (details in each subsection and \S\ref{sec:experiments}).}
 \label{tab:methods}
@@ -18,12 +18,11 @@ per random state on our CPUs at the largest size we ran (details in each subsect
 1 & IDA* + pattern databases & repro.\ of Korf~\cite{korf1997optimal} & Square $N\le5$, \Cu{3} scrambles & optimal & seconds (\Sq{5}); random \Cu{3}: none in 30\,min \\
 2 & reduction + two-phase & repro.\ (standard) & both, $N\le20$ & $\Theta(N^2)$ & seconds to minutes (\Cu{20}) \\
 3 & Demaine's parallel algorithm & repro.\ of~\cite{demaine2011algorithms} & both, $N\le20$ & $\Theta(N^2/\log N)$ (theory) & minutes (\Cu{20}) \\
-4 & CayleyPy per-size network & repro.\ of~\cite{chervov2025cayleypy} & Square $N\le8$ (\Cu{3} attempted) & near-optimal where trained & seconds (\Sq{8}, $W{=}4096$) \\
-5A & cluster-token transformer & new & Square $N\le10$ & -- & minutes (\Sq{10}) \\
-5B & cluster-decomposed staged beam & new & both, $N\le20$ & $\Theta(N^2)$ & minutes (\Cu{20}) \\
+4 & CayleyPy per-size network & repro.\ of~\cite{chervov2025cayleypy} & Square $N\le8$ & near-optimal where trained & seconds (\Sq{8}, $W{=}4096$) \\
+5A & cluster-token transformer & new & Square $N\le14$ & $\Theta(N^2)$ & 1.5\,min (\Sq{14}, T4) \\
 5C & net-gain bulk commutators & new & both, $N\le20$ & between $N^2/\log N$ and $N^2$ (empirical) & \FiveCTwentyMin{} min (\Cu{20}) \\
 6 & KMCoders pipeline from its write-up & repro.\ of~\cite{kmcoders2024santa} & cube, $N\le19$ (Santa) & $\Theta(N^2)$ & 14 min (\Cu{19}) \\
-7 & symmetry portfolio around KMCoders' solver & new & cube, $N\le5$ so far (Santa) & as KMCoders, $\approx4.4N^2$ & \MsevenCpuMinFour{} CPU-min (\Cu{4}), \MsevenCpuMinFive{} (\Cu{5}) \\
+7 & symmetry portfolio (main method) & new & cube (Santa), Square $N\le20$ & as its inner solver & $k\times$ the inner solver; \MsevenCpuMinFour{} CPU-min (\Cu{4}) \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -186,8 +185,7 @@ shrink as clusters diverge (\S\ref{sec:5c}). Each round scores $|\mathcal{T}|$ t
 \end{enumerate}
 Square models have 0.25--0.45M parameters and were trained on 4M ($N\le5$) or 10M ($N=6$--8) examples in 1--4 minutes
 each on CPU. A second set of Square models with the ``large'' preset (1.27M parameters at $N=8$, 256M examples) was trained
-on a Colab T4 GPU (\S\ref{sec:m4gpu}). We also trained the paper's 4.0M-parameter \Cu{3} model on 32M examples
-(77 minutes on CPU), 250$\times$ fewer than the paper's 8B.
+on a Colab T4 GPU (\S\ref{sec:m4gpu}).
 
 \begin{algorithm}[t]
 \caption{\Mfour: beam search with a learned distance (our reproduction of CayleyPy)}

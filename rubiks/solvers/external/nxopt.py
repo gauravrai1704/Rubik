@@ -74,6 +74,7 @@ class _Server:
 
 
 _server: _Server | None = None
+_server_lock = __import__("threading").Lock()
 
 
 def optimal_from_solution(moves3: list[Move], timeout: float = 3600.0) -> list[Move]:
@@ -82,9 +83,11 @@ def optimal_from_solution(moves3: list[Move], timeout: float = 3600.0) -> list[M
     inv = [m.inverse() for m in reversed(moves3)]
     if not inv:
         return []
-    if _server is None or _server.p.poll() is not None:
-        _server = _Server()
-    return _server.solve(_to_nxopt(inv))
+    with _server_lock:  # one process for all threads (each loads the 1.42 GB table)
+        if _server is None or _server.p.poll() is not None:
+            _server = _Server()
+        srv = _server
+    return srv.solve(_to_nxopt(inv))
 
 
 def parse_output(stdout: str) -> list[Move]:

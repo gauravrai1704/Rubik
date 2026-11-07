@@ -58,6 +58,17 @@ def macro(name: str, value) -> None:
     macros[name] = str(value)
 
 
+# ------------------------------------------------------------------ sync the result files that are still growing
+import shutil  # noqa: E402
+
+_DOCS = ROOT / "docs" / "results"
+(RES / "santa").mkdir(parents=True, exist_ok=True)
+for _f in list((_DOCS / "santa").glob("*.jsonl")):
+    shutil.copy(_f, RES / "santa" / _f.name)
+for _name in ("m7_square.jsonl", "m5a_square_gpu_large.jsonl", "m5a_cube_gpu_large.jsonl"):
+    if (_DOCS / _name).exists():
+        shutil.copy(_DOCS / _name, RES / _name)
+
 # ------------------------------------------------------------------ load
 m5b_sq = rows("m5b_square.jsonl")
 m5b_cu = rows("m5b_cube.jsonl") + rows("m5b_cube_15_20.jsonl")
@@ -477,6 +488,9 @@ import santa_part  # noqa: E402
 santa_part.build(macro)
 santa_part.build_more(macro)
 santa_part.build_m7_all(macro)
+import main_tables  # noqa: E402
+
+main_tables.build(macro)
 
 (GEN / "numbers.tex").write_text("".join(f"\\newcommand{{\\{k}}}{{{v}}}\n" for k, v in sorted(macros.items())))
 
@@ -502,9 +516,7 @@ def style(ax):
 fig, axes = plt.subplots(1, 2, figsize=(7.0, 2.6))
 ax = axes[0]
 Ns = sorted(sq_by_N)
-y5b = [np.mean([r["htm"] for r in sq_by_N[N] if r["solved"]]) / scale(N) for N in Ns]
-ax.plot(Ns, y5b, "-o", color=C5B, lw=1.6, ms=3.5, label="Method 5B")
-for label, src, col, mk in (("Method 4 (W=4096)", m4[4096], CM4, "s"), ("Method 5A", m5a, C5A, "^")):
+for label, src, col, mk in (("Method 4 (W=4096)", m4[4096], CM4, "s"),):
     pts = defaultdict(list)
     for r in src.values():
         if r["solved"]:
@@ -533,8 +545,6 @@ ax.set_ylim(bottom=0)
 style(ax)
 ax = axes[1]
 Nc = sorted(cu_by_N)
-ax.plot(Nc, [np.mean([r["htm"] for r in cu_by_N[N] if r["solved"]]) / scale(N) for N in Nc], "-o",
-        color=C5B, lw=1.6, ms=3.5, label="Method 5B")
 for label, src, col, mk in (("Method 2", base_cu["M2"], CM2, "v"), ("Method 3", base_cu["M3"], CM3, "P"),
                             ("Method 5C", base_cu["5C"], C5C, "*")):
     pts = defaultdict(list)

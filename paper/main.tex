@@ -1,4 +1,4 @@
-%% Nine Rubik's solvers on one engine: net-gain bulk commutators, symmetry portfolios, distance from optimal
+%% Eight Rubik's solvers on one engine: net-gain bulk commutators, symmetry portfolios, distance from optimal
 %% acmart, sigconf. `nonacm` drops the ACM rights block for a preprint; remove it (and fill
 %% \acmConference, \acmDOI, ...) when targeting a specific ACM venue.
 \documentclass[sigconf,nonacm]{acmart}
@@ -17,6 +17,8 @@
 \newcommand{\Mfour}{Method~4\xspace}
 \newcommand{\FiveA}{Method~5A\xspace}
 \newcommand{\FiveB}{Method~5B\xspace}
+\newcommand{\best}[1]{\textcolor{red}{\textbf{#1}}}
+\newcommand{\second}[1]{\textcolor{green!50!black}{\textbf{#1}}}
 \newcommand{\FiveC}{Method~5C\xspace}
 \newcommand{\Mone}{Method~1\xspace}
 \newcommand{\Mtwo}{Method~2\xspace}
@@ -28,7 +30,7 @@
 \begin{document}
 
 \title{Short Solutions for Large Rubik's Cubes and Squares}
-\subtitle{Nine Solvers on One Open Engine: Net-Gain Bulk Commutators, Symmetry Portfolios that Match the Santa 2023 Record Lengths, and How Far from Optimal They Are}
+\subtitle{Eight Solvers on One Open Engine: Symmetry Portfolios that Beat the Santa 2023 Record Lengths, Net-Gain Bulk Commutators, and How Far from Optimal They Are}
 
 %% TODO(authors): add family names, e-mail addresses and the supervising faculty member.
 \author{Gaurav}
@@ -65,24 +67,22 @@
 \renewcommand{\shortauthors}{Gaurav et al.}
 
 \begin{abstract}
-We study short solutions of the \Sq{N} Rubik's Square and the \Cu{N} Rubik's Cube for every size we can run, on one open
-engine, with nine solvers: our reproductions of IDA* with pattern databases, reduction with Kociemba's two-phase algorithm,
-Demaine et al.'s parallel cluster algorithm, the CayleyPy per-size network and, from its write-up, the KMCoders pipeline that
-produced the strongest public large-cube solutions in Kaggle's Santa 2023 competition; and four new methods. \FiveC schedules
-Demaine's bulk commutators by net gain: a bulk move is applied to a whole block of layers when the pieces it fixes per move beat
-the best single-cluster fix, even if some cells of the block do not need it. On random cubes it is the shortest of our methods
-from \Cu{5} to \Cu{20} (\CuTwentyHTMFiveC{} moves on the \Cu{20}, \FiveCGainTwenty\% fewer than Demaine's algorithm), with a lead
-that grows with $N$ and is significant from $N=5$ on 20 states per size. \Mseven is a symmetry portfolio: the 48 rotations and
-reflections of the cube turn one scramble into 48 equivalent inputs to KMCoders' deterministic solver, and every answer maps back
-with the same length. On the Santa 2023 \Cu{4} puzzles it averages \MsevenBestFour{} quarter turns against \MsevenPubFour{} for
-KMCoders' published best-of-many solutions and \MsevenOneFour{} for one run of their program, and with an optimal central
-3$\times$3$\times$3 it is shorter than the published solution on all \MsevenNFive{} \Cu{5} puzzles we ran (\MsevenBestFive{} against
-\MsevenPubFive{} on average). Two learned methods decompose the puzzle into cubie
-clusters shared by all sizes: a staged beam search that solved every random state up to $N=20$, and a cluster-token transformer
-whose distance estimates carry over to unseen sizes. Finally, a counting lower bound, calibrated on Squares whose exact God's
-numbers we compute (\GodSquareThree, \GodSquareFour, \GodSquareFive{} for $N=3,4,5$), shows how far everything is from optimal: the
-published Santa lengths are \PubOverBoundFour{}$\times$ the bound at $N=4$ and \PubOverBoundThirtyThree{}$\times$ at $N=33$, a gap
-that grows like $\log N$. We release the engine, the benchmarks, every solver and every result file.
+We study short solutions of the \Sq{N} Rubik's Square and the \Cu{N} Rubik's Cube on one open engine, with eight solvers: our
+reproductions of IDA* with pattern databases, reduction with Kociemba's two-phase algorithm, Demaine et al.'s parallel cluster
+algorithm, the CayleyPy per-size network and, from its write-up, the KMCoders pipeline that produced the strongest public large-cube
+solutions in Kaggle's Santa 2023 competition; and three new methods. Our main method, \Mseven, is a symmetry portfolio: the
+rotations and reflections of the puzzle turn one scramble into many equivalent inputs to a deterministic solver, and every answer
+maps back to a solution of the original state with the same length. Around KMCoders' own solver, with an optimal central
+3$\times$3$\times$3 stage, it is the best method at \MsevenRedCube{} of the \SizesCube{} Santa 2023 cube sizes, shorter in total than
+KMCoders' published best-of-many solutions on the puzzles it ran (\MsevenAllTotal{} against \MsevenAllPubTotal{} quarter turns); around
+our strongest Square solvers it is the best method at \MsevenRedSquare{} of the \SizesSquare{} Square sizes. \FiveC schedules Demaine's
+bulk commutators by net gain: a bulk move is applied to a whole block of layers when the pieces it fixes per move beat the best
+single-cluster fix. It is the strongest single solver on large Squares and, on random cubes, \FiveCGainTwenty\% shorter than Demaine's
+algorithm at \Cu{20}, with a lead that grows with $N$. \FiveA, a cluster-token transformer trained on small Squares only, solves Squares of
+sizes it never saw. Finally, a counting lower bound, calibrated on Squares whose exact God's numbers we compute (\GodSquareThree,
+\GodSquareFour, \GodSquareFive{} for $N=3,4,5$), shows how far everything is from optimal: the published Santa lengths are
+\PubOverBoundFour{}$\times$ the bound at $N=4$ and \PubOverBoundThirtyThree{}$\times$ at $N=33$, a gap that grows like $\log N$. We release
+the engine, the benchmarks, every solver and every result file.
 \end{abstract}
 
 \begin{CCSXML}

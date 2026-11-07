@@ -16,21 +16,21 @@ the team KMCoders solved, among others, a \Cu{33} in \PubThirtyThree{} quarter t
 We ask what it takes to cover the whole range of sizes, for both the cube and its flat relative, the \Sq{N}
 Rubik's Square of Demaine et al.~\cite{demaine2011algorithms}; which approach gives the shortest solutions at
 each size; whether any method can beat the published competition solutions; and how far all of them are
-from optimal. We implement nine solvers on one open engine: five reproductions of known methods (exact
+from optimal. We implement eight solvers on one open engine: five reproductions of known methods (exact
 search, reduction, Demaine's parallel algorithm, CayleyPy and, from its write-up, the KMCoders pipeline) and
-five new ones, and we run them, together with three external baselines, on the same seeded instances and on
+three new ones, and we run them, together with three external baselines, on the same seeded random Squares and on
 the Santa 2023 cube puzzles. Section~\ref{sec:contrib} lists what is new and what is reproduced.
 
 \paragraph{Main results.}
-(i) On our random-state benchmark, \FiveC, a net-gain schedule for Demaine's bulk commutators, is the shortest
-of our methods on every cube from \Cu{5} to \Cu{20} and on the Square from $N=9$ up; its lead over our
-reproduction of Demaine's algorithm grows with $N$ (\FiveCGainTwenty\% on the \Cu{20}) and is significant
-from $N=5$ on with 20 states per size. (ii) On the Santa 2023 cube puzzles, \Mseven, a symmetry portfolio
-around KMCoders' own solver, reaches KMCoders' published best-of-many lengths: \MsevenBestFour{} against
-\MsevenPubFour{} quarter turns on average over \MsevenNFour{} \Cu{4} puzzles (\MsevenWinsFour{} shorter,
-\MsevenTiesFour{} equal, \MsevenLossesFour{} longer), and, with an optimal 3$\times$3$\times$3 stage, shorter
-than the published solution on all \MsevenNFive{} \Cu{5} puzzles we ran (\MsevenBestFive{} against \MsevenPubFive{}, \MsevenGainFive\%
-shorter; Table~\ref{tab:m7}). (iii) A counting lower bound
+Our main method is \Mseven, a symmetry portfolio: the rotations and reflections of the puzzle turn one scramble into many
+equivalent inputs to a deterministic solver, and every answer maps back with the same length. (i) On the Santa 2023 cube puzzles,
+around KMCoders' own solver and with an optimal central 3$\times$3$\times$3, it is the best method at \MsevenRedCube{} of the
+\SizesCube{} sizes, ahead of KMCoders' published best-of-many solutions (Table~\ref{tab:maincube}); on the puzzles it ran, its total
+is \MsevenAllTotal{} quarter turns against \MsevenAllPubTotal{} published (\MsevenAllTotalGain\% fewer; Table~\ref{tab:m7all}).
+(ii) On random Rubik's Squares, around our strongest solvers, it is the best method at \MsevenRedSquare{} of the \SizesSquare{}
+sizes (Table~\ref{tab:mainsq}). Our \FiveC, a net-gain schedule for Demaine's bulk commutators, is the strongest single solver on
+large Squares and, on random cubes, shorter than our reproduction of Demaine's algorithm by a margin that grows with $N$
+(\FiveCGainTwenty\% on the \Cu{20}), significant from $N=5$ on with 20 states per size. (iii) A counting lower bound
 shows how much room is left: the published lengths are \PubOverBoundFour{}$\times$ the bound at $N=4$ and
 \PubOverBoundThirtyThree{}$\times$ at $N=33$, a gap that grows like $\log N$ because the competition method
 fixes $O(1)$ pieces per 3-cycle in its final stage.
@@ -44,20 +44,18 @@ from the harness's result files. We separate what is new from what we reproduce.
 
 \paragraph{Novel contributions (ours).}
 \begin{enumerate}
-\item \textbf{\Mseven: a symmetry portfolio around a deterministic cube solver} (\S\ref{sec:m7}). The same
-  scramble seen through the 48 rotations and reflections of the cube is 48 different inputs to a solver whose
-  search is driven by fixed seeds and tie-breaks; each answer maps back to a solution of the original
-  state with the same length. Keeping the shortest of $k$ copies, with KMCoders' beam variant, a 20$\times$
-  shorter annealing stage and, for odd $N$, an optimal quarter-turn 3$\times$3$\times$3 stage, reaches
-  and on some puzzles beats the published Santa 2023 solutions.
+\item \textbf{\Mseven: a symmetry portfolio around deterministic solvers} (\S\ref{sec:m7}), our main method. The same
+  scramble seen through the rotations and reflections of the puzzle (48 for the cube, 8 for the Square) is that many different
+  inputs to a solver whose search is driven by fixed seeds and tie-breaks; each answer maps back to a solution of the original
+  state with the same length, and \Mseven keeps the shortest. On the cube its inner solver is KMCoders' program with their beam
+  variant, a 20$\times$ shorter annealing stage and, for odd $N$, an optimal quarter-turn 3$\times$3$\times$3 stage; on the Square,
+  our strongest solvers.
 \item \textbf{\FiveC: net-gain scheduling of bulk commutators} (\S\ref{sec:5c}). It keeps Demaine's bulk
   moves but applies one to a whole block of layers when the pieces it fixes per move beat the best
   single-cluster fix, even if some cells of the block do not need it, scoring every candidate exactly.
-\item \textbf{\FiveB: cluster-decomposed staged beam search} (\S\ref{sec:5b}) with exact abstraction tables,
-  small per-cluster networks shared by all sizes and machine-verified commutator actions; it solved every
-  random state we tried up to $N=20$.
 \item \textbf{\FiveA: one network for every size} (\S\ref{sec:5a}), a cluster-token transformer whose distance
-  estimates carry over to Square sizes it never saw in training.
+  estimates carry over to Square sizes it never saw in training; with a staged beam search it solves every Square we tried
+  and is second only to per-size networks up to $N=7$.
 \item \textbf{How far from optimal} (\S\ref{sec:bound}): a counting lower bound on the typical optimal
   quarter-turn distance of every \Cu{N}, calibrated on the Squares whose exact God's numbers we compute,
   and measured against every method, including the published competition solutions.

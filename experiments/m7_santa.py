@@ -5,8 +5,8 @@
 One fixed configuration per size (the paper's):
   * N = 4: best of 48 symmetric copies of KMCoders' beam variant with 1M stage-2 iterations, and of 8 copies of
     their default program (greedy, 20M iterations);
-  * N >= 5: best of 24 copies of the beam variant with 1M stage-2 iterations; for odd N the central 3x3x3 is
-    solved optimally in QTM by nxopt.
+  * N = 5..7: best of 24 copies of the beam variant with 1M stage-2 iterations; N >= 8: 12 copies (cost);
+    for odd N the central 3x3x3 is solved optimally in QTM by nxopt.
 Rows are appended to docs/results/santa/m7_full_N<N>.jsonl as soon as a puzzle finishes; puzzles already in that
 file, or in the earlier subset files of the same configuration, are skipped.
 """
@@ -35,6 +35,8 @@ def configs(N: int):
     beam = {"binary": "solve_cube_beam", "sa_iters": 1_000_000, "stage1": "nxopt" if odd else "kociemba"}
     if N == 4:
         return [("beam48", 48, beam), ("default8", 8, {"binary": "solve_cube"})]
+    if N >= 8:  # one copy takes 14-35 min at N = 8-10 on 4 cores
+        return [("beam12", 12, beam)]
     return [("beam24", 24, beam)]
 
 
