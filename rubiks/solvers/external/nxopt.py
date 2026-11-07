@@ -56,20 +56,33 @@ class _Server:
                                   stderr=subprocess.DEVNULL, text=True, bufsize=1)
         self.lock = threading.Lock()
 
-    def solve(self, scramble: str) -> list[Move]:
+    def _readline(self, deadline: float) -> str:
+        import select
+        import time as _t
+
+        left = deadline - _t.time()
+        if left <= 0 or not select.select([self.p.stdout], [], [], left)[0]:
+            self.p.kill()  # a hard position: give up; the next call starts a fresh process
+            raise TimeoutError("nxopt exceeded its time limit")
+        return self.p.stdout.readline()
+
+    def solve(self, scramble: str, timeout: float = 180.0) -> list[Move]:
+        import time as _t
+
         with self.lock:
+            deadline = _t.time() + timeout
             self.p.stdin.write(scramble + "\n")
             self.p.stdin.flush()
             buf = []
             while True:
-                line = self.p.stdout.readline()
+                line = self._readline(deadline)
                 if not line:
                     raise RuntimeError("nxopt exited: " + "".join(buf[-5:]))
                 buf.append(line)
                 if line.startswith("Solved") or line.startswith("Did not solve"):
                     m = re.match(r"Solved \d+ in (\d+)", line)
                     if m and int(m.group(1)) > 0:
-                        buf.append(self.p.stdout.readline())
+                        buf.append(self._readline(deadline))
                     return parse_output("".join(buf[-2:]))
 
 
@@ -77,7 +90,7 @@ _server: _Server | None = None
 _server_lock = __import__("threading").Lock()
 
 
-def optimal_from_solution(moves3: list[Move], timeout: float = 3600.0) -> list[Move]:
+def optimal_from_solution(moves3: list[Move], timeout: float = 180.0) -> list[Move]:
     """An optimal QTM solution of the 3x3x3 position that ``moves3`` (face turns) solves."""
     global _server
     inv = [m.inverse() for m in reversed(moves3)]
@@ -87,7 +100,7 @@ def optimal_from_solution(moves3: list[Move], timeout: float = 3600.0) -> list[M
         if _server is None or _server.p.poll() is not None:
             _server = _Server()
         srv = _server
-    return srv.solve(_to_nxopt(inv))
+    return srv.solve(_to_nxopt(inv), timeout)
 
 
 def parse_output(stdout: str) -> list[Move]:

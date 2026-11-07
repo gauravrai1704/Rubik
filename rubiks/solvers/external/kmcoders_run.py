@@ -87,7 +87,7 @@ def _run_with_rusage(cmd, stdin_text, cwd, env, timeout) -> _Run:
 class KMCodersRun(Solver):
     def __init__(self, puzzle: PuzzleSpec, budget: Budget | None = None, root: str | None = None,
                  binary: str = "solve_cube", stage1: str = "kociemba", seed: int = 0,
-                 sa_iters: int | None = None, **kwargs):
+                 sa_iters: int | None = None, nxopt_timeout: float = 180.0, **kwargs):
         """``seed`` (XORed into their fixed seeds; 0 = their program unchanged) and ``sa_iters`` (stage-2
         annealing iterations, theirs: 20M) need the two-line patch ``kmcoders_env.patch``."""
         super().__init__(puzzle, budget)
@@ -100,6 +100,7 @@ class KMCodersRun(Solver):
         if stage1 not in ("kociemba", "nxopt", "optimal"):
             raise ValueError("stage1: 'kociemba', 'nxopt' (optimal QTM, Rokicki's solver) or 'optimal' (Method 1)")
         self.binary, self.stage1 = binary, stage1
+        self.nxopt_timeout = nxopt_timeout
         self.env = dict(os.environ)
         if seed:
             self.env["KMC_SEED"] = str(seed)
@@ -126,8 +127,11 @@ class KMCodersRun(Solver):
                 from . import nxopt
 
                 small = [Move(m.axis, 0 if m.layer == 0 else 2, m.turn) for m in koc]
-                koc = [Move(m.axis, 0 if m.layer == 0 else N - 1, m.turn) for m in nxopt.optimal_from_solution(
-                    small, self.budget.wall_time_s)]
+                try:  # nxopt needs minutes on a few hard positions: then keep Kociemba's answer for this copy
+                    koc = [Move(m.axis, 0 if m.layer == 0 else N - 1, m.turn)
+                           for m in nxopt.optimal_from_solution(small, self.nxopt_timeout)]
+                except (TimeoutError, RuntimeError):
+                    self.last_stage1 = "kociemba (nxopt timed out)"
             big = pre + koc
         else:
             from ..m1_idastar.cube3 import ida_star
@@ -154,7 +158,9 @@ class KMCodersRun(Solver):
                 "sa_iters": int(self.env.get("KMC_TL", 20_000_000))}
         try:
             if self.puzzle.N % 2 == 1 and self.puzzle.N > 3:
+                self.last_stage1 = self.stage1
                 info["stage1_qtm"] = self._write_corner_cache(state, pid)
+                info["stage1"] = self.last_stage1
             r = _run_with_rusage([str(self.exe)], santa_input(self.puzzle, state, pid), self.root, self.env,
                                  self.budget.wall_time_s)
             info["cpu_s"] = r.cpu_s
