@@ -54,27 +54,40 @@ class _Server:
         cwd = Path(os.environ.get("NXOPT_DIR", exe.parent))
         self.p = subprocess.Popen([str(exe), "-t", "1", "-"], cwd=cwd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                   stderr=subprocess.DEVNULL, text=True, bufsize=1)
+        self._buf = b""  # our own line buffer: select() cannot see lines already read into Python's buffer
         self.lock = threading.Lock()
-        # wait until the pruning table is loaded (minutes from a cold disk) before any per-position time limit applies
         import time as _t
 
+        # nxopt buffers its output until it has solved a position, so send a one-move warm-up position and wait
+        # (minutes from a cold disk) for its answer before any per-position time limit applies
+        self.p.stdin.write("U1\n")
+        self.p.stdin.flush()
         deadline = _t.time() + 1800
         while True:
             line = self._readline(deadline)
             if not line:
                 raise RuntimeError("nxopt exited while loading its table")
-            if "read in" in line or "Table written" in line:
+            if line.startswith("Solved"):
+                self._readline(deadline)  # its moves line
                 break
 
     def _readline(self, deadline: float) -> str:
         import select
         import time as _t
 
-        left = deadline - _t.time()
-        if left <= 0 or not select.select([self.p.stdout], [], [], left)[0]:
-            self.p.kill()  # a hard position: give up; the next call starts a fresh process
-            raise TimeoutError("nxopt exceeded its time limit")
-        return self.p.stdout.readline()
+        fd = self.p.stdout.fileno()
+        while b"\n" not in self._buf:
+            left = deadline - _t.time()
+            if left <= 0 or not select.select([fd], [], [], left)[0]:
+                self.p.kill()  # a hard position: give up; the next call starts a fresh process
+                raise TimeoutError("nxopt exceeded its time limit")
+            chunk = os.read(fd, 65536)
+            if not chunk:  # process exited
+                line, self._buf = self._buf, b""
+                return line.decode()
+            self._buf += chunk
+        line, self._buf = self._buf.split(b"\n", 1)
+        return line.decode() + "\n"
 
     def solve(self, scramble: str, timeout: float = 1200.0) -> list[Move]:
         import time as _t
