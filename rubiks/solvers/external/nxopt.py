@@ -55,6 +55,16 @@ class _Server:
         self.p = subprocess.Popen([str(exe), "-t", "1", "-"], cwd=cwd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                   stderr=subprocess.DEVNULL, text=True, bufsize=1)
         self.lock = threading.Lock()
+        # wait until the pruning table is loaded (minutes from a cold disk) before any per-position time limit applies
+        import time as _t
+
+        deadline = _t.time() + 1800
+        while True:
+            line = self._readline(deadline)
+            if not line:
+                raise RuntimeError("nxopt exited while loading its table")
+            if "read in" in line or "Table written" in line:
+                break
 
     def _readline(self, deadline: float) -> str:
         import select
