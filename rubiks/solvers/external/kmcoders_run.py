@@ -87,7 +87,7 @@ def _run_with_rusage(cmd, stdin_text, cwd, env, timeout) -> _Run:
 class KMCodersRun(Solver):
     def __init__(self, puzzle: PuzzleSpec, budget: Budget | None = None, root: str | None = None,
                  binary: str = "solve_cube", stage1: str = "kociemba", seed: int = 0,
-                 sa_iters: int | None = None, nxopt_timeout: float = 180.0, **kwargs):
+                 sa_iters: int | None = None, nxopt_timeout: float = 1200.0, **kwargs):
         """``seed`` (XORed into their fixed seeds; 0 = their program unchanged) and ``sa_iters`` (stage-2
         annealing iterations, theirs: 20M) need the two-line patch ``kmcoders_env.patch``."""
         super().__init__(puzzle, budget)
@@ -127,7 +127,7 @@ class KMCodersRun(Solver):
                 from . import nxopt
 
                 small = [Move(m.axis, 0 if m.layer == 0 else 2, m.turn) for m in koc]
-                try:  # nxopt needs minutes on a few hard positions: then keep Kociemba's answer for this copy
+                try:  # nxopt needs many minutes on a few hard positions: past the limit keep Kociemba's answer
                     koc = [Move(m.axis, 0 if m.layer == 0 else N - 1, m.turn)
                            for m in nxopt.optimal_from_solution(small, self.nxopt_timeout)]
                 except (TimeoutError, RuntimeError):

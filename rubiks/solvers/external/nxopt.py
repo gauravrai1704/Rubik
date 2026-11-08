@@ -76,7 +76,7 @@ class _Server:
             raise TimeoutError("nxopt exceeded its time limit")
         return self.p.stdout.readline()
 
-    def solve(self, scramble: str, timeout: float = 180.0) -> list[Move]:
+    def solve(self, scramble: str, timeout: float = 1200.0) -> list[Move]:
         import time as _t
 
         with self.lock:
@@ -100,7 +100,7 @@ _server: _Server | None = None
 _server_lock = __import__("threading").Lock()
 
 
-def optimal_from_solution(moves3: list[Move], timeout: float = 180.0) -> list[Move]:
+def optimal_from_solution(moves3: list[Move], timeout: float = 1200.0) -> list[Move]:
     """An optimal QTM solution of the 3x3x3 position that ``moves3`` (face turns) solves."""
     global _server
     inv = [m.inverse() for m in reversed(moves3)]
@@ -110,7 +110,31 @@ def optimal_from_solution(moves3: list[Move], timeout: float = 180.0) -> list[Mo
         if _server is None or _server.p.poll() is not None:
             _server = _Server()
         srv = _server
-    return srv.solve(_to_nxopt(inv), timeout)
+    key = _to_nxopt(inv)
+    cache = _cache()
+    if key in cache:
+        return parse_notation(cache[key], _P3) if cache[key] else []
+    moves = srv.solve(key, timeout)
+    _remember(key, to_notation(moves, _P3) if moves else "")
+    return moves
+
+
+def _cache_path() -> Path:
+    exe = Path(os.environ["NXOPT"])
+    return Path(os.environ.get("NXOPT_DIR", exe.parent)) / "solutions.tsv"
+
+
+def _cache() -> dict[str, str]:
+    """Optimal solutions found earlier (scramble -> moves), so a rerun never searches the same position twice."""
+    p = _cache_path()
+    if not p.exists():
+        return {}
+    return dict(l.split("\t", 1) for l in p.read_text().split("\n") if "\t" in l)
+
+
+def _remember(key: str, sol: str) -> None:
+    with _server_lock, _cache_path().open("a") as fh:
+        fh.write(f"{key}\t{sol}\n")
 
 
 def parse_output(stdout: str) -> list[Move]:
