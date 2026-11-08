@@ -109,25 +109,26 @@ class _Server:
                     return parse_output("".join(buf[-2:]))
 
 
-_server: _Server | None = None
+_idle: list[_Server] = []  # free processes; a caller takes one (or starts one), so hard positions never queue
 _server_lock = __import__("threading").Lock()
 
 
 def optimal_from_solution(moves3: list[Move], timeout: float = 1200.0) -> list[Move]:
     """An optimal QTM solution of the 3x3x3 position that ``moves3`` (face turns) solves."""
-    global _server
     inv = [m.inverse() for m in reversed(moves3)]
     if not inv:
         return []
-    with _server_lock:  # one process for all threads (each loads the 1.42 GB table)
-        if _server is None or _server.p.poll() is not None:
-            _server = _Server()
-        srv = _server
     key = _to_nxopt(inv)
-    cache = _cache()
-    if key in cache:
-        return parse_notation(cache[key], _P3) if cache[key] else []
-    moves = srv.solve(key, timeout)
+    cached = _cache().get(key)
+    if cached is not None:
+        return parse_notation(cached, _P3) if cached else []
+    with _server_lock:
+        srv = _idle.pop() if _idle else None
+    if srv is None or srv.p.poll() is not None:  # each process holds the 1.42 GB table
+        srv = _Server()
+    moves = srv.solve(key, timeout)  # on a timeout the process is killed and not returned to the pool
+    with _server_lock:
+        _idle.append(srv)
     _remember(key, to_notation(moves, _P3) if moves else "")
     return moves
 
