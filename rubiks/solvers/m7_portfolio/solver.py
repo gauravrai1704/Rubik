@@ -10,12 +10,17 @@ the exact solved state (Santa 2023).
 """
 from __future__ import annotations
 
+import hashlib
+import json
+import os
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
 
 from ...engine import PuzzleSpec, metrics
+from ...engine.puzzle import Move
 from ..base import Budget, Solver, SolveResult, get_solver, register
 from ..symmetry import map_back, rotated, symmetries
 
@@ -34,13 +39,38 @@ class SymmetryPortfolio(Solver):
         self.inner_name = "+".join(n for n, _ in specs)
         # identity, its mirror image, then the other rotations each followed by its mirror image
         n_rot = len(puzzle.rotations)
+        # optional on-disk record of finished copies (env M7_COPY_CACHE, a directory): a run killed part-way through
+        # a puzzle resumes from the copies it already finished
+        self.cache_dir = os.environ.get("M7_COPY_CACHE")
+        self.spec_key = json.dumps([[n, kw] for n, kw in specs], sort_keys=True, default=str)
+        self._cache_lock = threading.Lock()
         self.order = [0, n_rot] + [x for r in range(1, n_rot) for x in (r, n_rot + r)]
 
     def _solved(self, s) -> bool:
         P = self.puzzle
         return bool(P.is_solved(s)) if P.kind == "square" else bool(np.array_equal(s, P.solved))
 
+    def _cache_file(self, state):
+        h = hashlib.sha1(np.asarray(state).tobytes() + self.spec_key.encode()).hexdigest()[:16]
+        return os.path.join(self.cache_dir, f"{self.puzzle.kind}{self.puzzle.N}_{h}.jsonl")
+
     def _one(self, state, r):
+        if self.cache_dir:
+            f = self._cache_file(state)
+            if os.path.exists(f):
+                for line in open(f):
+                    c = json.loads(line)
+                    if c["r"] == r:
+                        return r, [Move(*m) for m in c["moves"]], c["ok"], c["info"]
+        out = self._one_run(state, r)
+        if self.cache_dir:
+            os.makedirs(self.cache_dir, exist_ok=True)
+            row = {"r": r, "moves": [[m.axis, m.layer, m.turn] for m in out[1]], "ok": out[2], "info": out[3]}
+            with self._cache_lock, open(self._cache_file(state), "a") as fh:
+                fh.write(json.dumps(row, default=str) + "\n")
+        return out
+
+    def _one_run(self, state, r):
         P = self.puzzle
         best = None
         for name, inner in self.inners:

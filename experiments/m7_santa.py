@@ -13,6 +13,7 @@ file, or in the earlier subset files of the same configuration, are skipped.
 from __future__ import annotations
 
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -25,6 +26,8 @@ from rubiks.solvers import Budget, get_solver, load_all
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "docs" / "results" / "santa"
+# finished copies are kept on disk, so a container restart in the middle of a puzzle loses at most the running copies
+os.environ.setdefault("M7_COPY_CACHE", str(OUT / "m7_copy_cache"))
 # earlier runs of exactly these configurations (first puzzles of N = 4, 5)
 EARLIER = {4: [("m7_beam_sa1M_48copies_N4.jsonl", "beam48"), ("m7_default_8copies_N4.jsonl", "default8")],
            5: [("m7_beam_sa1M_24copies_nxopt_N5.jsonl", "beam24")]}
