@@ -63,7 +63,8 @@ def main(sizes: list[int]) -> None:
         P = cube(N)
         out = OUT / f"m7_full_N{N}.jsonl"
         skip = done_ids(N)
-        solvers = [(tag, get_solver("m7_portfolio", P, Budget(wall_time_s=4 * 3600), copies=k, workers=3,
+        solvers = [(tag, get_solver("m7_portfolio", P, Budget(wall_time_s=4 * 3600), copies=k,
+                                    workers=2 if N >= 10 else 3,  # one N = 10 copy needs ~4.7 GB of RAM
                                     inner_kwargs=kw)) for tag, k, kw in configs(N)]
         for ins in santa2023.instances(N):
             if ins.id in skip:
