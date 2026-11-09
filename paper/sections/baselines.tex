@@ -21,8 +21,8 @@ these defaults B2 is ``what one run of the published code gives''. A two-line pa
 random seed and the length of their annealing stage be set by environment variables; the defaults are unchanged.
 
 \paragraph{B3: dwalton76.}
-The open NxNxN reduction solver of Walton~\cite{walton2017nxnxn}, with its lookup tables (about 8\,GB for $N\le7$, the
-range we ran), on the Santa puzzles. Its wide turns are expanded into single-slice turns before measuring.
+The open NxNxN reduction solver of Walton~\cite{walton2017nxnxn}, with its lookup tables (about 8\,GB), on the Santa puzzles. Its wide turns are expanded into single-slice turns before measuring. At $N=9$ its answers end with the whole cube in another orientation; Santa's
+goal is exact, so we append the shortest whole-cube rotation, counted as $N$ slice turns per quarter turn (9--18 moves).
 
 \paragraph{Components.}
 Kociemba's two-phase algorithm~\cite{kociemba2phase} (the \texttt{kociemba} Python package) finishes the \Cu{3} stage of
