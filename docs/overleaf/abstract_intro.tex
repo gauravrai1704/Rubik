@@ -1,0 +1,69 @@
+%% =====================================================================
+%% (1) main.tex preamble: add next to \MsevenEight, \MsevenNine and \MsevenTen.
+%% SymPort's total QTM over all 184 Santa puzzles with N = 4..10:
+%%   6,334 (N = 4..7, already measured) + 3*\MsevenEight + 3*\MsevenNine + 4*\MsevenTen
+%% KMCoders' published total over the same 184 puzzles is 12,324.
+\newcommand{\MsevenSantaTotal}{??,???}
+
+%% =====================================================================
+%% (2) main.tex: replace everything between \begin{abstract} and \end{abstract}
+\begin{abstract}
+Short solutions of large Rubik's puzzles are known mostly from small cubes and from programming competitions, and the methods
+are rarely compared on common ground. We build one open engine for the \Cu{N} Rubik's Cube and the \Sq{N} Rubik's Square and
+run eight solvers on the same instances. Five reproduce known methods, among them the KMCoders pipeline behind the strongest
+public large-cube solutions of Kaggle's Santa 2023 competition, and three are new. Our main method, \Mseven, runs a deterministic
+solver on symmetric copies of a scramble (up to 48 for the cube, 8 for the Square) and keeps the shortest answer, which maps back
+to a solution of the original state with the same length. Wrapped around KMCoders' own program with an optimal central
+3$\times$3$\times$3 stage, it is shorter on average than their published best-of-many solutions at every Santa 2023 cube size
+from $N=4$ to 10, with \MsevenSantaTotal{} against 12,324 quarter turns over all \SantaTotal{} puzzles. \FiveC schedules
+Demaine et al.'s bulk commutators by net gain rather than unanimous need. On random cubes it is \FiveCGainTen\% shorter than
+Demaine's algorithm at $N=10$, a lead that grows with $N$. \FiveA, a cluster-token transformer trained on small Squares only,
+solves Squares of sizes it never saw. Finally, a counting lower bound, calibrated on Squares whose exact God's numbers we
+compute (\GodSquareThree, \GodSquareFour{} and \GodSquareFive{} for $N=3$, 4 and 5), puts the published Santa solutions at
+\PubOverBoundFour{}$\times$ the bound at $N=4$ and \PubOverBoundTen{}$\times$ at $N=10$, a gap that grows like $\log N$. We
+release the engine, the benchmarks, every solver and every result file.
+\end{abstract}
+
+%% =====================================================================
+%% (3) sections/intro.tex: replace the whole file (the separate Contributions section is folded in here)
+%% =====================================================================
+\section{Introduction}
+\label{sec:intro}
+
+The \Cu{N} Rubik's Cube is a standard testbed for planning on graphs that are far too large to
+enumerate. Its worst-case solution length, God's number, is 20 face turns for $N=3$~\cite{rokicki2014diameter}
+(26 quarter turns~\cite{rokicki2014qtm}) and grows as $\Theta(N^2/\log N)$~\cite{demaine2011algorithms};
+finding a shortest solution of a given state is NP-complete~\cite{demaine2018npcomplete}. Learned solvers
+have recently become strong on small cubes. DeepCubeA~\cite{agostinelli2019deepcubea} and
+EfficientCube~\cite{takano2023selfsupervision} solve the \Cu{3}, and CayleyPy~\cite{chervov2025cayleypy}
+reaches near-optimal \Cu{3} solutions and the first learned \Cu{4} and \Cu{5} solvers. All of them train one
+network per size, and none reports a cube beyond $N=5$. At the other end of the scale, the strongest public
+large-cube solutions come from a programming competition, Kaggle's Santa 2023~\cite{kaggle2023santa}, where
+the team KMCoders solved, among others, a \Cu{33} in 4,719 quarter turns~\cite{kmcoders2024santa}.
+
+We ask what it takes to cover the whole range of sizes, for both the cube and its flat relative, the \Sq{N}
+Rubik's Square of Demaine et al.~\cite{demaine2011algorithms}; which approach gives the shortest solutions at
+each size; whether any method can beat the published competition solutions; and how far all of them are
+from optimal. To answer on common ground, we run eight solvers and three external baselines on one open engine,
+on the same seeded random Squares and the same Santa 2023 cube puzzles; every number in this paper is generated
+by script from the result files.
+
+\paragraph{Contributions.}
+\begin{itemize}
+\item \textbf{\Mseven, a symmetry portfolio} (\S\ref{sec:m7}), our main method. Around KMCoders' program it is the best
+  method at every Santa 2023 cube size from $N=4$ to 10, ahead of their published best-of-many solutions on average
+  (Table~\ref{tab:maincube}); around our strongest Square solvers it is the best method at \MsevenRedSquare{} of the
+  \SizesSquare{} Square sizes (Table~\ref{tab:mainsq}).
+\item \textbf{\FiveC, net-gain scheduling of bulk commutators} (\S\ref{sec:5c}): the strongest single solver on large
+  Squares, and \FiveCGainTwenty\% shorter than Demaine's algorithm on the random \Cu{20}.
+\item \textbf{\FiveA, one network for every size} (\S\ref{sec:5a}): a cluster-token transformer that solves Square
+  sizes it never saw in training.
+\item \textbf{How far from optimal} (\S\ref{sec:bound}): a counting lower bound for every \Cu{N}, calibrated on the
+  first exact God's numbers we know of for the \Sq{4} and \Sq{5}, and measured against every method.
+\item \textbf{An open engine and benchmark} (\S\ref{sec:engine}) for both puzzles at every $N$, with a harness that
+  re-applies and verifies every solution and an exact adapter for the Santa 2023 puzzles.
+\end{itemize}
+We also reproduce five known methods: \Mone~\cite{korf1997optimal}, \Mtwo~\cite{kociemba2phase},
+\Mthree~\cite{demaine2011algorithms}, \Mfour~\cite{chervov2025cayleypy} and \Msix, the KMCoders pipeline rebuilt from its
+write-up~\cite{kmcoders2024santa}. We run three external baselines unchanged (\S\ref{sec:baselines}): \Bone, \Btwo and
+\Bthree~\cite{walton2017nxnxn}. Table~\ref{tab:names} lists every name.
