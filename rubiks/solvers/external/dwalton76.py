@@ -89,5 +89,32 @@ class DWalton76(Solver):
         if not line:
             raise RuntimeError("dwalton76 gave no solution: " + (r.stdout + r.stderr)[-300:])
         sol = line[-1].split(":", 1)[1].strip()
-        return SolveResult(moves=to_moves(sol, self.puzzle), wall_time_s=time.time() - t0,
-                           info={"dwalton76": sol})
+        moves = to_moves(sol, self.puzzle)
+        rot = _orient(self.puzzle, self.puzzle.apply(s, moves))
+        info = {"dwalton76": sol}
+        if rot:  # its answer can end in another orientation (seen at N = 9); the exact goal needs the rotation too
+            moves += rot
+            info["rotation_moves"] = len(rot)
+        return SolveResult(moves=moves, wall_time_s=time.time() - t0, info=info)
+
+
+def _orient(P: PuzzleSpec, s: np.ndarray) -> list[Move]:
+    """Shortest whole-cube rotation (as N slice turns per rotation, every slice counted) from a solved-but-rotated
+    state ``s`` to the exact solved state; [] if already exact or not solved."""
+    import itertools
+
+    if np.array_equal(s, P.solved) or not P.is_solved(s):
+        return []
+    N = P.N
+    turns = [[Move(ax, d, t) for d in range(N)] for ax in range(3) for t in (1, 2, 3)]
+    best = None
+    for k in (1, 2, 3):
+        for seq in itertools.product(turns, repeat=k):
+            mv = [m for group in seq for m in group]
+            if np.array_equal(P.apply(s, mv), P.solved):
+                q = sum(2 if m.turn == 2 else 1 for m in mv)
+                if best is None or q < best[0]:
+                    best = (q, mv)
+        if best:
+            return best[1]
+    raise RuntimeError("no whole-cube rotation reaches the goal")
