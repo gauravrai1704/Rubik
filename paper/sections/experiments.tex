@@ -21,8 +21,9 @@ everything is from optimal (\S\ref{sec:exp-bound}).
 \caption{\textbf{Rubik's Square}, random states: mean solution length (HTM; on the Square HTM\,=\,QTM) of every method on the same
 instances ($n$ per size). In each row the \best{best} method is red and the \second{second best} green; only methods that solved
 every instance of that size are ranked, and ties share the colour. \Mone: exact optimum (breadth-first search for $N\le4$, IDA*
-for $N=5$; beyond, no optimal solver finishes). \Mfour: per-size network, $W{=}4096$, only for $N\le8$. A superscript gives the
-solved fraction when below 100\%; ``--'' = not run.}
+for $N=5$). \Mfour: per-size network, $W{=}4096$. A superscript gives the solved fraction when below 100\%. A dash means
+no result, for three reasons: \Mone{} at $N\ge6$, where no optimal solver finishes (0/10 states at $N=6$); \Mfour{} at
+$N\ge9$, for which no network was trained; \FiveA{} at $N=3$, 13 and 15--20, not run.}
 \label{tab:mainsq}
 \small
 \begin{tabular}{@{}rr|r|rrrrrr@{}}
@@ -37,7 +38,9 @@ $N$ & $n$ & \Mseven (ours) & \Mone optimal & \Mfour & \FiveA (ours) & \FiveC (ou
 \caption{\textbf{Rubik's Cube}, Santa 2023 puzzles: mean solution length in QTM, the competition's score, of every method on the
 same puzzles ($n$ per size). In each row the \best{best} method is red and the \second{second best} green; only methods that solved
 every puzzle of that size are ranked. B1: KMCoders' published best-of-many solutions; B2: one run of their program; B3: dwalton76
-(\S\ref{sec:baselines}). A superscript gives the number of puzzles run when below $n$; ``--'' = not run.}
+(\S\ref{sec:baselines}). A superscript gives the number of puzzles run when below $n$. A dash means not run, because of
+cost: \Mseven{} and B2 at $N=19$ and 33 (hours of CPU per copy); B3 at $N\ge8$ (run for $N\le7$ only); \Msix, \FiveC,
+\Mthree{} and \Mtwo{} at $N=33$.}
 \label{tab:maincube}
 \small
 \resizebox{\textwidth}{!}{%
