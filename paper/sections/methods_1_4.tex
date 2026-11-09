@@ -21,7 +21,7 @@ per random state on our CPUs at the largest size we ran (details in each subsect
 4 & CayleyPy per-size network & repro.\ of~\cite{chervov2025cayleypy} & Square $N\le8$ & near-optimal where trained & seconds (\Sq{8}, $W{=}4096$) \\
 5A & cluster-token transformer & new & Square $N\le14$ & $\Theta(N^2)$ & 1.5\,min (\Sq{14}, T4) \\
 5C & net-gain bulk commutators & new & both, $N\le20$ & between $N^2/\log N$ and $N^2$ (empirical) & \FiveCTwentyMin{} min (\Cu{20}) \\
-6 & KMCoders pipeline from its write-up & repro.\ of~\cite{kmcoders2024santa} & cube, $N\le19$ (Santa) & $\Theta(N^2)$ & 14 min (\Cu{19}) \\
+6 & KMCoders pipeline from its write-up & repro.\ of~\cite{kmcoders2024santa} & cube, $N\le10$ (Santa) & $\Theta(N^2)$ & 14 min (\Cu{19}) \\
 7 & symmetry portfolio (main method) & new & cube (Santa), Square $N\le20$ & as its inner solver & $k\times$ the inner solver; \MsevenCpuMinFour{} CPU-min (\Cu{4}) \\
 \bottomrule
 \end{tabular}

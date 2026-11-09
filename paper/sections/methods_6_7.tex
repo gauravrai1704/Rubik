@@ -52,8 +52,8 @@ $a\leftarrow$ \textsc{Anneal}$(a)$ over parity-preserving inner-slice edits, obj
 \Return $a$\;
 \end{algorithm}
 
-\emph{Cost.} Storing $\mathrm{suf}_t$ and $\mathrm{inv}_t$ for all $T$ times takes $O(T\cdot6N^2)$ memory (about 21\,MB at
-$N=19$); an insertion rebuilds the suffixes before it in $O(t\cdot6N^2)$. One greedy round scores $O(\text{times}\times
+\emph{Cost.} Storing $\mathrm{suf}_t$ and $\mathrm{inv}_t$ for all $T$ times takes $O(T\cdot6N^2)$ memory (a few megabytes at
+$N=10$); an insertion rebuilds the suffixes before it in $O(t\cdot6N^2)$. One greedy round scores $O(\text{times}\times
 \text{candidates})$ gathers. Every 3-cycle fixes $O(1)$ pieces, so solutions have $\Theta(N^2)$ moves.
 \emph{What it leaves out.} Comparing with KMCoders' code shows what the write-up does not describe: their stage 3 also applies
 bulk commutators $[D_I,R_J]$ of whole slice sets $I$, $J$ chosen by annealing (Demaine-style parallel moves), their final stage

@@ -34,7 +34,8 @@ def word(n: int) -> str:
 
 
 S = RES / "santa"
-pub = {r["id"]: r for r in rows(S / "kmcoders.jsonl")}
+SANTA_MAX_N = 10  # the paper uses the Santa cubes up to 10x10x10 only
+pub = {r["id"]: r for r in rows(S / "kmcoders.jsonl") if r["N"] <= SANTA_MAX_N}
 one = {}
 for N in range(4, 11):
     for r in rows(S / f"kmcoders_program_N{N}.jsonl"):
@@ -47,7 +48,7 @@ M7 = {"N4_48": {r["id"]: r for r in rows(S / "m7_beam_sa1M_48copies_N4.jsonl")},
       "N5_24": {r["id"]: r for r in rows(S / "m7_beam_sa1M_24copies_N5.jsonl")},
       "N5_24nx": {r["id"]: r for r in rows(S / "m7_beam_sa1M_24copies_nxopt_N5.jsonl")}}
 
-NS = [4, 5, 6, 7, 8, 9, 10, 19, 33]
+NS = [4, 5, 6, 7, 8, 9, 10]
 
 
 def _m7_best() -> dict:
@@ -111,7 +112,7 @@ def build(macro):
     macro("SantaTotal", sum(1 for r in pub.values() if r["N"] >= 2))
 
     # ratios used in the text
-    for N, tag in ((4, "Four"), (5, "Five"), (6, "Six"), (7, "Seven"), (10, "Ten"), (19, "Nineteen"), (33, "ThirtyThree")):
+    for N, tag in ((4, "Four"), (5, "Five"), (6, "Six"), (7, "Seven"), (8, "Eight"), (9, "Nine"), (10, "Ten")):
         ids = [i for i, r in pub.items() if r["N"] == N]
         p, _ = mean_on(pub, ids)
         macro(f"Bound{tag}", fmt(bound(N), 1))
@@ -126,7 +127,7 @@ def build(macro):
             macro(f"One{tag}", fmt(o, 1))
     for key, tag in (("5C", "FiveC"), ("M6", "Msix")):
         rs = []
-        for N in (4, 5, 6, 7, 8, 9, 10, 19):
+        for N in (4, 5, 6, 7, 8, 9, 10):
             ids = [i for i, r in pub.items() if r["N"] == N]
             m, n = mean_on(meth[key], ids)
             if m and n == len(ids):
@@ -142,7 +143,7 @@ def build(macro):
         macro("MsevenNxoptMean", fmt(np.mean([r["qtm"] for r in nx]), 1))
         macro("MsevenNxoptPubMean", fmt(np.mean([pub[r["id"]]["qtm"] for r in nx]), 1))
     # n^2 constants of the published lengths
-    for N, tag in ((10, "Ten"), (19, "Nineteen"), (33, "ThirtyThree")):
+    for N, tag in ((4, "Four"), (7, "Seven"), (10, "Ten")):
         ids = [i for i, r in pub.items() if r["N"] == N]
         macro(f"PubPerNsq{tag}", fmt(mean_on(pub, ids)[0] / N ** 2, 2))
 
@@ -305,7 +306,7 @@ def build_m7_all(macro):
 def build_more(macro):
     # ---------------------------------------------------------------- time per Santa puzzle (wall s, mean)
     lines = []
-    for N in (4, 5, 6, 7, 8, 9, 10, 19):
+    for N in (4, 5, 6, 7, 8, 9, 10):
         ids = [i for i, r in pub.items() if r["N"] == N]
         cells = [str(N)]
         for src in (one, meth["dwalton76"], meth["M6"], meth["5C"], meth["M3"], meth["M2"]):

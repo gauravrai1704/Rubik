@@ -38,8 +38,7 @@ $N$ & $n$ & \Mseven (ours) & \Mone optimal & \Mfour & \FiveA (ours) & \FiveC (ou
 \caption{\textbf{Rubik's Cube}, Santa 2023 puzzles: mean solution length in QTM, the competition's score, of every method on the
 same puzzles ($n$ per size). In each row the \best{best} method is red and the \second{second best} green; only methods that solved
 every puzzle of that size are ranked. B1: KMCoders' published best-of-many solutions; B2: one run of their program; B3: dwalton76
-(\S\ref{sec:baselines}). A superscript gives the number of puzzles run when below $n$. Sizes $N\le10$ (the larger Santa cubes, $N=19$ and 33, are left out: one run of
-\Mseven{} there costs hours of CPU per copy).}
+(\S\ref{sec:baselines}). A superscript gives the number of puzzles run when below $n$. Santa cubes up to $N=10$ (\S\ref{sec:data}).}
 \label{tab:maincube}
 \small
 \resizebox{\textwidth}{!}{%
@@ -203,7 +202,7 @@ KMCoders' published mean (dashed).}
 \paragraph{Time.}
 Table~\ref{tab:santatime} gives the mean wall time per Santa puzzle. One run of KMCoders' program takes about a minute at $N=4$
 and 22 minutes at $N=9$ on our shared machine, so \Mseven's $k$ copies cost $k$ times that; our cluster methods take seconds to
-minutes even at $N=19$.
+minutes even at $N=10$.
 
 \begin{table}[t]
 \caption{Mean wall time per Santa puzzle (seconds; shared 4-core machine, so indicative).}
@@ -298,11 +297,11 @@ states. A flat line would mean growth at the rate of the worst case. Means over 
 \label{sec:exp-bound}
 
 Figure~\ref{fig:santaratio} divides each method's mean Santa length by the counting bound of \S\ref{sec:bound}. KMCoders' published
-solutions are \PubOverBoundFour{}$\times$ the bound at $N=4$, \PubOverBoundTen{}$\times$ at $N=10$, \PubOverBoundNineteen{}$\times$ at
-$N=19$ and \PubOverBoundThirtyThree{}$\times$ at $N=33$. On the Square, where we know the truth, the worst case is 1.5--1.7$\times$ the
+solutions are \PubOverBoundFour{}$\times$ the bound at $N=4$, \PubOverBoundSeven{}$\times$ at $N=7$ and
+\PubOverBoundTen{}$\times$ at $N=10$. On the Square, where we know the truth, the worst case is 1.5--1.7$\times$ the
 bound (Table~\ref{tab:cal}), and typical optimal distances are lower still, so at small $N$ the published solutions are within a small
-factor of optimal, and the room left grows with $N$. The growth has a clear cause: the published lengths are a near-constant
-\PubPerNsqTen{}, \PubPerNsqNineteen{} and \PubPerNsqThirtyThree{}$\cdot N^2$ at $N=10$, 19 and 33, while the bound grows like
+factor of optimal, and the room left grows with $N$. The growth has a clear cause: the published lengths grow like $N^2$
+(\PubPerNsqFour{}, \PubPerNsqSeven{} and \PubPerNsqTen{}$\cdot N^2$ at $N=4$, 7 and 10), while the bound grows like
 $N^2/\log N$. KMCoders' final stage fixes $O(1)$ pieces per 3-cycle, so it is $\Theta(N^2)$, although their stage 3 already contains
 Demaine-style bulk commutators. A method that kept the parallelism of bulk commutators into the endgame, as \FiveC does on the random
 benchmark, is the natural way to close this gap at large $N$; on Santa today, \FiveC's constant is still too large.

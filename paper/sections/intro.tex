@@ -11,7 +11,7 @@ EfficientCube~\cite{takano2023selfsupervision} solve the \Cu{3}, and CayleyPy~\c
 reaches near-optimal \Cu{3} solutions and the first learned \Cu{4} and \Cu{5} solvers. All of them train one
 network per size, and none reports a cube beyond $N=5$. At the other end of the scale, the strongest public
 large-cube solutions come from a programming competition, Kaggle's Santa 2023~\cite{kaggle2023santa}, where
-the team KMCoders solved, among others, a \Cu{33} in \PubThirtyThree{} quarter turns~\cite{kmcoders2024santa}.
+the team KMCoders solved, among others, a \Cu{33} in 4,719 quarter turns~\cite{kmcoders2024santa}.
 
 We ask what it takes to cover the whole range of sizes, for both the cube and its flat relative, the \Sq{N}
 Rubik's Square of Demaine et al.~\cite{demaine2011algorithms}; which approach gives the shortest solutions at
@@ -32,7 +32,7 @@ sizes (Table~\ref{tab:mainsq}). Our \FiveC, a net-gain schedule for Demaine's bu
 large Squares and, on random cubes, shorter than our reproduction of Demaine's algorithm by a margin that grows with $N$
 (\FiveCGainTwenty\% on the \Cu{20}), significant from $N=5$ on with 20 states per size. (iii) A counting lower bound
 shows how much room is left: the published lengths are \PubOverBoundFour{}$\times$ the bound at $N=4$ and
-\PubOverBoundThirtyThree{}$\times$ at $N=33$, a gap that grows like $\log N$ because the competition method
+\PubOverBoundTen{}$\times$ at $N=10$, a gap that grows like $\log N$ because the competition method
 fixes $O(1)$ pieces per 3-cycle in its final stage.
 
 %% =====================================================================
