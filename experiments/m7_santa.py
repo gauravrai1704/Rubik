@@ -23,6 +23,7 @@ import numpy as np
 from rubiks.bench import santa2023
 from rubiks.engine import cube, metrics
 from rubiks.solvers import Budget, get_solver, load_all
+from rubiks.solvers.external import nxopt
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "docs" / "results" / "santa"
@@ -64,7 +65,7 @@ def main(sizes: list[int]) -> None:
         out = OUT / f"m7_full_N{N}.jsonl"
         skip = done_ids(N)
         solvers = [(tag, get_solver("m7_portfolio", P, Budget(wall_time_s=4 * 3600), copies=k,
-                                    workers=2 if N >= 10 else 3,  # one N = 10 copy needs ~4.7 GB of RAM
+                                    workers=2 if N >= 8 else 3,  # 15 GB: one copy needs 3-4.7 GB at N = 8-10, each nxopt 1.4 GB
                                     inner_kwargs=kw)) for tag, k, kw in configs(N)]
         for ins in santa2023.instances(N):
             if ins.id in skip:
@@ -87,6 +88,7 @@ def main(sizes: list[int]) -> None:
             with out.open("a") as fh:
                 fh.write(json.dumps(row) + "\n")
             print(ins.id, row["qtm"], row["wall_time_s"], flush=True)
+        nxopt.shutdown()  # free the idle nxopt processes (1.4 GB each) before the next size
 
 
 if __name__ == "__main__":

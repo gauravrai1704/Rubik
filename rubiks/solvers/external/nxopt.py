@@ -113,6 +113,16 @@ _idle: list[_Server] = []  # free processes; a caller takes one (or starts one),
 _server_lock = __import__("threading").Lock()
 
 
+def shutdown() -> None:
+    """Stop the idle nxopt processes (each holds the 1.42 GB table), e.g. before a memory-hungry stage."""
+    with _server_lock:
+        while _idle:
+            srv = _idle.pop()
+            if srv.p.poll() is None:
+                srv.p.kill()
+                srv.p.wait()
+
+
 def optimal_from_solution(moves3: list[Move], timeout: float = 1200.0) -> list[Move]:
     """An optimal QTM solution of the 3x3x3 position that ``moves3`` (face turns) solves."""
     inv = [m.inverse() for m in reversed(moves3)]

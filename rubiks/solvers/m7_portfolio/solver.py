@@ -63,7 +63,7 @@ class SymmetryPortfolio(Solver):
                     if c["r"] == r:
                         return r, [Move(*m) for m in c["moves"]], c["ok"], c["info"]
         out = self._one_run(state, r)
-        if self.cache_dir:
+        if self.cache_dir and out[2]:  # a failed copy (e.g. killed for lack of memory) is retried on a rerun
             os.makedirs(self.cache_dir, exist_ok=True)
             row = {"r": r, "moves": [[m.axis, m.layer, m.turn] for m in out[1]], "ok": out[2], "info": out[3]}
             with self._cache_lock, open(self._cache_file(state), "a") as fh:
@@ -72,7 +72,7 @@ class SymmetryPortfolio(Solver):
 
     def _one_run(self, state, r):
         P = self.puzzle
-        best = None
+        best, errors = None, []
         for name, inner in self.inners:
             try:
                 res = inner.solve(rotated(P, state, r))
@@ -81,9 +81,11 @@ class SymmetryPortfolio(Solver):
             moves = map_back(P, res.moves, r)
             ok = self._solved(P.apply(np.asarray(state), moves))
             info = dict(res.info or {}, inner=name)
+            if not ok:
+                errors.append({"inner": name, **info})
             if ok and (best is None or metrics(moves, P)["qtm"] < metrics(best[1], P)["qtm"]):
                 best = (r, moves, True, info)
-        return best or (r, [], False, {})
+        return best or (r, [], False, {"errors": errors})
 
     def solve(self, state: np.ndarray) -> SolveResult:
         t0 = time.time()
