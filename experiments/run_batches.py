@@ -16,9 +16,9 @@ BATCHES = [
     ("m7_N5", [PY, "experiments/m7_santa.py", "5"]),           # ~5 h
     ("m7_N6_N7", [PY, "experiments/m7_santa.py", "6", "7"]),   # ~7 h
     ("m7_N4", [PY, "experiments/m7_santa.py", "4"]),           # ~10 h
-    ("seed_control_N4", [PY, "experiments/m7_seed_control.py"]),  # ~3 h
     ("b2_N10", [PY, "experiments/kmc_one_run.py", "10"]),      # ~3 h
     ("m7_N8_N10", [PY, "experiments/m7_santa.py", "8", "9", "10"]),  # ~17 h
+    ("seed_control_N4", [PY, "experiments/m7_seed_control.py"]),  # ~3 h (after the main-table runs)
     # N = 19 left out of the paper's runs (cost: tens of hours per configuration)
 ]
 
