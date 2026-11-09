@@ -19,8 +19,7 @@ BATCHES = [
     ("seed_control_N4", [PY, "experiments/m7_seed_control.py"]),  # ~3 h
     ("b2_N10", [PY, "experiments/kmc_one_run.py", "10"]),      # ~3 h
     ("m7_N8_N10", [PY, "experiments/m7_santa.py", "8", "9", "10"]),  # ~17 h
-    ("b2_N19", [PY, "experiments/kmc_one_run.py", "19"]),      # ~10 h
-    ("m7_N19", [PY, "experiments/m7_santa.py", "19"]),         # ~15-20 h
+    # N = 19 left out of the paper's runs (cost: tens of hours per configuration)
 ]
 
 # do not run two campaigns at once: wait for one started by hand to finish
