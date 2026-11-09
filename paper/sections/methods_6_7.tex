@@ -1,5 +1,5 @@
 %% ---------------------------------------------------------------------
-\subsection{Method 6: the KMCoders pipeline from its write-up (our reproduction)}
+\subsection{\Msix: the KMCoders pipeline from its write-up (our reproduction)}
 \label{sec:m6}
 
 \emph{Origin.} The cube part of KMCoders' Santa 2023 solution~\cite{kmcoders2024santa}, implemented from their written
@@ -61,7 +61,7 @@ counts the exact minimum number of 3-cycles each cluster still needs and inserts
 $10^5$ sequences for small $N$, and they solve odd cubes' central \Cu{3} optimally.
 
 %% ---------------------------------------------------------------------
-\subsection{Method 7: a symmetry portfolio around deterministic solvers (new, main method)}
+\subsection{\Mseven: a symmetry portfolio around deterministic solvers (new, main method)}
 \label{sec:m7}
 
 \emph{Idea.} A deterministic solver that is far from optimal is not equally far on every input: KMCoders' program, run once
@@ -88,7 +88,7 @@ The harness verifies every mapped-back solution independently. $\square$
 
 \emph{Steps.}
 \begin{enumerate}
-\item \emph{Inner solver.} KMCoders' program (B2) with three settings: their beam variant (\texttt{solve\_cube\_beam}), which their
+\item \emph{Inner solver.} KMCoders' program (\Btwo) with three settings: their beam variant (\texttt{solve\_cube\_beam}), which their
   write-up recommends for small $N$; 1M instead of 20M annealing iterations in their second stage, which takes about three
   quarters of a \Cu{4} run and did not change lengths measurably at 0.5M, 2M or 20M iterations; and, for odd $N$, an optimal
   quarter-turn central \Cu{3} from \texttt{nxopt} (Kociemba's answer only defines the position; \texttt{nxopt} solves it

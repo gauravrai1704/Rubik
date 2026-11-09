@@ -48,7 +48,7 @@ seed, hardware and git commit. A crash or time-out counts as a failure and stays
 into engine moves (wide turns expanded into single-slice turns) and re-verified like any other method's.
 
 \paragraph{Shared beam search.}
-Methods 4, 5A and 5B share one beam search. Per step it expands the beam in chunks, scores children with the
+\Mfour, \FiveA and \FiveB share one beam search. Per step it expands the beam in chunks, scores children with the
 heuristic, and keeps the $W$ best after removing duplicates by a random 64-bit linear hash (also across the last three
 steps). Only (score, hash, parent, action) is stored per child; the next beam is rebuilt from parents. Beam states are
 packed at 3 bits per sticker and can live on the device, in pinned host memory or on disk. The search accepts
@@ -57,7 +57,7 @@ heuristic that can score all children of a parent in one pass is used that way, 
 One step of a width-$W$ search with $A$ actions costs $O(WA)$ heuristic evaluations and $O(WA\cdot N^2)$ sticker work.
 
 \paragraph{Pure 3-cycles for any cluster.}
-Methods 2, 3 and 5C need, for every center and wing cluster of every $N$, move sequences that 3-cycle three of its
+\Mtwo, \Mthree and \FiveC need, for every center and wing cluster of every $N$, move sequences that 3-cycle three of its
 pieces and touch nothing else. We find them automatically. For centers we enumerate commutators $[A, B\,C\,B']$ with
 $A$ and $C$ inner-slice quarter turns on one axis and $B$ an outer face turn; for wings, $[X, Y\,Z\,Y']$ with $X$ an
 inner slice and $Y, Z$ outer faces. A candidate is kept if, applied to the sticker permutation, it moves exactly three

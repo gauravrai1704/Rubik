@@ -5,27 +5,27 @@
 These programs and results are not ours. We run them unchanged through our harness (\S\ref{sec:engine}), which
 re-verifies every solution and measures it in our metrics.
 
-\paragraph{B1: KMCoders' published Santa 2023 solutions.}
+\paragraph{\Bone: KMCoders' published Santa 2023 solutions.}
 The final submission of KMCoders~\cite{kmcoders2024santa}, replayed in our engine. Each of its \SantaTotal{}
 standard-goal cube solutions reaches the exact goal. These are the best lengths KMCoders kept per puzzle over the
 competition (their repository stores per-puzzle best files), so they reflect many runs and much tuning; we treat
 them as the published reference numbers. They exist only for the Santa puzzles.
 
-\paragraph{B2: KMCoders' program, one run.}
+\paragraph{\Btwo: KMCoders' program, one run.}
 KMCoders' Rust cube solver (\texttt{solve\_cube} from the same repository), built from source and run once per state
 through a wrapper that writes the state in their input format. Our input matches their own puzzle files byte for byte
 (unit test). Their program caches per-puzzle intermediate results and, for odd $N$, reads its central-\Cu{3} solution
 from a cache file that came from an external optimal solver in the competition (and otherwise calls a third-party
 solver from a fixed path); we supply that stage with Kociemba's two-phase algorithm, the program's own fallback. With
-these defaults B2 is ``what one run of the published code gives''. A two-line patch (released with our code) lets the
+these defaults \Btwo is ``what one run of the published code gives''. A two-line patch (released with our code) lets the
 random seed and the length of their annealing stage be set by environment variables; the defaults are unchanged.
 
-\paragraph{B3: dwalton76.}
+\paragraph{\Bthree: dwalton76's NxNxN solver.}
 The open NxNxN reduction solver of Walton~\cite{walton2017nxnxn}, with its lookup tables (about 8\,GB), on the Santa puzzles. Its wide turns are expanded into single-slice turns before measuring. At $N=9$ its answers end with the whole cube in another orientation; Santa's
 goal is exact, so we append the shortest whole-cube rotation, counted as $N$ slice turns per quarter turn (9--18 moves).
 
 \paragraph{Components.}
 Kociemba's two-phase algorithm~\cite{kociemba2phase} (the \texttt{kociemba} Python package) finishes the \Cu{3} stage of
-Methods 2, 3 and 5C and of B2 for odd $N$. Rokicki's \texttt{nxopt}~\cite{rokicki2018nxopt}, built for the
+\Mtwo, \Mthree and \FiveC and of \Btwo for odd $N$. Rokicki's \texttt{nxopt}~\cite{rokicki2018nxopt}, built for the
 quarter-turn metric with a 1.42\,GB pruning table, gives optimal QTM solutions of that stage in \Mseven; one
 long-lived process keeps the table loaded and answers positions in seconds to about a minute each.

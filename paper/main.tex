@@ -4,6 +4,7 @@
 \documentclass[sigconf,nonacm]{acmart}
 
 \usepackage{booktabs}
+\usepackage{array}
 \usepackage{multirow}
 \usepackage[ruled,vlined,linesnumbered]{algorithm2e}
 \usepackage{tikz}
@@ -14,17 +15,26 @@
 
 \newcommand{\Sq}[1]{#1$\times$#1$\times$1\xspace}
 \newcommand{\Cu}[1]{#1$\times$#1$\times$#1\xspace}
-\newcommand{\Mfour}{Method~4\xspace}
-\newcommand{\FiveA}{Method~5A\xspace}
-\newcommand{\FiveB}{Method~5B\xspace}
+\newcommand{\Mname}[1]{\textsc{#1}\xspace}
+\newcommand{\Mone}{\Mname{IDA$^*$-PDB}}
+\newcommand{\Mtwo}{\Mname{Reduction}}
+\newcommand{\Mthree}{\Mname{Demaine}}
+\newcommand{\Mfour}{\Mname{CayleyPy}}
+\newcommand{\FiveA}{\Mname{OneNet}}
+\newcommand{\FiveB}{\Mname{OneNet-B}}
+\newcommand{\FiveC}{\Mname{NetGain}}
+\newcommand{\Msix}{\Mname{KMC-Repro}}
+\newcommand{\Mseven}{\Mname{SymPort}}
+\newcommand{\Bone}{\Mname{KMC-published}}
+\newcommand{\Btwo}{\Mname{KMC-one run}}
+\newcommand{\Bthree}{\Mname{dwalton76}}
+%% two-line table headers for the longer names
+\newcommand{\Hd}[1]{\begin{tabular}[b]{@{}c@{}}#1\end{tabular}}
+\newcommand{\BoneH}{\Hd{\textsc{KMC-}\\\textsc{published}}}
+\newcommand{\BtwoH}{\Hd{\textsc{KMC-}\\\textsc{one run}}}
+\newcommand{\MsixH}{\Hd{\textsc{KMC-}\\\textsc{Repro}}}
 \newcommand{\best}[1]{\textcolor{red}{\textbf{#1}}}
 \newcommand{\second}[1]{\textcolor{green!50!black}{\textbf{#1}}}
-\newcommand{\FiveC}{Method~5C\xspace}
-\newcommand{\Mone}{Method~1\xspace}
-\newcommand{\Mtwo}{Method~2\xspace}
-\newcommand{\Mthree}{Method~3\xspace}
-\newcommand{\Msix}{Method~6\xspace}
-\newcommand{\Mseven}{Method~7\xspace}
 \SetKwFor{ParallelFor}{for}{in parallel do}{end}
 
 \begin{document}

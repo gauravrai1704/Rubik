@@ -2,8 +2,37 @@
 \section{Methods}
 \label{sec:methods}
 
-We describe the eight methods in the order of their numbers. Each subsection states where the method comes from, its
-steps, its pseudocode, and its cost in moves, time and memory. Table~\ref{tab:methods} summarises them.
+We call every method and baseline by a short name; Table~\ref{tab:names} lists them all. We describe the eight methods
+from the oldest idea to the newest. Each subsection states where the method comes from, its steps, its pseudocode, and
+its cost in moves, time and memory. Table~\ref{tab:methods} summarises them.
+
+\begin{table}[t]
+\caption{Names used in this paper for every system we run: our eight methods (\S\ref{sec:methods}) and the three external
+baselines (\S\ref{sec:baselines}).}
+\label{tab:names}
+\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lp{4.6cm}l@{}}
+\toprule
+Name & System & Section \\
+\midrule
+\multicolumn{3}{@{}l}{\emph{Our methods: reproductions of published methods}} \\
+\Mone & IDA* with pattern databases (optimal) & \S\ref{sec:m1} \\
+\Mtwo & reduction + Kociemba's two-phase algorithm & \S\ref{sec:m2} \\
+\Mthree & Demaine et al.'s parallel cluster algorithm & \S\ref{sec:m3} \\
+\Mfour & CayleyPy per-size networks with beam search & \S\ref{sec:m4} \\
+\Msix & the KMCoders pipeline, rebuilt from its write-up & \S\ref{sec:m6} \\
+\multicolumn{3}{@{}l}{\emph{Our methods: new}} \\
+\FiveA & one cluster-token network for every size & \S\ref{sec:5a} \\
+\FiveB & learned beam search inside reduction stages (a variant we report only in Table~\ref{tab:optimal}) & \S\ref{sec:engine} \\
+\FiveC & net-gain scheduling of bulk commutators & \S\ref{sec:5c} \\
+\Mseven & symmetry portfolio (main method) & \S\ref{sec:m7} \\
+\multicolumn{3}{@{}l}{\emph{External baselines (their code or solutions)}} \\
+\Bone & KMCoders' published Santa 2023 solutions & \S\ref{sec:baselines} \\
+\Btwo & one run of KMCoders' program & \S\ref{sec:baselines} \\
+\Bthree & dwalton76's NxNxN solver & \S\ref{sec:baselines} \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \begin{table*}[t]
 \caption{The eight methods. ``Repro.'': our reproduction of a published method; ``new'': ours. Move growth is the
@@ -11,24 +40,24 @@ length of the returned solutions as a function of $N$ (proved for Demaine's cons
 per random state on our CPUs at the largest size we ran (details in each subsection and \S\ref{sec:experiments}).}
 \label{tab:methods}
 \footnotesize\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}lp{3.9cm}p{2.5cm}p{3.3cm}p{3.1cm}p{4.0cm}@{}}
+\begin{tabular}{@{}lp{3.4cm}p{2.3cm}p{3.0cm}p{2.9cm}p{3.6cm}@{}}
 \toprule
-\# & Method & Origin & Puzzles, sizes & Moves vs $N$ & Time per state (largest size) \\
+Name & Method & Origin & Puzzles, sizes & Moves vs $N$ & Time per state (largest size) \\
 \midrule
-1 & IDA* + pattern databases & repro.\ of Korf~\cite{korf1997optimal} & Square $N\le5$, \Cu{3} scrambles & optimal & seconds (\Sq{5}); random \Cu{3}: none in 30\,min \\
-2 & reduction + two-phase & repro.\ (standard) & both, $N\le20$ & $\Theta(N^2)$ & seconds to minutes (\Cu{20}) \\
-3 & Demaine's parallel algorithm & repro.\ of~\cite{demaine2011algorithms} & both, $N\le20$ & $\Theta(N^2/\log N)$ (theory) & minutes (\Cu{20}) \\
-4 & CayleyPy per-size network & repro.\ of~\cite{chervov2025cayleypy} & Square $N\le8$ & near-optimal where trained & seconds (\Sq{8}, $W{=}4096$) \\
-5A & cluster-token transformer & new & Square $N\le14$ & $\Theta(N^2)$ & 1.5\,min (\Sq{14}, T4) \\
-5C & net-gain bulk commutators & new & both, $N\le20$ & between $N^2/\log N$ and $N^2$ (empirical) & \FiveCTwentyMin{} min (\Cu{20}) \\
-6 & KMCoders pipeline from its write-up & repro.\ of~\cite{kmcoders2024santa} & cube, $N\le10$ (Santa) & $\Theta(N^2)$ & 14 min (\Cu{19}) \\
-7 & symmetry portfolio (main method) & new & cube (Santa), Square $N\le20$ & as its inner solver & $k\times$ the inner solver; \MsevenCpuMinFour{} CPU-min (\Cu{4}) \\
+\Mone & IDA* + pattern databases & repro.\ of Korf~\cite{korf1997optimal} & Square $N\le5$, \Cu{3} scrambles & optimal & seconds (\Sq{5}); random \Cu{3}: none in 30\,min \\
+\Mtwo & reduction + two-phase & repro.\ (standard) & both, $N\le20$ & $\Theta(N^2)$ & seconds to minutes (\Cu{20}) \\
+\Mthree & Demaine's parallel algorithm & repro.\ of~\cite{demaine2011algorithms} & both, $N\le20$ & $\Theta(N^2/\log N)$ (theory) & minutes (\Cu{20}) \\
+\Mfour & CayleyPy per-size network & repro.\ of~\cite{chervov2025cayleypy} & Square $N\le8$ & near-optimal where trained & seconds (\Sq{8}, $W{=}4096$) \\
+\FiveA & cluster-token transformer & new & Square $N\le14$ & $\Theta(N^2)$ & 1.5\,min (\Sq{14}, T4) \\
+\FiveC & net-gain bulk commutators & new & both, $N\le20$ & between $N^2/\log N$ and $N^2$ (empirical) & \FiveCTwentyMin{} min (\Cu{20}) \\
+\Msix & KMCoders pipeline from its write-up & repro.\ of~\cite{kmcoders2024santa} & cube, $N\le10$ (Santa) & $\Theta(N^2)$ & 14 min (\Cu{19}) \\
+\Mseven & symmetry portfolio (main method) & new & cube (Santa), Square $N\le20$ & as its inner solver & $k\times$ the inner solver; \MsevenCpuMinFour{} CPU-min (\Cu{4}) \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
 %% ---------------------------------------------------------------------
-\subsection{Method 1: IDA* with pattern databases (our reproduction)}
+\subsection{\Mone: IDA* with pattern databases (our reproduction)}
 \label{sec:m1}
 
 \emph{Origin.} Korf's optimal \Cu{3} solver~\cite{korf1997optimal}, with pattern databases~\cite{culberson1998pattern};
@@ -81,7 +110,7 @@ $\bar h$ the typical heuristic value; at $d\approx18$ for a random \Cu{3} this i
 Breadth-first search over the \Sq{5} stores $1.06\cdot10^7$ states (about 6\,GB in Python).
 
 %% ---------------------------------------------------------------------
-\subsection{Method 2: reduction with Kociemba's two-phase algorithm (our reproduction)}
+\subsection{\Mtwo: reduction with Kociemba's two-phase algorithm (our reproduction)}
 \label{sec:m2}
 
 \emph{Origin.} The standard reduction method for large cubes~\cite{walton2017nxnxn}, with Kociemba's two-phase
@@ -131,7 +160,7 @@ moves, so solutions have $\Theta(N^2)$ moves. Building the libraries is a breadt
 cluster type (seconds); each greedy step scans all clusters' libraries ($O(N^2\cdot 4{,}048)$ lookups).
 
 %% ---------------------------------------------------------------------
-\subsection{Method 3: Demaine's parallel cluster algorithm (our reproduction)}
+\subsection{\Mthree: Demaine's parallel cluster algorithm (our reproduction)}
 \label{sec:m3}
 
 \emph{Origin.} Demaine et al.~\cite{demaine2011algorithms}. On the Square we follow their construction; on the cube,
@@ -170,7 +199,7 @@ suggests~\cite{kmcoders2024santa}.
 shrink as clusters diverge (\S\ref{sec:5c}). Each round scores $|\mathcal{T}|$ types over $O(N^2)$ layer pairs.
 
 %% ---------------------------------------------------------------------
-\subsection{Method 4: CayleyPy per-size networks (our reproduction)}
+\subsection{\Mfour: CayleyPy per-size networks (our reproduction)}
 \label{sec:m4}
 
 \emph{Origin.} Chervov et al.~\cite{chervov2025cayleypy}.

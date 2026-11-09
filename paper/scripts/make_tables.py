@@ -187,8 +187,8 @@ for N in ("3", "4"):
     same = all(base_sq["M2"].get(i, {}).get("htm") == base_sq["M3"].get(i, {}).get("htm")
                == base_sq["5C"].get(i, {}).get("htm") for i in ids)
     assert same, "Methods 2, 3, 5C differ on the smallest Squares: give them separate rows"
-    for label, src in (("Method 4 ($W{=}4096$)", m4[4096]), ("Method 5A", m5a), ("Method 5B", by_id(m5b_sq)),
-                       ("Methods 2, 3, 5C", base_sq["5C"])):
+    for label, src in (("\\Mfour ($W{=}4096$)", m4[4096]), ("\\FiveA", m5a), ("\\FiveB", by_id(m5b_sq)),
+                       ("\\Mtwo, \\Mthree, \\FiveC", base_sq["5C"])):
         got = [(src[i]["htm"], opt[N]["instances"][i]) for i in ids if i in src and src[i]["solved"]]
         tried = [i for i in ids if i in src]
         if not tried:
@@ -197,8 +197,8 @@ for N in ("3", "4"):
         gap = [a - b for a, b in got]
         n_opt = sum(1 for a, b in got if a == b)
         entries.append(f"{label} & {len(got)}/{len(tried)} & {np.mean(gap):.1f} & {n_opt}/{len(got)}")
-        tag = {"Method 4 ($W{=}4096$)": "Mfour", "Method 5A": "FiveA", "Method 5B": "FiveB",
-               "Methods 2, 3, 5C": "Base"}[label]
+        tag = {"\\Mfour ($W{=}4096$)": "Mfour", "\\FiveA": "FiveA", "\\FiveB": "FiveB",
+               "\\Mtwo, \\Mthree, \\FiveC": "Base"}[label]
         macro(f"Gap{tag}{'Three' if N == '3' else 'Four'}", f"{np.mean(gap):.1f}")
         macro(f"Opt{tag}{'Three' if N == '3' else 'Four'}", f"{n_opt}/{len(got)}")
     for k, e in enumerate(entries):
@@ -516,7 +516,7 @@ def style(ax):
 fig, axes = plt.subplots(1, 2, figsize=(7.0, 2.6))
 ax = axes[0]
 Ns = sorted(sq_by_N)
-for label, src, col, mk in (("Method 4 (W=4096)", m4[4096], CM4, "s"),):
+for label, src, col, mk in (("CayleyPy (W=4096)", m4[4096], CM4, "s"),):
     pts = defaultdict(list)
     for r in src.values():
         if r["solved"]:
@@ -524,8 +524,8 @@ for label, src, col, mk in (("Method 4 (W=4096)", m4[4096], CM4, "s"),):
     xs = sorted(pts)
     if xs:
         ax.plot(xs, [np.mean(pts[N]) / scale(N) for N in xs], "-" + mk, color=col, lw=1.6, ms=3.5, label=label)
-for label, src, col, mk in (("Method 2", base_sq["M2"], CM2, "v"), ("Method 3", base_sq["M3"], CM3, "P"),
-                            ("Method 5C", base_sq["5C"], C5C, "*")):
+for label, src, col, mk in (("Reduction", base_sq["M2"], CM2, "v"), ("Demaine", base_sq["M3"], CM3, "P"),
+                            ("NetGain", base_sq["5C"], C5C, "*")):
     pts = defaultdict(list)
     for r in src.values():
         if r["solved"]:
@@ -533,7 +533,7 @@ for label, src, col, mk in (("Method 2", base_sq["M2"], CM2, "v"), ("Method 3", 
     xs = sorted(pts)
     if xs:
         ax.plot(xs, [np.mean(pts[N]) / scale(N) for N in xs], "-" + mk, color=col, lw=2.2 if "5C" in label else 1.2,
-                ms=4.5 if "5C" in label else 3.5, label=label)
+                ms=4.5 if "NetGain" in label else 3.5, label=label)
 if opt:
     xs = [int(N) for N in opt]
     ax.plot(xs, [opt[str(N)]["mean_random"] / scale(N) for N in xs], "D", color=COPT, ms=4.5, label="optimal")
@@ -545,8 +545,8 @@ ax.set_ylim(bottom=0)
 style(ax)
 ax = axes[1]
 Nc = sorted(cu_by_N)
-for label, src, col, mk in (("Method 2", base_cu["M2"], CM2, "v"), ("Method 3", base_cu["M3"], CM3, "P"),
-                            ("Method 5C", base_cu["5C"], C5C, "*")):
+for label, src, col, mk in (("Reduction", base_cu["M2"], CM2, "v"), ("Demaine", base_cu["M3"], CM3, "P"),
+                            ("NetGain", base_cu["5C"], C5C, "*")):
     pts = defaultdict(list)
     for r in src.values():
         if r["solved"] and r["N"] in cu_by_N:
@@ -554,7 +554,7 @@ for label, src, col, mk in (("Method 2", base_cu["M2"], CM2, "v"), ("Method 3", 
     xs = sorted(pts)
     if xs:
         ax.plot(xs, [np.mean(pts[N]) / scale(N) for N in xs], "-" + mk, color=col, lw=2.2 if "5C" in label else 1.2,
-                ms=4.5 if "5C" in label else 3.5, label=label)
+                ms=4.5 if "NetGain" in label else 3.5, label=label)
 ax.set_xlabel("Cube size $N$")
 ax.set_ylabel("HTM / ($N^2/\\ln N$)")
 ax.set_xticks([3, 5, 8, 10, 15, 20])

@@ -341,9 +341,9 @@ def figures(plt, style):
     # ---------------------------------------------------------------- (1) Santa: published lengths and methods over the bound
     fig, ax = plt.subplots(figsize=(3.4, 3.3))
     series = [("KMCoders published", pub, INK, "-", "D", 1.8), ("KMCoders program, one run", one, INK2, "--", "o", 1.2),
-              ("dwalton76", meth["dwalton76"], INK3, ":", "s", 1.2), ("Method 6 (our reproduction)", meth["M6"], INK2, "-.", "x", 1.0),
-              ("Method 2", meth["M2"], CM2, "-", "v", 1.2), ("Method 3", meth["M3"], CM3, "-", "P", 1.2),
-              ("Method 5C", meth["5C"], C5C, "-", "*", 1.8)]
+              ("dwalton76", meth["dwalton76"], INK3, ":", "s", 1.2), ("KMC-Repro", meth["M6"], INK2, "-.", "x", 1.0),
+              ("Reduction", meth["M2"], CM2, "-", "v", 1.2), ("Demaine", meth["M3"], CM3, "-", "P", 1.2),
+              ("NetGain", meth["5C"], C5C, "-", "*", 1.8)]
     for label, src, col, ls, mk, lw in series:
         xs, ys = [], []
         for N in NS:
@@ -365,7 +365,7 @@ def figures(plt, style):
             m7x.append(N)
             m7y.append(np.mean([r["qtm"] for r in src.values()]) / bound(N))
     if m7x:
-        ax.plot(m7x, m7y, "o", color=CM7, ms=6, mec="white", mew=1.0, label="Method 7 (subsets)", zorder=5)
+        ax.plot(m7x, m7y, "o", color=CM7, ms=6, mec="white", mew=1.0, label="SymPort (subsets)", zorder=5)
     ax.set_xscale("log")
     ax.set_xticks(NS)
     ax.set_xticklabels([str(N) for N in NS])
@@ -393,8 +393,8 @@ def figures(plt, style):
             if i in one:
                 ax.plot([k], [one[i]["qtm"]], "x", color=INK2, ms=4.5, mew=1.0)
         ax.plot([], [], "o", color=CM7, ms=3, label="one copy (48 per puzzle)")
-        ax.plot([], [], "-", color=INK, lw=1.6, label="KMCoders published")
-        ax.plot([], [], "x", color=INK2, ms=4.5, label="their program, one run")
+        ax.plot([], [], "-", color=INK, lw=1.6, label="KMC-published")
+        ax.plot([], [], "x", color=INK2, ms=4.5, label="KMC-one run")
         ax.set_xticks(range(len(ids)))
         ax.set_xticklabels([str(int(i.split("-")[-1])) for i in ids], rotation=0, fontsize=6)
         ax.set_xlabel("Santa 2023 4×4×4 puzzle")
@@ -418,7 +418,7 @@ def figures(plt, style):
                 c = np.array([x for x in a[i]["copies"] if x])
                 v.append(np.mean([c[rng.choice(len(c), k, replace=False)].min() for _ in range(200)]))
             ys.append(np.mean(v))
-        ax.plot(ks, ys, "-o", color=CM7, lw=1.8, ms=3.6, label="Method 7, best of $k$ copies")
+        ax.plot(ks, ys, "-o", color=CM7, lw=1.8, ms=3.6, label="SymPort, best of $k$ copies")
         P = np.mean([pub[i]["qtm"] for i in a])
         ax.axhline(P, color=INK, lw=1.2, ls="--")
         ax.annotate("KMCoders published", (ks[0], P), xytext=(2, -9), textcoords="offset points", ha="left",
