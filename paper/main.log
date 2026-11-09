@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.10.25)  9 NOV 2026 13:36
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.10.25)  9 NOV 2026 13:44
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1408,52 +1408,52 @@ LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/it' will be
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/sc' will be
 (Font)              scaled to size 7.0pt on input line 19.
 
-Overfull \hbox (1.59972pt too wide) in paragraph at lines 43--57
+Overfull \hbox (1.59972pt too wide) in paragraph at lines 42--56
  [][] 
  []
 
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/b/sc' will be
-(Font)              scaled to size 10.95pt on input line 60.
+(Font)              scaled to size 10.95pt on input line 59.
 LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 10.95pt on input line 60.
+(Font)              scaled to size 10.95pt on input line 59.
 LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 6.1pt on input line 60.
+(Font)              scaled to size 6.1pt on input line 59.
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 60.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `superscript' on input line 60.
+(hyperref)                removing `math shift' on input line 59.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 60.
+(hyperref)                removing `superscript' on input line 59.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 59.
 
 [5.5{/usr/share/texlive/texmf-dist/fonts/enc/dvips/libertine/lbtn_iqbcqn.enc}]
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/b/n' will be
-(Font)              scaled to size 8.0pt on input line 87.
+(Font)              scaled to size 8.0pt on input line 86.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/b/n' will be
-(Font)              scaled to size 6.0pt on input line 89.
+(Font)              scaled to size 6.0pt on input line 88.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/b/n' will be
-(Font)              scaled to size 5.55556pt on input line 89.
+(Font)              scaled to size 5.55556pt on input line 88.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/it' will be
-(Font)              scaled to size 8.0pt on input line 95.
+(Font)              scaled to size 8.0pt on input line 94.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/sc' will be
-(Font)              scaled to size 8.0pt on input line 95.
+(Font)              scaled to size 8.0pt on input line 94.
 LaTeX Font Info:    Font shape `T1/zi4/m/n' will be
-(Font)              scaled to size 8.0pt on input line 95.
+(Font)              scaled to size 8.0pt on input line 94.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/scit' will be
-(Font)              scaled to size 8.0pt on input line 105.
+(Font)              scaled to size 8.0pt on input line 104.
 
 [6.6]
-Overfull \hbox (1.12605pt too wide) in paragraph at lines 209--211
+Overfull \hbox (1.12605pt too wide) in paragraph at lines 208--210
 []\T1/LinuxLibertineT-TLF/m/it/9 (-20) Data. \T1/LinuxLibertineT-TLF/m/n/9 (-20
 ) Fresh non-backtracking ran-dom walks from the solved
  []
 
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 7.3pt on input line 233.
+(Font)              scaled to size 7.3pt on input line 232.
 ) (./sections/methods_5.tex [7.7]
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
 (Font)              scaled to size 6.0pt on input line 40.
@@ -1483,7 +1483,7 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [11.11]
-<figures/m4_width.pdf, id=575, 238.49101pt x 158.99399pt>
+<figures/m4_width.pdf, id=572, 238.49101pt x 158.99399pt>
 File: figures/m4_width.pdf Graphic file (type pdf)
 <use figures/m4_width.pdf>
 Package pdftex.def Info: figures/m4_width.pdf  used on input line 103.
@@ -1494,7 +1494,7 @@ Class acmart Warning: A possible image without description on input line 107.
 
 (./generated/tab_m4_gpu_rows.tex) (./generated/tab_repro_kmc_rows.tex)
 (./generated/tab_m7_all_rows.tex) [12.12 <./figures/m4_width.pdf>]
-<figures/m7_copies.pdf, id=608, 245.718pt x 195.129pt>
+<figures/m7_copies.pdf, id=606, 245.718pt x 195.129pt>
 File: figures/m7_copies.pdf Graphic file (type pdf)
 <use figures/m7_copies.pdf>
 Package pdftex.def Info: figures/m7_copies.pdf  used on input line 187.
@@ -1503,7 +1503,7 @@ Package pdftex.def Info: figures/m7_copies.pdf  used on input line 187.
 
 Class acmart Warning: A possible image without description on input line 191.
 
-<figures/m7_portfolio.pdf, id=609, 245.718pt x 158.99399pt>
+<figures/m7_portfolio.pdf, id=607, 245.718pt x 158.99399pt>
 File: figures/m7_portfolio.pdf Graphic file (type pdf)
 <use figures/m7_portfolio.pdf>
 Package pdftex.def Info: figures/m7_portfolio.pdf  used on input line 195.
@@ -1523,7 +1523,7 @@ Overfull \hbox (3.08075pt too wide) in paragraph at lines 231--237
 
 [13.13 <./figures/m7_copies.pdf> <./figures/m7_portfolio.pdf>]
 (./generated/tab_5c_ablation.tex) (./generated/tab_5a_gen.tex)
-<figures/scaling.pdf, id=661, 505.89pt x 187.902pt>
+<figures/scaling.pdf, id=659, 505.89pt x 187.902pt>
 File: figures/scaling.pdf Graphic file (type pdf)
 <use figures/scaling.pdf>
 Package pdftex.def Info: figures/scaling.pdf  used on input line 289.
@@ -1532,7 +1532,7 @@ Package pdftex.def Info: figures/scaling.pdf  used on input line 289.
 
 Class acmart Warning: A possible image without description on input line 293.
 
-<figures/santa_ratio.pdf, id=665, 245.718pt x 238.49101pt>
+<figures/santa_ratio.pdf, id=663, 245.718pt x 238.49101pt>
 File: figures/santa_ratio.pdf Graphic file (type pdf)
 <use figures/santa_ratio.pdf>
 Package pdftex.def Info: figures/santa_ratio.pdf  used on input line 310.
@@ -1619,10 +1619,10 @@ st/fonts/type1/public/newtx/txexs.pfb></usr/share/texlive/texmf-dist/fonts/type
 1/public/newtx/txmiaX.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/new
 tx/txsym.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/newtx/txsys.pfb>
 
-Output written on main.pdf (16 pages, 770467 bytes).
+Output written on main.pdf (16 pages, 770331 bytes).
 PDF statistics:
- 925 PDF objects out of 1000 (max. 8388607)
- 790 compressed objects within 8 object streams
+ 923 PDF objects out of 1000 (max. 8388607)
+ 788 compressed objects within 8 object streams
  297 named destinations out of 1000 (max. 500000)
  150798 words of extra memory for PDF output out of 154059 (max. 10000000)
 
