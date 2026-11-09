@@ -116,7 +116,7 @@ def build(macro):
             "M3": by_id(rows(S / "m3_demaine.jsonl")), "M2": by_id(rows(S / "m2_reduction.jsonl"))}
     corder = ["M7", "B1", "B2", "B3", "M6", "5C", "M3", "M2"]
     lines = []
-    for N in (4, 5, 6, 7, 8, 9, 10, 19, 33):
+    for N in (4, 5, 6, 7, 8, 9, 10, 19):
         ids = sorted(i for i, r in pub.items() if r["N"] == N)
         vals = {k: stat(csrc[k], ids, "qtm") for k in corder}
         cells, place = rank_cells(vals, corder)
@@ -125,7 +125,7 @@ def build(macro):
         lines.append(f"{N} & {len(ids)} & " + " & ".join(cells) + " \\\\")
     (GEN / "tab_main_cube_rows.tex").write_text("\n".join(lines) + "\n\\bottomrule\n")
 
-    for puz, nsizes in (("square", len(ids_by_N)), ("cube", 9)):
+    for puz, nsizes in (("square", len(ids_by_N)), ("cube", 8)):
         tag = "Square" if puz == "square" else "Cube"
         red = sorted(N for N, r in top.get((puz, "M7"), set()) if r == 1)
         green = sorted(N for N, r in top.get((puz, "M7"), set()) if r == 2)
