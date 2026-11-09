@@ -8,6 +8,7 @@ puzzles already there are skipped.
 from __future__ import annotations
 
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -22,6 +23,8 @@ OUT = Path(__file__).resolve().parents[1] / "docs" / "results" / "santa" / "dwal
 
 
 def main(sizes: list[int]) -> None:
+    if "DWALTON76_DIR" not in os.environ and "KMCODERS_DIR" in os.environ:  # our layout: <dir>/kmc/repo, <dir>/ext/dwalton
+        os.environ["DWALTON76_DIR"] = str(Path(os.environ["KMCODERS_DIR"]).parents[1] / "ext" / "dwalton")
     load_all()
     done = {json.loads(l)["id"] for l in OUT.read_text().splitlines() if l.strip()} if OUT.exists() else set()
     for N in sizes:
