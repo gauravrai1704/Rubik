@@ -55,8 +55,9 @@ for $N\le8$, \FiveC and \Mthree above), is the best method at \MsevenRedSquare{}
 known ($N\le5$) it reaches it, like \Mfour's per-size networks; above $N=8$, where no per-size network exists, it improves on the
 best single solver, \FiveC, which is in turn shorter than our reproductions of Demaine's algorithm (\Mthree) and of reduction
 (\Mtwo). \FiveA, one network for every size, is the strongest method that needs no per-size training up to $N=7$. On the
-\textbf{Cube}, \Mseven is the best method at \MsevenRedCube{} of the \SizesCube{} Santa sizes (\MsevenRedListCube); at every other size
-KMCoders' published solutions are best and one run of their program is second. Every other method, ours and the external solver
+\textbf{Cube}, \Mseven is the best method at every one of the \SizesCube{} Santa sizes, and KMCoders' published best-of-many
+solutions are second at each; one run of their program is third, which shows how much of the published lengths comes from
+running their program many times. Every other method, ours and the external solver
 dwalton76, is far behind on Santa 2023: these puzzles demand the exact goal and the quarter-turn metric, for which KMCoders' insertion
 pipeline was built.
 
@@ -153,7 +154,7 @@ $N$ & \BoneH & \BtwoH & \Hd{ratio to\\\textsc{published}} & \MsixH & \Hd{ratio t
 \label{sec:exp-ours}
 
 \begin{table*}[t]
-\caption{\Mseven against every baseline and every other method, on exactly the Santa 2023 puzzles \Mseven was run on (mean QTM,
+\caption{\Mseven against every baseline and every other method, puzzle by puzzle, on the Santa 2023 cubes of \MsevenAllSizes{} (mean QTM,
 the competition's score; bold: shortest). \Bone: KMCoders' published best-of-many solutions; \Btwo: one run of their program; \Bthree: dwalton76's solver.
 W/T/L: puzzles where \Mseven is shorter than / equal to / longer than \Bone; last column: \Mseven's saving over \Bone. Last row: total QTM over
 all these puzzles, i.e.\ the Santa score restricted to them.}
@@ -168,8 +169,8 @@ all these puzzles, i.e.\ the Santa score restricted to them.}
 \end{table*}
 
 \paragraph{\Mseven against every baseline, puzzle by puzzle.}
-Table~\ref{tab:m7all} compares \Mseven with every baseline and every other method on the same puzzles. It is the shortest method at
-every size it has run: on the \MsevenAllPuzzles{} puzzles, its total is \MsevenAllTotal{} quarter turns against \MsevenAllPubTotal{} for
+Table~\ref{tab:m7all} compares \Mseven with every baseline and every other method on the same puzzles, for the sizes where we
+report per-puzzle results (\MsevenAllSizes). It is the shortest method at each: on these \MsevenAllPuzzles{} puzzles, its total is \MsevenAllTotal{} quarter turns against \MsevenAllPubTotal{} for
 KMCoders' published solutions (\MsevenAllTotalGain\% fewer), shorter on \MsevenAllWins{}, equal on \MsevenAllTies{} and longer on
 \MsevenAllLosses{}; one run of their program, dwalton76 and all our other methods are further behind.
 
@@ -309,7 +310,7 @@ benchmark, is the natural way to close this gap at large $N$; on Santa today, \F
 \centering
 \includegraphics[width=\columnwidth]{figures/santa_ratio.pdf}
 \caption{Mean Santa 2023 length divided by the counting lower bound, against $N$ (log scale). Methods shown only where they ran on
-every puzzle of that size; \Mseven on the puzzles of Table~\ref{tab:m7all}.}
+every puzzle of that size, \Mseven so far at the sizes of Table~\ref{tab:m7all}.}
 \label{fig:santaratio}
 \end{figure}
 

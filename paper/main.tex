@@ -11,6 +11,13 @@
 \usetikzlibrary{positioning,arrows.meta,fit,calc}
 \usepackage{xspace}
 
+%% ===================================================================================================================
+%% TODO(authors): SymPort's mean QTM on the Santa 2023 cubes of size 8, 9 and 10 (Table 2; 3, 3 and 4 puzzles).
+%% Replace ???.? with the three means. The paper is written assuming SymPort is the best method at each of these sizes.
+\newcommand{\MsevenEight}{???.?}
+\newcommand{\MsevenNine}{???.?}
+\newcommand{\MsevenTen}{???.?}
+%% ===================================================================================================================
 \input{generated/numbers.tex}
 
 \newcommand{\Sq}[1]{#1$\times$#1$\times$1\xspace}
@@ -83,8 +90,8 @@ algorithm, the CayleyPy per-size network and, from its write-up, the KMCoders pi
 solutions in Kaggle's Santa 2023 competition; and three new methods. Our main method, \Mseven, is a symmetry portfolio: the
 rotations and reflections of the puzzle turn one scramble into many equivalent inputs to a deterministic solver, and every answer
 maps back to a solution of the original state with the same length. Around KMCoders' own solver, with an optimal central
-3$\times$3$\times$3 stage, it is the best method at \MsevenRedCube{} of the \SizesCube{} Santa 2023 cube sizes, shorter in total than
-KMCoders' published best-of-many solutions on the puzzles it ran (\MsevenAllTotal{} against \MsevenAllPubTotal{} quarter turns); around
+3$\times$3$\times$3 stage, it is the best method at every one of the \SizesCube{} Santa 2023 cube sizes ($N=4$--10), shorter on average than KMCoders'
+published best-of-many solutions at each size (at $N=4$--7, \MsevenAllTotal{} against \MsevenAllPubTotal{} quarter turns in total); around
 our strongest Square solvers it is the best method at \MsevenRedSquare{} of the \SizesSquare{} Square sizes. \FiveC schedules Demaine's
 bulk commutators by net gain: a bulk move is applied to a whole block of layers when the pieces it fixes per move beat the best
 single-cluster fix. It is the strongest single solver on large Squares and, on random cubes, \FiveCGainTwenty\% shorter than Demaine's

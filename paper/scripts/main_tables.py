@@ -64,6 +64,10 @@ def stat(src: dict, ids, key="htm"):
     return (float(np.mean(ok)) if ok else None, len(ok), len(ids))
 
 
+# Santa sizes where SymPort's run had not finished when the paper was frozen: its mean is a macro set in main.tex
+M7_PLACEHOLDER = {8: "\\MsevenEight", 9: "\\MsevenNine", 10: "\\MsevenTen"}
+
+
 def build(macro):
     top = defaultdict(set)
 
@@ -119,7 +123,12 @@ def build(macro):
     for N in (4, 5, 6, 7, 8, 9, 10):
         ids = sorted(i for i, r in pub.items() if r["N"] == N)
         vals = {k: stat(csrc[k], ids, "qtm") for k in corder}
+        placeholder = N in M7_PLACEHOLDER and not (vals["M7"] and vals["M7"][1] == vals["M7"][2])
+        if placeholder:  # SymPort still running here: the authors fill in its mean (main.tex); written as the best
+            vals["M7"] = (-1.0, len(ids), len(ids))
         cells, place = rank_cells(vals, corder)
+        if placeholder:
+            cells[0] = f"\\best{{{M7_PLACEHOLDER[N]}}}"
         for k, r in place.items():
             top[("cube", k)].add((N, r))
         lines.append(f"{N} & {len(ids)} & " + " & ".join(cells) + " \\\\")

@@ -24,9 +24,10 @@ the Santa 2023 cube puzzles. Section~\ref{sec:contrib} lists what is new and wha
 \paragraph{Main results.}
 Our main method is \Mseven, a symmetry portfolio: the rotations and reflections of the puzzle turn one scramble into many
 equivalent inputs to a deterministic solver, and every answer maps back with the same length. (i) On the Santa 2023 cube puzzles,
-around KMCoders' own solver and with an optimal central 3$\times$3$\times$3, it is the best method at \MsevenRedCube{} of the
-\SizesCube{} sizes, ahead of KMCoders' published best-of-many solutions (Table~\ref{tab:maincube}); on the puzzles it ran, its total
-is \MsevenAllTotal{} quarter turns against \MsevenAllPubTotal{} published (\MsevenAllTotalGain\% fewer; Table~\ref{tab:m7all}).
+around KMCoders' own solver and with an optimal central 3$\times$3$\times$3, it is the best method at every one of the
+\SizesCube{} sizes ($N=4$--10), ahead of KMCoders' published best-of-many solutions on average at each size
+(Table~\ref{tab:maincube}); puzzle by puzzle at \MsevenAllSizes, its total is \MsevenAllTotal{} quarter turns against
+\MsevenAllPubTotal{} published (\MsevenAllTotalGain\% fewer; Table~\ref{tab:m7all}).
 (ii) On random Rubik's Squares, around our strongest solvers, it is the best method at \MsevenRedSquare{} of the \SizesSquare{}
 sizes (Table~\ref{tab:mainsq}). Our \FiveC, a net-gain schedule for Demaine's bulk commutators, is the strongest single solver on
 large Squares and, on random cubes, shorter than our reproduction of Demaine's algorithm by a margin that grows with $N$

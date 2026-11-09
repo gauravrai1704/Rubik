@@ -260,11 +260,13 @@ def build_m7_all(macro):
     lines = []
     tot = {"M7": 0, "B1": 0}
     allw = [0, 0, 0]
+    sizes_done = []
     for N in NS:
         ids = sorted(i for i in M7BEST if M7BEST[i]["N"] == N)
-        if not ids:
-            continue
         n_all = sum(1 for r in pub.values() if r["N"] == N)
+        if not ids or len(ids) < n_all:  # only sizes where SymPort has run on every puzzle
+            continue
+        sizes_done.append(N)
         vals = {"M7": mean_on(M7BEST, ids)[0], "B1": mean_on(pub, ids)[0]}
         for k, src in (("B2", one), ("B3", meth["dwalton76"]), ("M6", meth["M6"]), ("5C", meth["5C"]),
                        ("M3", meth["M3"]), ("M2", meth["M2"])):
@@ -293,6 +295,7 @@ def build_m7_all(macro):
         lines.append("\\midrule")
         lines.append(f"all & {sum(allw)} & \\textbf{{{tot['M7']:,}}} & {tot['B1']:,} & \\multicolumn{{6}}{{l}}{{(total QTM, the Santa score on these puzzles)}} & "
                      f"{allw[0]}/{allw[1]}/{allw[2]} & {g:+.1f}\\% \\\\")
+        macro("MsevenAllSizes", f"$N={sizes_done[0]}$--{sizes_done[-1]}" if len(sizes_done) > 1 else f"$N={sizes_done[0]}$")
         macro("MsevenAllPuzzles", sum(allw))
         macro("MsevenAllTotal", f"{tot['M7']:,}")
         macro("MsevenAllPubTotal", f"{tot['B1']:,}")
@@ -355,17 +358,13 @@ def figures(plt, style):
         if xs:
             ax.plot(xs, ys, ls, marker=mk, color=col, lw=lw, ms=3.6, label=label)
     m7x, m7y = [], []
-    for N, key in ((4, "N4_48"), (5, "N5_24nx")):
-        src = dict(M7[key])
-        if N == 4:
-            for i, r in M7["N4_8"].items():
-                if i in src and r["qtm"] < src[i]["qtm"]:
-                    src[i] = r
-        if src:
+    for N in NS:  # sizes where SymPort has run on every puzzle
+        got = [r["qtm"] for r in M7BEST.values() if r["N"] == N]
+        if got and len(got) == sum(1 for r in pub.values() if r["N"] == N):
             m7x.append(N)
-            m7y.append(np.mean([r["qtm"] for r in src.values()]) / bound(N))
+            m7y.append(np.mean(got) / bound(N))
     if m7x:
-        ax.plot(m7x, m7y, "o", color=CM7, ms=6, mec="white", mew=1.0, label="SymPort (subsets)", zorder=5)
+        ax.plot(m7x, m7y, "o", color=CM7, ms=6, mec="white", mew=1.0, label="SymPort", zorder=5)
     ax.set_xscale("log")
     ax.set_xticks(NS)
     ax.set_xticklabels([str(N) for N in NS])
