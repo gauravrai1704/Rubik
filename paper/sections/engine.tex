@@ -48,7 +48,7 @@ seed, hardware and git commit. A crash or time-out counts as a failure and stays
 into engine moves (wide turns expanded into single-slice turns) and re-verified like any other method's.
 
 \paragraph{Shared beam search.}
-\Mfour, \FiveA and \FiveB share one beam search. Per step it expands the beam in chunks, scores children with the
+\Mfour and \FiveA share one beam search. Per step it expands the beam in chunks, scores children with the
 heuristic, and keeps the $W$ best after removing duplicates by a random 64-bit linear hash (also across the last three
 steps). Only (score, hash, parent, action) is stored per child; the next beam is rebuilt from parents. Beam states are
 packed at 3 bits per sticker and can live on the device, in pinned host memory or on disk. The search accepts

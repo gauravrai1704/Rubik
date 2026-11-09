@@ -187,7 +187,7 @@ for N in ("3", "4"):
     same = all(base_sq["M2"].get(i, {}).get("htm") == base_sq["M3"].get(i, {}).get("htm")
                == base_sq["5C"].get(i, {}).get("htm") for i in ids)
     assert same, "Methods 2, 3, 5C differ on the smallest Squares: give them separate rows"
-    for label, src in (("\\Mfour ($W{=}4096$)", m4[4096]), ("\\FiveA", m5a), ("\\FiveB", by_id(m5b_sq)),
+    for label, src in (("\\Mfour ($W{=}4096$)", m4[4096]), ("\\FiveA", m5a),
                        ("\\Mtwo, \\Mthree, \\FiveC", base_sq["5C"])):
         got = [(src[i]["htm"], opt[N]["instances"][i]) for i in ids if i in src and src[i]["solved"]]
         tried = [i for i in ids if i in src]
@@ -202,8 +202,8 @@ for N in ("3", "4"):
         macro(f"Gap{tag}{'Three' if N == '3' else 'Four'}", f"{np.mean(gap):.1f}")
         macro(f"Opt{tag}{'Three' if N == '3' else 'Four'}", f"{n_opt}/{len(got)}")
     for k, e in enumerate(entries):
-        lead = (f"\\multirow{{4}}{{*}}{{{N}$\\times${N}}} & \\multirow{{4}}{{*}}{{{opt[N]['gods_number']}}} & "
-                f"\\multirow{{4}}{{*}}{{{opt[N]['mean_random']:.1f}}}") if k == 0 else " & & "
+        lead = (f"\\multirow{{{len(entries)}}}{{*}}{{{N}$\\times${N}}} & \\multirow{{{len(entries)}}}{{*}}{{{opt[N]['gods_number']}}} & "
+                f"\\multirow{{{len(entries)}}}{{*}}{{{opt[N]['mean_random']:.1f}}}") if k == 0 else " & & "
         opt_lines.append(f"{lead} & {e} \\\\")
     opt_lines.append("\\midrule")
     macro(f"GodSquare{'Three' if N == '3' else 'Four'}", opt[N]["gods_number"])
