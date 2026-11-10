@@ -121,7 +121,8 @@ best $\leftarrow\bot$\;
 
 \emph{Cost.} $k$ times the inner solver's CPU time; memory is the inner solver's (plus \texttt{nxopt}'s 1.42\,GB table, shared).
 Measured: \MsevenCpuMinFour{} CPU-minutes per \Cu{4} puzzle for 48 copies and \MsevenCpuMinFive{} per \Cu{5} puzzle for 24
-copies, on a shared 4-core machine. Moves: as KMCoders' method, $\Theta(N^2)$ ($\approx4.4N^2$ in the published data); the
+copies, on a shared 4-core machine; one copy takes \ScaleCpuEight{} CPU-minutes at $N=8$ and \ScaleCpuNine{} at $N=9$, so
+we run 12 copies there. Moves: as KMCoders' method, $\Theta(N^2)$ ($\approx4.4N^2$ in the published data); the
 portfolio lowers the constant, not the exponent.
 
 \emph{What did not help.} Two attempts to improve KMCoders' finished solutions directly found nothing: simulated annealing

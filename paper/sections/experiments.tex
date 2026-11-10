@@ -38,7 +38,8 @@ $N$ & $n$ & \Mseven (ours) & \Mone optimal & \Mfour & \FiveA (ours) & \FiveC (ou
 \caption{\textbf{Rubik's Cube}, Santa 2023 puzzles: mean solution length in QTM, the competition's score, of every method on the
 same puzzles ($n$ per size). In each row the \best{best} method is red and the \second{second best} green; only methods that solved
 every puzzle of that size are ranked. \Bone: KMCoders' published best-of-many solutions; \Btwo: one run of their program; \Bthree: dwalton76's solver
-(\S\ref{sec:baselines}). A superscript gives the number of puzzles run when below $n$. Santa cubes up to $N=10$ (\S\ref{sec:data}).}
+(\S\ref{sec:baselines}). A superscript gives the number of puzzles run when below $n$. Santa cubes up to $N=10$ (\S\ref{sec:data});
+\Mseven was not run on the \Cu{10} (--; \S\ref{sec:m7scale}).}
 \label{tab:maincube}
 \small
 \begin{tabular}{@{}rr|r|rrr|rrrr@{}}
@@ -55,9 +56,10 @@ for $N\le8$, \FiveC and \Mthree above), is the best method at \MsevenRedSquare{}
 known ($N\le5$) it reaches it, like \Mfour's per-size networks; above $N=8$, where no per-size network exists, it improves on the
 best single solver, \FiveC, which is in turn shorter than our reproductions of Demaine's algorithm (\Mthree) and of reduction
 (\Mtwo). \FiveA, one network for every size, is the strongest method that needs no per-size training up to $N=7$. On the
-\textbf{Cube}, \Mseven is the best method at every one of the \SizesCube{} Santa sizes, and KMCoders' published best-of-many
-solutions are second at each; one run of their program is third, which shows how much of the published lengths comes from
-running their program many times. Every other method, ours and the external solver
+\textbf{Cube}, \Mseven is the best method at $N=4$--7, with KMCoders' published best-of-many solutions second; at $N=8$ and 9
+the order is reversed (\MsevenAllMeanEight{} against \MsevenAllPubEight{} and \MsevenAllMeanNine{} against \MsevenAllPubNine;
+\S\ref{sec:m7scale} analyses why), and we did not run \Mseven at $N=10$. One run of their program comes next at every size,
+which shows how much of the published lengths comes from running their program many times. Every other method, ours and the external solver
 dwalton76, is far behind on Santa 2023: these puzzles demand the exact goal and the quarter-turn metric, for which KMCoders' insertion
 pipeline was built.
 
@@ -170,7 +172,7 @@ all these puzzles, i.e.\ the Santa score restricted to them.}
 
 \paragraph{\Mseven against every baseline, puzzle by puzzle.}
 Table~\ref{tab:m7all} compares \Mseven with every baseline and every other method on the same puzzles, for the sizes where we
-report per-puzzle results (\MsevenAllSizes). It is the shortest method at each: on these \MsevenAllPuzzles{} puzzles, its total is \MsevenAllTotal{} quarter turns against \MsevenAllPubTotal{} for
+report per-puzzle results (\MsevenAllSizes). It is the shortest method at $N=4$--7 and second to \Bone at $N=8$ and 9; over all \MsevenAllPuzzles{} puzzles, its total is \MsevenAllTotal{} quarter turns against \MsevenAllPubTotal{} for
 KMCoders' published solutions (\MsevenAllTotalGain\% fewer), shorter on \MsevenAllWins{}, equal on \MsevenAllTies{} and longer on
 \MsevenAllLosses{}; one run of their program, dwalton76 and all our other methods are further behind.
 
@@ -198,6 +200,45 @@ solution (bar) and one run of their program on the unrotated puzzle (cross).}
 KMCoders' published mean (dashed).}
 \label{fig:m7portfolio}
 \end{figure}
+
+\paragraph{Why the portfolio stops winning at $N\ge8$.}
+\label{sec:m7scale}
+Table~\ref{tab:m7scale} splits \Mseven's result into two numbers per size: how far a typical copy (the median of the $k$ copies)
+is behind the published solution (\emph{gap}), and how much the portfolio buys over that typical copy (\emph{gain}, best against
+median). \Mseven wins exactly where the gain exceeds the gap. Up to $N=7$ it does, by a narrowing margin: the gain falls from
+\ScaleGainFour\% at $N=4$ to \ScaleGainSeven\% at $N=7$, while the gap falls from \ScaleGapFour\% to \ScaleGapSeven\%. At $N=8$
+and 9 the gain is \ScaleGainEight\% against a gap of \ScaleGapEight\% and \ScaleGapNine\%, and the published solutions win.
+Three effects shrink the gain.
+(i) \emph{The spread does not grow with the length.} The standard deviation of the copies' lengths stays between \ScaleSdFour{} and
+\ScaleSdNine{} quarter turns from $N=4$ to 9, while the solutions grow as $N^2$, so the relative spread, which is all a
+best-of-$k$ portfolio can harvest, falls from \ScaleCvFour\% to \ScaleCvNine\%. The symmetric copies differ in the early stages and
+in tie-breaks, but the long later stages, which dominate at large $N$, come out much the same.
+(ii) \emph{Fewer copies.} One copy costs \ScaleCpuFour{} CPU-minutes at $N=4$ but \ScaleCpuEight{} and \ScaleCpuNine{} at $N=8$ and
+9, so within our budget we ran \ScaleKEight{} copies there instead of 24--48.
+(iii) \emph{The published solutions are themselves a portfolio}: the best of many runs and settings tried during the
+competition, which pushes them into the lower tail of the program's spread.
+A normal model fitted to each puzzle's copies reproduces the measured best of 12 to within half a quarter turn at $N=8$ and 9;
+it projects the best of all 48 symmetric copies at \ScaleProjEight{} for $N=8$ (published \MsevenAllPubEight) and \ScaleProjNine{}
+for $N=9$ (published \MsevenAllPubNine). The full symmetry group would therefore only just win at $N=8$ and would not close the gap
+at $N=9$, at about \ScaleFullHoursEight{} and \ScaleFullHoursNine{} CPU-hours per puzzle. At $N=10$ we stopped after
+\TenPartialK{} copies of the first puzzle (best \TenPartialBest{} against \TenPartialPub{} published) and report no \Cu{10} result.
+Symmetry alone runs out at large $N$; \S\ref{sec:future} lists what we expect to work there.
+
+\begin{table*}[t]
+\caption{Why \Mseven's lead shrinks with $N$ (Santa 2023 cubes, QTM; shorter of \Mseven and \Bone in bold). $k$: copies run per
+puzzle (median; a few copies at $N=5$ and 7 were lost to the memory limit); CPU-min: per copy (median); SD: standard deviation of
+the copies' lengths (mean over puzzles); gain: best copy against the median copy; gap: median copy against \Bone; \Mseven: best
+of the $k$ copies (at $N=4$ without the 8 default-program copies of Table~\ref{tab:maincube}); last column: normal-model projection
+of the best of all 48 symmetric copies.}
+\label{tab:m7scale}
+\small
+\begin{tabular}{@{}rrrrrrr|rr|r@{}}
+\toprule
+$N$ & $n$ & $k$ & CPU-min & SD & gain & gap & \Hd{\Mseven\\(ours)} & \BoneH & \Hd{best of 48\\(model)} \\
+\midrule
+\input{generated/tab_m7_scale_rows.tex}
+\end{tabular}
+\end{table*}
 
 \paragraph{Time.}
 Table~\ref{tab:santatime} gives the mean wall time per Santa puzzle. One run of KMCoders' program takes about a minute at $N=4$
@@ -310,7 +351,7 @@ benchmark, is the natural way to close this gap at large $N$; on Santa today, \F
 \centering
 \includegraphics[width=\columnwidth]{figures/santa_ratio.pdf}
 \caption{Mean Santa 2023 length divided by the counting lower bound, against $N$ (log scale). Methods shown only where they ran on
-every puzzle of that size, \Mseven so far at the sizes of Table~\ref{tab:m7all}.}
+every puzzle of that size (\Mseven at $N=4$--9).}
 \label{fig:santaratio}
 \end{figure}
 

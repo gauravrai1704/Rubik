@@ -488,6 +488,7 @@ import santa_part  # noqa: E402
 santa_part.build(macro)
 santa_part.build_more(macro)
 santa_part.build_m7_all(macro)
+santa_part.build_m7_scaling(macro)
 import main_tables  # noqa: E402
 
 main_tables.build(macro)

@@ -432,3 +432,81 @@ def figures(plt, style):
         fig.tight_layout()
         fig.savefig(FIG / "m7_portfolio.pdf")
         plt.close(fig)
+
+
+def _copies_by_puzzle() -> dict:
+    """QTM of every symmetric copy SymPort ran per Santa puzzle (its beam configuration; failed copies left out)."""
+    cop, cpu = {}, defaultdict(list)
+    for N in range(4, SANTA_MAX_N + 1):
+        for r in rows(S / f"m7_full_N{N}.jsonl"):
+            for tag, p in r["parts"].items():
+                if tag.startswith("beam") and p.get("copies"):
+                    cop[r["id"]] = (N, [x for x in p["copies"] if x])
+                    cpu[N] += [x for x in p.get("cpu_s") or [] if x]
+    for key in ("N4_48", "N5_24nx"):  # the first puzzles of N = 4, 5 (earlier runs of the same configuration)
+        for i, r in M7[key].items():
+            if i not in cop and r.get("copies"):
+                cop[i] = (r["N"], [x for x in r["copies"] if x])
+                cpu[r["N"]] += [x for x in r.get("cpu_s") or [] if x]
+    return cop, cpu
+
+
+def _normal_min_shift(k: int) -> float:
+    """E[min of k standard normals] (negative), by numerical integration."""
+    from math import erf, exp, pi, sqrt
+    xs = np.linspace(-8, 8, 16001)
+    Phi = np.array([0.5 * (1 + erf(x / sqrt(2))) for x in xs])
+    pdf = np.exp(-xs ** 2 / 2) / sqrt(2 * pi)
+    dens = k * pdf * (1 - Phi) ** (k - 1)
+    return float(np.sum(xs * dens) * (xs[1] - xs[0]))
+
+
+def build_m7_scaling(macro):
+    """Why the portfolio stops beating the published solutions at N >= 8: copy spread, per-copy cost and a
+    normal-model projection of the best of 48 copies (Table tab:m7scale)."""
+    cop, cpu = _copies_by_puzzle()
+    e48 = _normal_min_shift(48)
+    lines = []
+    tag = {4: "Four", 5: "Five", 6: "Six", 7: "Seven", 8: "Eight", 9: "Nine"}
+    for N in range(4, SANTA_MAX_N + 1):
+        ids = [i for i, (n, c) in cop.items() if n == N and c and i in pub]
+        n_all = sum(1 for r in pub.values() if r["N"] == N)
+        if len(ids) < n_all:
+            continue
+        k = int(np.median([len(cop[i][1]) for i in ids]))
+        med = np.mean([np.median(cop[i][1]) for i in ids])
+        best = np.mean([min(cop[i][1]) for i in ids])
+        sd = np.mean([np.std(cop[i][1]) for i in ids])
+        P = np.mean([pub[i]["qtm"] for i in ids])
+        gain = 100 * (med - best) / med  # what the portfolio buys over a typical copy
+        gap = 100 * (med - P) / P  # how far a typical copy is behind the published solution
+        proj = np.mean([np.mean(cop[i][1]) + e48 * np.std(cop[i][1]) for i in ids])
+        cmin = np.median(cpu[N]) / 60 if cpu[N] else float("nan")
+        win = best < P
+        cells = [str(N), str(len(ids)), str(k), fmt(cmin, 0 if cmin >= 10 else 1), fmt(sd), fmt(gain) + "\\%",
+                 fmt(gap) + "\\%", (f"\\textbf{{{fmt(best)}}}" if win else fmt(best)),
+                 (fmt(P) if win else f"\\textbf{{{fmt(P)}}}"), fmt(proj)]
+        lines.append(" & ".join(cells) + " \\\\")
+        if N in tag:
+            t = tag[N]
+            macro(f"ScaleSd{t}", fmt(sd))
+            macro(f"ScaleGain{t}", fmt(gain))
+            macro(f"ScaleGap{t}", fmt(gap))
+            macro(f"ScaleProj{t}", fmt(proj))
+            macro(f"ScaleCpu{t}", fmt(cmin, 0 if cmin >= 10 else 1))
+            macro(f"ScaleK{t}", k)
+            macro(f"ScaleCv{t}", fmt(100 * np.mean([np.std(cop[i][1]) / np.mean(cop[i][1]) for i in ids])))
+            macro(f"ScaleFullHours{t}", fmt(48 * cmin / 60, 0))
+    (GEN / "tab_m7_scale_rows.tex").write_text("\n".join(lines) + "\n\\bottomrule\n")
+    # first Santa 10x10x10 puzzle: the copies finished before the run was stopped (no N = 10 row in the tables)
+    cache = ROOT / "docs" / "results" / "santa" / "m7_copy_cache"
+    from rubiks.engine import cube, metrics
+    from rubiks.engine.puzzle import Move
+    P10, got = cube(10), []
+    for f in sorted(cache.glob("cube10_*.jsonl")) if cache.exists() else []:
+        got = [metrics([Move(*m) for m in json.loads(l)["moves"]], P10)["qtm"] for l in f.read_text().splitlines()
+               if l.strip() and json.loads(l)["ok"]]
+    if got:
+        macro("TenPartialK", len(got))
+        macro("TenPartialBest", min(got))
+        macro("TenPartialPub", pub["santa-cube10-0272"]["qtm"])

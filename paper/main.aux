@@ -16,7 +16,7 @@
 \@writefile{toc}{\contentsline {section}{Abstract}{1}{section*.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
 \newlabel{sec:intro}{{1}{1}{Introduction}{section.1}{}}
-\@writefile{toc}{\contentsline {paragraph}{Main results.}{1}{section*.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Contributions.}{1}{section*.5}\protected@file@percent }
 \citation{korf1997optimal}
 \citation{kociemba2phase}
 \citation{demaine2011algorithms}
@@ -43,16 +43,6 @@
 \citation{kaggle2023santa}
 \citation{kmcoders2024santa}
 \citation{kirkpatrick1983annealing}
-\@writefile{toc}{\contentsline {section}{\numberline {2}Contributions}{2}{section.2}\protected@file@percent }
-\newlabel{sec:contrib}{{2}{2}{Contributions}{section.2}{}}
-\@writefile{toc}{\contentsline {paragraph}{Novel contributions (ours).}{2}{section*.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Reproductions (our implementations of known methods).}{2}{section*.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3}Related Work}{2}{section.3}\protected@file@percent }
-\newlabel{sec:related}{{3}{2}{Related Work}{section.3}{}}
-\@writefile{toc}{\contentsline {paragraph}{The cube group and its diameter.}{2}{section*.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Optimal and near-optimal 3$\times $3$\times $3\xspace   solvers.}{2}{section*.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Large-cube solvers.}{2}{section*.10}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Kaggle Santa 2023 and KMCoders.}{2}{section*.11}\protected@file@percent }
 \citation{agostinelli2019deepcubea}
 \citation{takano2023selfsupervision}
 \citation{agostinelli2024qstar}
@@ -66,38 +56,50 @@
 \citation{lee2019settransformer}
 \citation{openai2019dactyl}
 \citation{anand2025cubebench,gao2025cubebench}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Related Work}{2}{section.2}\protected@file@percent }
+\newlabel{sec:related}{{2}{2}{Related Work}{section.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{The cube group and its diameter.}{2}{section*.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Optimal and near-optimal 3$\times $3$\times $3\xspace   solvers.}{2}{section*.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Large-cube solvers.}{2}{section*.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Kaggle Santa 2023 and KMCoders.}{2}{section*.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Learned solvers.}{2}{section*.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Search techniques we build on.}{2}{section*.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Size generalisation and other uses of the cube.}{2}{section*.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Problem, Data and Metrics}{2}{section.3}\protected@file@percent }
+\newlabel{sec:problem}{{3}{2}{Problem, Data and Metrics}{section.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Puzzles.}{2}{section*.13}\protected@file@percent }
 \citation{kaggle2023santa}
-\@writefile{toc}{\contentsline {paragraph}{Learned solvers.}{3}{section*.12}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Search techniques we build on.}{3}{section*.13}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Size generalisation and other uses of the cube.}{3}{section*.14}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4}Problem, Data and Metrics}{3}{section.4}\protected@file@percent }
-\newlabel{sec:problem}{{4}{3}{Problem, Data and Metrics}{section.4}{}}
-\@writefile{toc}{\contentsline {paragraph}{Puzzles.}{3}{section*.15}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Cubie cluster types. Wings combine two sticker orbits of one layer. Counts are for one $N$; $k=\lfloor N/2\rfloor -1$.}}{3}{table.caption.17}\protected@file@percent }
-\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
-\newlabel{tab:clusters}{{1}{3}{Cubie cluster types. Wings combine two sticker orbits of one layer. Counts are for one $N$; $k=\lfloor N/2\rfloor -1$}{table.caption.17}{}}
-\@writefile{toc}{\contentsline {paragraph}{Clusters.}{3}{section*.16}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Metrics.}{3}{section*.18}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Data}{3}{subsection.4.1}\protected@file@percent }
-\newlabel{sec:data}{{4.1}{3}{Data}{subsection.4.1}{}}
-\@writefile{toc}{\contentsline {paragraph}{Random states (our benchmark).}{3}{section*.19}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Kaggle Santa 2023 (external benchmark).}{3}{section*.20}\protected@file@percent }
 \citation{rubikrepo}
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Calibrating the counting bound on the Rubik's Square: state counts and exact God's numbers (colour goal, any of the 4 solved orientations) from breadth-first search, and the counting bound for $|G|/4$ states.}}{4}{table.caption.21}\protected@file@percent }
-\newlabel{tab:cal}{{2}{4}{Calibrating the counting bound on the Rubik's Square: state counts and exact God's numbers (colour goal, any of the 4 solved orientations) from breadth-first search, and the counting bound for $|G|/4$ states}{table.caption.21}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}How far from optimal? A counting lower bound}{4}{subsection.4.2}\protected@file@percent }
-\newlabel{sec:bound}{{4.2}{4}{How far from optimal? A counting lower bound}{subsection.4.2}{}}
-\newlabel{eq:bound}{{1}{4}{How far from optimal? A counting lower bound}{equation.4.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Engine and Benchmark}{4}{section.5}\protected@file@percent }
-\newlabel{sec:engine}{{5}{4}{Engine and Benchmark}{section.5}{}}
-\@writefile{toc}{\contentsline {paragraph}{Moves from geometry.}{4}{section*.22}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Canonical form.}{4}{section*.23}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Clusters with $N$-invariant signatures.}{4}{section*.24}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Projections.}{4}{section*.25}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Solvability checker.}{4}{section*.26}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Harness.}{4}{section*.27}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Cubie cluster types. Wings combine two sticker orbits of one layer. Counts are for one $N$; $k=\lfloor N/2\rfloor -1$.}}{3}{table.caption.15}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{tab:clusters}{{1}{3}{Cubie cluster types. Wings combine two sticker orbits of one layer. Counts are for one $N$; $k=\lfloor N/2\rfloor -1$}{table.caption.15}{}}
+\@writefile{toc}{\contentsline {paragraph}{Clusters.}{3}{section*.14}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Metrics.}{3}{section*.16}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Data}{3}{subsection.3.1}\protected@file@percent }
+\newlabel{sec:data}{{3.1}{3}{Data}{subsection.3.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Random states (our benchmark).}{3}{section*.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Kaggle Santa 2023 (external benchmark).}{3}{section*.18}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}How far from optimal? A counting lower bound}{3}{subsection.3.2}\protected@file@percent }
+\newlabel{sec:bound}{{3.2}{3}{How far from optimal? A counting lower bound}{subsection.3.2}{}}
+\newlabel{eq:bound}{{1}{3}{How far from optimal? A counting lower bound}{equation.3.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Engine and Benchmark}{3}{section.4}\protected@file@percent }
+\newlabel{sec:engine}{{4}{3}{Engine and Benchmark}{section.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Moves from geometry.}{3}{section*.20}\protected@file@percent }
 \citation{agostinelli2024qstar}
 \citation{kmcoders2024santa}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Calibrating the counting bound on the Rubik's Square: state counts and exact God's numbers (colour goal, any of the 4 solved orientations) from breadth-first search, and the counting bound for $|G|/4$ states.}}{4}{table.caption.19}\protected@file@percent }
+\newlabel{tab:cal}{{2}{4}{Calibrating the counting bound on the Rubik's Square: state counts and exact God's numbers (colour goal, any of the 4 solved orientations) from breadth-first search, and the counting bound for $|G|/4$ states}{table.caption.19}{}}
+\@writefile{toc}{\contentsline {paragraph}{Canonical form.}{4}{section*.21}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Clusters with $N$-invariant signatures.}{4}{section*.22}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Projections.}{4}{section*.23}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Solvability checker.}{4}{section*.24}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Harness.}{4}{section*.25}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Shared beam search.}{4}{section*.26}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Pure 3-cycles for any cluster.}{4}{section*.27}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}External Baselines}{4}{section.5}\protected@file@percent }
+\newlabel{sec:baselines}{{5}{4}{External Baselines}{section.5}{}}
+\@writefile{toc}{\contentsline {paragraph}{\textsc  {KMC-published}\xspace  : KMCoders' published Santa 2023 solutions.}{4}{section*.28}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\textsc  {KMC-one run}\xspace  : KMCoders' program, one run.}{4}{section*.29}\protected@file@percent }
 \citation{walton2017nxnxn}
 \citation{kociemba2phase}
 \citation{rokicki2018nxopt}
@@ -107,133 +109,131 @@
 \citation{kmcoders2024santa}
 \citation{korf1997optimal}
 \citation{culberson1998pattern}
-\@writefile{toc}{\contentsline {paragraph}{Shared beam search.}{5}{section*.28}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Pure 3-cycles for any cluster.}{5}{section*.29}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {6}External Baselines}{5}{section.6}\protected@file@percent }
-\newlabel{sec:baselines}{{6}{5}{External Baselines}{section.6}{}}
-\@writefile{toc}{\contentsline {paragraph}{\textsc  {KMC-published}\xspace  : KMCoders' published Santa 2023 solutions.}{5}{section*.30}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\textsc  {KMC-one run}\xspace  : KMCoders' program, one run.}{5}{section*.31}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{\textsc  {dwalton76}\xspace  : dwalton76's NxNxN solver.}{5}{section*.32}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Names used in this paper for every system we run: our eight methods (\S  \ref {sec:methods}) and the three external baselines (\S  \ref {sec:baselines}).}}{5}{table.caption.34}\protected@file@percent }
-\newlabel{tab:names}{{3}{5}{Names used in this paper for every system we run: our eight methods (\S \ref {sec:methods}) and the three external baselines (\S \ref {sec:baselines})}{table.caption.34}{}}
-\@writefile{toc}{\contentsline {paragraph}{Components.}{5}{section*.33}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {7}Methods}{5}{section.7}\protected@file@percent }
-\newlabel{sec:methods}{{7}{5}{Methods}{section.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}\textsc  {IDA$^*$-PDB}\xspace  : IDA* with pattern databases (our reproduction)}{5}{subsection.7.1}\protected@file@percent }
-\newlabel{sec:m1}{{7.1}{5}{\Mone : IDA* with pattern databases (our reproduction)}{subsection.7.1}{}}
 \citation{walton2017nxnxn}
 \citation{kociemba2phase}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Names used in this paper for every system we run: our eight methods (\S  \ref {sec:methods}) and the three external baselines (\S  \ref {sec:baselines}).}}{5}{table.caption.32}\protected@file@percent }
+\newlabel{tab:names}{{3}{5}{Names used in this paper for every system we run: our eight methods (\S \ref {sec:methods}) and the three external baselines (\S \ref {sec:baselines})}{table.caption.32}{}}
+\@writefile{toc}{\contentsline {paragraph}{\textsc  {dwalton76}\xspace  : dwalton76's NxNxN solver.}{5}{section*.30}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Components.}{5}{section*.31}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Methods}{5}{section.6}\protected@file@percent }
+\newlabel{sec:methods}{{6}{5}{Methods}{section.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}\textsc  {IDA$^*$-PDB}\xspace  : IDA* with pattern databases (our reproduction)}{5}{subsection.6.1}\protected@file@percent }
+\newlabel{sec:m1}{{6.1}{5}{\Mone : IDA* with pattern databases (our reproduction)}{subsection.6.1}{}}
+\@writefile{loa}{\contentsline {algocf}{\numberline {1}{\ignorespaces \textsc  {IDA$^*$-PDB}\xspace  : IDA* (our reproduction of Korf's solver)}}{5}{algocf.1}\protected@file@percent }
+\newlabel{alg:m1}{{1}{5}{\Mone : IDA* with pattern databases (our reproduction)}{algocf.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}\textsc  {Reduction}\xspace  : reduction with Kociemba's two-phase algorithm (our reproduction)}{5}{subsection.6.2}\protected@file@percent }
+\newlabel{sec:m2}{{6.2}{5}{\Mtwo : reduction with Kociemba's two-phase algorithm (our reproduction)}{subsection.6.2}{}}
 \citation{demaine2011algorithms}
 \citation{kmcoders2024santa}
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces The eight methods. ``Repro.'': our reproduction of a published method; ``new'': ours. Move growth is the length of the returned solutions as a function of $N$ (proved for Demaine's construction, empirical otherwise); time is per random state on our CPUs at the largest size we ran (details in each subsection and \S  \ref {sec:experiments}).}}{6}{table.caption.35}\protected@file@percent }
-\newlabel{tab:methods}{{4}{6}{The eight methods. ``Repro.'': our reproduction of a published method; ``new'': ours. Move growth is the length of the returned solutions as a function of $N$ (proved for Demaine's construction, empirical otherwise); time is per random state on our CPUs at the largest size we ran (details in each subsection and \S \ref {sec:experiments})}{table.caption.35}{}}
-\@writefile{loa}{\contentsline {algocf}{\numberline {1}{\ignorespaces \textsc  {IDA$^*$-PDB}\xspace  : IDA* (our reproduction of Korf's solver)}}{6}{algocf.1}\protected@file@percent }
-\newlabel{alg:m1}{{1}{6}{\Mone : IDA* with pattern databases (our reproduction)}{algocf.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}\textsc  {Reduction}\xspace  : reduction with Kociemba's two-phase algorithm (our reproduction)}{6}{subsection.7.2}\protected@file@percent }
-\newlabel{sec:m2}{{7.2}{6}{\Mtwo : reduction with Kociemba's two-phase algorithm (our reproduction)}{subsection.7.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}\textsc  {Demaine}\xspace  : Demaine's parallel cluster algorithm (our reproduction)}{6}{subsection.7.3}\protected@file@percent }
-\newlabel{sec:m3}{{7.3}{6}{\Mthree : Demaine's parallel cluster algorithm (our reproduction)}{subsection.7.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces The eight methods. ``Repro.'': our reproduction of a published method; ``new'': ours. Move growth is the length of the returned solutions as a function of $N$ (proved for Demaine's construction, empirical otherwise); time is per random state on our CPUs at the largest size we ran (details in each subsection and \S  \ref {sec:experiments}).}}{6}{table.caption.33}\protected@file@percent }
+\newlabel{tab:methods}{{4}{6}{The eight methods. ``Repro.'': our reproduction of a published method; ``new'': ours. Move growth is the length of the returned solutions as a function of $N$ (proved for Demaine's construction, empirical otherwise); time is per random state on our CPUs at the largest size we ran (details in each subsection and \S \ref {sec:experiments})}{table.caption.33}{}}
+\@writefile{loa}{\contentsline {algocf}{\numberline {2}{\ignorespaces \textsc  {Reduction}\xspace  : reduction (our reproduction), cube}}{6}{algocf.2}\protected@file@percent }
+\newlabel{alg:m2}{{2}{6}{\Mtwo : reduction with Kociemba's two-phase algorithm (our reproduction)}{algocf.2}{}}
+\@writefile{loa}{\contentsline {algocf}{\numberline {3}{\ignorespaces \textsc  {Demaine}\xspace  : one family of cube clusters (our reproduction with 3-cycle batching)}}{6}{algocf.3}\protected@file@percent }
+\newlabel{alg:m3}{{3}{6}{\Mthree : Demaine's parallel cluster algorithm (our reproduction)}{algocf.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}\textsc  {Demaine}\xspace  : Demaine's parallel cluster algorithm (our reproduction)}{6}{subsection.6.3}\protected@file@percent }
+\newlabel{sec:m3}{{6.3}{6}{\Mthree : Demaine's parallel cluster algorithm (our reproduction)}{subsection.6.3}{}}
 \citation{chervov2025cayleypy}
 \citation{vaswani2017attention}
 \citation{lee2019settransformer}
-\@writefile{loa}{\contentsline {algocf}{\numberline {2}{\ignorespaces \textsc  {Reduction}\xspace  : reduction (our reproduction), cube}}{7}{algocf.2}\protected@file@percent }
-\newlabel{alg:m2}{{2}{7}{\Mtwo : reduction with Kociemba's two-phase algorithm (our reproduction)}{algocf.2}{}}
-\@writefile{loa}{\contentsline {algocf}{\numberline {3}{\ignorespaces \textsc  {Demaine}\xspace  : one family of cube clusters (our reproduction with 3-cycle batching)}}{7}{algocf.3}\protected@file@percent }
-\newlabel{alg:m3}{{3}{7}{\Mthree : Demaine's parallel cluster algorithm (our reproduction)}{algocf.3}{}}
+\citation{demaine2011algorithms}
 \@writefile{loa}{\contentsline {algocf}{\numberline {4}{\ignorespaces \textsc  {CayleyPy}\xspace  : beam search with a learned distance (our reproduction of CayleyPy)}}{7}{algocf.4}\protected@file@percent }
 \newlabel{alg:m4}{{4}{7}{\Mfour : CayleyPy per-size networks (our reproduction)}{algocf.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.4}\textsc  {CayleyPy}\xspace  : CayleyPy per-size networks (our reproduction)}{7}{subsection.7.4}\protected@file@percent }
-\newlabel{sec:m4}{{7.4}{7}{\Mfour : CayleyPy per-size networks (our reproduction)}{subsection.7.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.5}\textsc  {OneNet}\xspace  : one network for every size (new)}{7}{subsection.7.5}\protected@file@percent }
-\newlabel{sec:5a}{{7.5}{7}{\FiveA : one network for every size (new)}{subsection.7.5}{}}
-\citation{demaine2011algorithms}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces \textsc  {OneNet}\xspace  's staged search for $N\ge 8$. Each stage adds a few pieces to an exact goal. Tiny stages are solved optimally by lookup; the rest by beam search over single moves and verified commutators, guided by \textsc  {OneNet}\xspace  's per-cluster costs.}}{8}{figure.caption.40}\protected@file@percent }
-\newlabel{fig:pipeline}{{1}{8}{\FiveA 's staged search for $N\ge 8$. Each stage adds a few pieces to an exact goal. Tiny stages are solved optimally by lookup; the rest by beam search over single moves and verified commutators, guided by \FiveA 's per-cluster costs}{figure.caption.40}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.6}\textsc  {NetGain}\xspace  : net-gain scheduling of bulk commutators (new)}{8}{subsection.7.6}\protected@file@percent }
-\newlabel{sec:5c}{{7.6}{8}{\FiveC : net-gain scheduling of bulk commutators (new)}{subsection.7.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}\textsc  {CayleyPy}\xspace  : CayleyPy per-size networks (our reproduction)}{7}{subsection.6.4}\protected@file@percent }
+\newlabel{sec:m4}{{6.4}{7}{\Mfour : CayleyPy per-size networks (our reproduction)}{subsection.6.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.5}\textsc  {OneNet}\xspace  : one network for every size (new)}{7}{subsection.6.5}\protected@file@percent }
+\newlabel{sec:5a}{{6.5}{7}{\FiveA : one network for every size (new)}{subsection.6.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces \textsc  {OneNet}\xspace  's staged search for $N\ge 8$. Each stage adds a few pieces to an exact goal. Tiny stages are solved optimally by lookup; the rest by beam search over single moves and verified commutators, guided by \textsc  {OneNet}\xspace  's per-cluster costs.}}{7}{figure.caption.38}\protected@file@percent }
+\newlabel{fig:pipeline}{{1}{7}{\FiveA 's staged search for $N\ge 8$. Each stage adds a few pieces to an exact goal. Tiny stages are solved optimally by lookup; the rest by beam search over single moves and verified commutators, guided by \FiveA 's per-cluster costs}{figure.caption.38}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.6}\textsc  {NetGain}\xspace  : net-gain scheduling of bulk commutators (new)}{7}{subsection.6.6}\protected@file@percent }
+\newlabel{sec:5c}{{6.6}{7}{\FiveC : net-gain scheduling of bulk commutators (new)}{subsection.6.6}{}}
+\citation{kmcoders2024santa}
 \@writefile{loa}{\contentsline {algocf}{\numberline {5}{\ignorespaces Staged beam search (\textsc  {OneNet}\xspace  for $N\ge 8$)}}{8}{algocf.5}\protected@file@percent }
 \newlabel{alg:staged}{{5}{8}{\FiveA : one network for every size (new)}{algocf.5}{}}
-\newlabel{eq:5c}{{2}{8}{\FiveC : net-gain scheduling of bulk commutators (new)}{equation.7.2}{}}
-\citation{kmcoders2024santa}
-\@writefile{loa}{\contentsline {algocf}{\numberline {6}{\ignorespaces \textsc  {NetGain}\xspace  schedule for one family of clusters (centers or wings)}}{9}{algocf.6}\protected@file@percent }
-\newlabel{alg:5c}{{6}{9}{\FiveC : net-gain scheduling of bulk commutators (new)}{algocf.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.7}\textsc  {KMC-Repro}\xspace  : the KMCoders pipeline from its write-up (our reproduction)}{9}{subsection.7.7}\protected@file@percent }
-\newlabel{sec:m6}{{7.7}{9}{\Msix : the KMCoders pipeline from its write-up (our reproduction)}{subsection.7.7}{}}
-\newlabel{eq:insert}{{3}{9}{\Msix : the KMCoders pipeline from its write-up (our reproduction)}{equation.7.3}{}}
+\newlabel{eq:5c}{{2}{8}{\FiveC : net-gain scheduling of bulk commutators (new)}{equation.6.2}{}}
+\@writefile{loa}{\contentsline {algocf}{\numberline {6}{\ignorespaces \textsc  {NetGain}\xspace  schedule for one family of clusters (centers or wings)}}{8}{algocf.6}\protected@file@percent }
+\newlabel{alg:5c}{{6}{8}{\FiveC : net-gain scheduling of bulk commutators (new)}{algocf.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.7}\textsc  {KMC-Repro}\xspace  : the KMCoders pipeline from its write-up (our reproduction)}{8}{subsection.6.7}\protected@file@percent }
+\newlabel{sec:m6}{{6.7}{8}{\Msix : the KMCoders pipeline from its write-up (our reproduction)}{subsection.6.7}{}}
+\newlabel{eq:insert}{{3}{8}{\Msix : the KMCoders pipeline from its write-up (our reproduction)}{equation.6.3}{}}
 \@writefile{loa}{\contentsline {algocf}{\numberline {7}{\ignorespaces \textsc  {KMC-Repro}\xspace  : KMCoders pipeline (our reproduction from the write-up)}}{9}{algocf.7}\protected@file@percent }
 \newlabel{alg:m6}{{7}{9}{\Msix : the KMCoders pipeline from its write-up (our reproduction)}{algocf.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.8}\textsc  {SymPort}\xspace  : a symmetry portfolio around deterministic solvers (new, main method)}{9}{subsection.7.8}\protected@file@percent }
-\newlabel{sec:m7}{{7.8}{9}{\Mseven : a symmetry portfolio around deterministic solvers (new, main method)}{subsection.7.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.8}\textsc  {SymPort}\xspace  : a symmetry portfolio around deterministic solvers (new, main method)}{9}{subsection.6.8}\protected@file@percent }
+\newlabel{sec:m7}{{6.8}{9}{\Mseven : a symmetry portfolio around deterministic solvers (new, main method)}{subsection.6.8}{}}
 \citation{shaw1998lns}
+\citation{korf1997optimal}
 \@writefile{loa}{\contentsline {algocf}{\numberline {8}{\ignorespaces \textsc  {SymPort}\xspace  : symmetry portfolio}}{10}{algocf.8}\protected@file@percent }
 \newlabel{alg:m7}{{8}{10}{\Mseven : a symmetry portfolio around deterministic solvers (new, main method)}{algocf.8}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {8}Experiments}{10}{section.8}\protected@file@percent }
-\newlabel{sec:experiments}{{8}{10}{Experiments}{section.8}{}}
-\@writefile{toc}{\contentsline {paragraph}{Setup.}{10}{section*.45}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.1}Main results}{10}{subsection.8.1}\protected@file@percent }
-\newlabel{sec:main}{{8.1}{10}{Main results}{subsection.8.1}{}}
-\citation{korf1997optimal}
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces \textbf  {Rubik's Square}, random states: mean solution length (HTM; on the Square HTM\,=\,QTM) of every method on the same instances ($n$ per size). In each row the \textcolor {red}{\textbf  {best}} method is red and the \textcolor {green!50!black}{\textbf  {second best}} green; only methods that solved every instance of that size are ranked, and ties share the colour. \textsc  {IDA$^*$-PDB}\xspace  : exact optimum (breadth-first search for $N\le 4$, IDA* for $N=5$). \textsc  {CayleyPy}\xspace  : per-size network, $W{=}4096$. A superscript gives the solved fraction when below 100\%. A dash means no result, for three reasons: \textsc  {IDA$^*$-PDB}\xspace  {} at $N\ge 6$, where no optimal solver finishes (0/10 states at $N=6$); \textsc  {CayleyPy}\xspace  {} at $N\ge 9$, for which no network was trained; \textsc  {OneNet}\xspace  {} at $N=3$, 13 and 15--20, not run.}}{11}{table.caption.46}\protected@file@percent }
-\newlabel{tab:mainsq}{{5}{11}{\textbf {Rubik's Square}, random states: mean solution length (HTM; on the Square HTM\,=\,QTM) of every method on the same instances ($n$ per size). In each row the \best {best} method is red and the \second {second best} green; only methods that solved every instance of that size are ranked, and ties share the colour. \Mone : exact optimum (breadth-first search for $N\le 4$, IDA* for $N=5$). \Mfour : per-size network, $W{=}4096$. A superscript gives the solved fraction when below 100\%. A dash means no result, for three reasons: \Mone {} at $N\ge 6$, where no optimal solver finishes (0/10 states at $N=6$); \Mfour {} at $N\ge 9$, for which no network was trained; \FiveA {} at $N=3$, 13 and 15--20, not run}{table.caption.46}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces \textbf  {Rubik's Cube}, Santa 2023 puzzles: mean solution length in QTM, the competition's score, of every method on the same puzzles ($n$ per size). In each row the \textcolor {red}{\textbf  {best}} method is red and the \textcolor {green!50!black}{\textbf  {second best}} green; only methods that solved every puzzle of that size are ranked. \textsc  {KMC-published}\xspace  : KMCoders' published best-of-many solutions; \textsc  {KMC-one run}\xspace  : one run of their program; \textsc  {dwalton76}\xspace  : dwalton76's solver (\S  \ref {sec:baselines}). A superscript gives the number of puzzles run when below $n$. Santa cubes up to $N=10$ (\S  \ref {sec:data}).}}{11}{table.caption.47}\protected@file@percent }
-\newlabel{tab:maincube}{{6}{11}{\textbf {Rubik's Cube}, Santa 2023 puzzles: mean solution length in QTM, the competition's score, of every method on the same puzzles ($n$ per size). In each row the \best {best} method is red and the \second {second best} green; only methods that solved every puzzle of that size are ranked. \Bone : KMCoders' published best-of-many solutions; \Btwo : one run of their program; \Bthree : dwalton76's solver (\S \ref {sec:baselines}). A superscript gives the number of puzzles run when below $n$. Santa cubes up to $N=10$ (\S \ref {sec:data})}{table.caption.47}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.2}Reproductions against their originals}{11}{subsection.8.2}\protected@file@percent }
-\newlabel{sec:exp-repro}{{8.2}{11}{Reproductions against their originals}{subsection.8.2}{}}
-\@writefile{toc}{\contentsline {paragraph}{\textsc  {IDA$^*$-PDB}\xspace  and exact optima.}{11}{section*.48}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Optimality on the smallest Squares. ``Gap'' = mean HTM above the exact optimum over solved instances; ``optimal'' = instances solved in exactly the optimal length. \textsc  {OneNet}\xspace  was evaluated for $N\ge 4$ only.}}{12}{table.caption.49}\protected@file@percent }
-\newlabel{tab:optimal}{{7}{12}{Optimality on the smallest Squares. ``Gap'' = mean HTM above the exact optimum over solved instances; ``optimal'' = instances solved in exactly the optimal length. \FiveA was evaluated for $N\ge 4$ only}{table.caption.49}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces \textsc  {CayleyPy}\xspace  : mean solution length against beam width $W$, one per-size network for each Square size $N=3,\dots  ,8$ (10 states each; means over solved states). Hollow markers: not all 10 states solved.}}{12}{figure.caption.51}\protected@file@percent }
-\newlabel{fig:m4width}{{2}{12}{\Mfour : mean solution length against beam width $W$, one per-size network for each Square size $N=3,\dots ,8$ (10 states each; means over solved states). Hollow markers: not all 10 states solved}{figure.caption.51}{}}
-\@writefile{toc}{\contentsline {paragraph}{\textsc  {CayleyPy}\xspace  against CayleyPy.}{12}{section*.50}\protected@file@percent }
-\newlabel{sec:m4gpu}{{8.2}{12}{\Mfour with GPU-trained models}{section*.52}{}}
-\@writefile{toc}{\contentsline {paragraph}{\textsc  {CayleyPy}\xspace  with GPU-trained models.}{12}{section*.52}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces \textsc  {CayleyPy}\xspace  on the same 20 random Squares per size, same CPU, $W{=}4096$: committed CPU-trained models against the GPU-trained ``large'' models. Last column: states with a shorter / longer solution with the GPU model. Every state was solved by both.}}{12}{table.caption.53}\protected@file@percent }
-\newlabel{tab:m4gpu}{{8}{12}{\Mfour on the same 20 random Squares per size, same CPU, $W{=}4096$: committed CPU-trained models against the GPU-trained ``large'' models. Last column: states with a shorter / longer solution with the GPU model. Every state was solved by both}{table.caption.53}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Reproducing KMCoders on the Santa 2023 cubes (mean QTM). \textsc  {KMC-published}\xspace  : their published solutions; \textsc  {KMC-one run}\xspace  : one run of their program (puzzles run in brackets); \textsc  {KMC-Repro}\xspace  : our reproduction from their write-up. Ratios to \textsc  {KMC-published}\xspace  .}}{12}{table.caption.55}\protected@file@percent }
-\newlabel{tab:repro-kmc}{{9}{12}{Reproducing KMCoders on the Santa 2023 cubes (mean QTM). \Bone : their published solutions; \Btwo : one run of their program (puzzles run in brackets); \Msix : our reproduction from their write-up. Ratios to \Bone }{table.caption.55}{}}
-\@writefile{toc}{\contentsline {paragraph}{\textsc  {KMC-Repro}\xspace  and one run of KMCoders' program against KMCoders' published lengths.}{12}{section*.54}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.3}Analysis of our methods}{12}{subsection.8.3}\protected@file@percent }
-\newlabel{sec:exp-ours}{{8.3}{12}{Analysis of our methods}{subsection.8.3}{}}
-\@writefile{toc}{\contentsline {paragraph}{\textsc  {SymPort}\xspace  against every baseline, puzzle by puzzle.}{12}{section*.57}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces \textsc  {SymPort}\xspace  against every baseline and every other method, puzzle by puzzle, on the Santa 2023 cubes of $N=4$--7{} (mean QTM, the competition's score; bold: shortest). \textsc  {KMC-published}\xspace  : KMCoders' published best-of-many solutions; \textsc  {KMC-one run}\xspace  : one run of their program; \textsc  {dwalton76}\xspace  : dwalton76's solver. W/T/L: puzzles where \textsc  {SymPort}\xspace  is shorter than / equal to / longer than \textsc  {KMC-published}\xspace  ; last column: \textsc  {SymPort}\xspace  's saving over \textsc  {KMC-published}\xspace  . Last row: total QTM over all these puzzles, i.e.\ the Santa score restricted to them.}}{13}{table.caption.56}\protected@file@percent }
-\newlabel{tab:m7all}{{10}{13}{\Mseven against every baseline and every other method, puzzle by puzzle, on the Santa 2023 cubes of \MsevenAllSizes {} (mean QTM, the competition's score; bold: shortest). \Bone : KMCoders' published best-of-many solutions; \Btwo : one run of their program; \Bthree : dwalton76's solver. W/T/L: puzzles where \Mseven is shorter than / equal to / longer than \Bone ; last column: \Mseven 's saving over \Bone . Last row: total QTM over all these puzzles, i.e.\ the Santa score restricted to them}{table.caption.56}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces \textsc  {SymPort}\xspace  on the first 10 Santa 4$\times $4$\times $4\xspace   puzzles: QTM of each of the 48 symmetric copies (dots), KMCoders' published solution (bar) and one run of their program on the unrotated puzzle (cross).}}{13}{figure.caption.59}\protected@file@percent }
-\newlabel{fig:m7copies}{{3}{13}{\Mseven on the first 10 Santa \Cu {4} puzzles: QTM of each of the 48 symmetric copies (dots), KMCoders' published solution (bar) and one run of their program on the unrotated puzzle (cross)}{figure.caption.59}{}}
-\@writefile{toc}{\contentsline {paragraph}{Why the portfolio works.}{13}{section*.58}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Time.}{13}{section*.61}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Best of $k$ symmetric copies, averaged over the 10 4$\times $4$\times $4\xspace   puzzles (and 200 random draws of the $k$ copies), against KMCoders' published mean (dashed).}}{13}{figure.caption.60}\protected@file@percent }
-\newlabel{fig:m7portfolio}{{4}{13}{Best of $k$ symmetric copies, averaged over the 10 \Cu {4} puzzles (and 200 random draws of the $k$ copies), against KMCoders' published mean (dashed)}{figure.caption.60}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces Mean wall time per Santa puzzle (seconds; shared 4-core machine, so indicative).}}{13}{table.caption.62}\protected@file@percent }
-\newlabel{tab:santatime}{{11}{13}{Mean wall time per Santa puzzle (seconds; shared 4-core machine, so indicative)}{table.caption.62}{}}
-\newlabel{sec:ci}{{8.3}{13}{Statistics with 20 states per size}{section*.63}{}}
-\@writefile{toc}{\contentsline {paragraph}{Statistics with 20 states per size.}{13}{section*.63}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces Cube, 20 random states per size: mean HTM $\pm $ 95\% confidence half-width, and the paired difference \textsc  {NetGain}\xspace  $-$\textsc  {Demaine}\xspace  on the same states ($^\ast $: interval excludes 0).}}{14}{table.caption.64}\protected@file@percent }
-\newlabel{tab:ci}{{12}{14}{Cube, 20 random states per size: mean HTM $\pm $ 95\% confidence half-width, and the paired difference \FiveC $-$\Mthree on the same states ($^\ast $: interval excludes 0)}{table.caption.64}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {13}{\ignorespaces \textsc  {NetGain}\xspace  components on the cube (mean HTM, same instances): \textsc  {Demaine}\xspace  's schedule; \textsc  {NetGain}\xspace  without lookahead; full \textsc  {NetGain}\xspace  (lookahead on, the default for $N\le 15$); \textsc  {NetGain}\xspace  with lookahead but without setup sharing. ``--'' = not run.}}{14}{table.caption.66}\protected@file@percent }
-\newlabel{tab:5cabl}{{13}{14}{\FiveC components on the cube (mean HTM, same instances): \Mthree 's schedule; \FiveC without lookahead; full \FiveC (lookahead on, the default for $N\le 15$); \FiveC with lookahead but without setup sharing. ``--'' = not run}{table.caption.66}{}}
-\newlabel{sec:5cresults}{{8.3}{14}{Where \FiveC 's gain comes from}{section*.65}{}}
-\@writefile{toc}{\contentsline {paragraph}{Where \textsc  {NetGain}\xspace  's gain comes from.}{14}{section*.65}\protected@file@percent }
-\newlabel{sec:generalisation}{{8.3}{14}{\FiveA : does one network generalise across sizes?}{section*.67}{}}
-\@writefile{toc}{\contentsline {paragraph}{\textsc  {OneNet}\xspace  : does one network generalise across sizes?}{14}{section*.67}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {14}{\ignorespaces \textsc  {OneNet}\xspace  , trained on Squares with $N\in \{4,\dots  ,8\}$ only: agreement of its distance estimate with the true random-walk depth on fresh walks ($^\ast $ = size never seen in training). RMSE is in units of $N^2/\ln N$.}}{14}{table.caption.68}\protected@file@percent }
-\newlabel{tab:gen}{{14}{14}{\FiveA , trained on Squares with $N\in \{4,\dots ,8\}$ only: agreement of its distance estimate with the true random-walk depth on fresh walks ($^\ast $ = size never seen in training). RMSE is in units of $N^2/\ln N$}{table.caption.68}{}}
-\newlabel{sec:scaling}{{8.3}{14}{Scaling with $N$}{section*.69}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Experiments}{10}{section.7}\protected@file@percent }
+\newlabel{sec:experiments}{{7}{10}{Experiments}{section.7}{}}
+\@writefile{toc}{\contentsline {paragraph}{Setup.}{10}{section*.43}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Main results}{10}{subsection.7.1}\protected@file@percent }
+\newlabel{sec:main}{{7.1}{10}{Main results}{subsection.7.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}Reproductions against their originals}{10}{subsection.7.2}\protected@file@percent }
+\newlabel{sec:exp-repro}{{7.2}{10}{Reproductions against their originals}{subsection.7.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{\textsc  {IDA$^*$-PDB}\xspace  and exact optima.}{10}{section*.46}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\textsc  {CayleyPy}\xspace  against CayleyPy.}{10}{section*.48}\protected@file@percent }
+\newlabel{sec:m4gpu}{{7.2}{10}{\Mfour with GPU-trained models}{section*.50}{}}
+\@writefile{toc}{\contentsline {paragraph}{\textsc  {CayleyPy}\xspace  with GPU-trained models.}{10}{section*.50}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{\textsc  {KMC-Repro}\xspace  and one run of KMCoders' program against KMCoders' published lengths.}{10}{section*.52}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces \textbf  {Rubik's Square}, random states: mean solution length (HTM; on the Square HTM\,=\,QTM) of every method on the same instances ($n$ per size). In each row the \textcolor {red}{\textbf  {best}} method is red and the \textcolor {green!50!black}{\textbf  {second best}} green; only methods that solved every instance of that size are ranked, and ties share the colour. \textsc  {IDA$^*$-PDB}\xspace  : exact optimum (breadth-first search for $N\le 4$, IDA* for $N=5$). \textsc  {CayleyPy}\xspace  : per-size network, $W{=}4096$. A superscript gives the solved fraction when below 100\%. A dash means no result, for three reasons: \textsc  {IDA$^*$-PDB}\xspace  {} at $N\ge 6$, where no optimal solver finishes (0/10 states at $N=6$); \textsc  {CayleyPy}\xspace  {} at $N\ge 9$, for which no network was trained; \textsc  {OneNet}\xspace  {} at $N=3$, 13 and 15--20, not run.}}{11}{table.caption.44}\protected@file@percent }
+\newlabel{tab:mainsq}{{5}{11}{\textbf {Rubik's Square}, random states: mean solution length (HTM; on the Square HTM\,=\,QTM) of every method on the same instances ($n$ per size). In each row the \best {best} method is red and the \second {second best} green; only methods that solved every instance of that size are ranked, and ties share the colour. \Mone : exact optimum (breadth-first search for $N\le 4$, IDA* for $N=5$). \Mfour : per-size network, $W{=}4096$. A superscript gives the solved fraction when below 100\%. A dash means no result, for three reasons: \Mone {} at $N\ge 6$, where no optimal solver finishes (0/10 states at $N=6$); \Mfour {} at $N\ge 9$, for which no network was trained; \FiveA {} at $N=3$, 13 and 15--20, not run}{table.caption.44}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces \textbf  {Rubik's Cube}, Santa 2023 puzzles: mean solution length in QTM, the competition's score, of every method on the same puzzles ($n$ per size). In each row the \textcolor {red}{\textbf  {best}} method is red and the \textcolor {green!50!black}{\textbf  {second best}} green; only methods that solved every puzzle of that size are ranked. \textsc  {KMC-published}\xspace  : KMCoders' published best-of-many solutions; \textsc  {KMC-one run}\xspace  : one run of their program; \textsc  {dwalton76}\xspace  : dwalton76's solver (\S  \ref {sec:baselines}). A superscript gives the number of puzzles run when below $n$. Santa cubes up to $N=10$ (\S  \ref {sec:data}); \textsc  {SymPort}\xspace  was not run on the 10$\times $10$\times $10\xspace   (--; \S  \ref {sec:m7scale}).}}{11}{table.caption.45}\protected@file@percent }
+\newlabel{tab:maincube}{{6}{11}{\textbf {Rubik's Cube}, Santa 2023 puzzles: mean solution length in QTM, the competition's score, of every method on the same puzzles ($n$ per size). In each row the \best {best} method is red and the \second {second best} green; only methods that solved every puzzle of that size are ranked. \Bone : KMCoders' published best-of-many solutions; \Btwo : one run of their program; \Bthree : dwalton76's solver (\S \ref {sec:baselines}). A superscript gives the number of puzzles run when below $n$. Santa cubes up to $N=10$ (\S \ref {sec:data}); \Mseven was not run on the \Cu {10} (--; \S \ref {sec:m7scale})}{table.caption.45}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}Analysis of our methods}{11}{subsection.7.3}\protected@file@percent }
+\newlabel{sec:exp-ours}{{7.3}{11}{Analysis of our methods}{subsection.7.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{\textsc  {SymPort}\xspace  against every baseline, puzzle by puzzle.}{11}{section*.55}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Why the portfolio works.}{11}{section*.56}\protected@file@percent }
+\newlabel{sec:m7scale}{{7.3}{11}{Why the portfolio stops winning at $N\ge 8$}{section*.59}{}}
+\@writefile{toc}{\contentsline {paragraph}{Why the portfolio stops winning at $N\ge 8$.}{11}{section*.59}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Optimality on the smallest Squares. ``Gap'' = mean HTM above the exact optimum over solved instances; ``optimal'' = instances solved in exactly the optimal length. \textsc  {OneNet}\xspace  was evaluated for $N\ge 4$ only.}}{12}{table.caption.47}\protected@file@percent }
+\newlabel{tab:optimal}{{7}{12}{Optimality on the smallest Squares. ``Gap'' = mean HTM above the exact optimum over solved instances; ``optimal'' = instances solved in exactly the optimal length. \FiveA was evaluated for $N\ge 4$ only}{table.caption.47}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces \textsc  {CayleyPy}\xspace  : mean solution length against beam width $W$, one per-size network for each Square size $N=3,\dots  ,8$ (10 states each; means over solved states). Hollow markers: not all 10 states solved.}}{12}{figure.caption.49}\protected@file@percent }
+\newlabel{fig:m4width}{{2}{12}{\Mfour : mean solution length against beam width $W$, one per-size network for each Square size $N=3,\dots ,8$ (10 states each; means over solved states). Hollow markers: not all 10 states solved}{figure.caption.49}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces \textsc  {CayleyPy}\xspace  on the same 20 random Squares per size, same CPU, $W{=}4096$: committed CPU-trained models against the GPU-trained ``large'' models. Last column: states with a shorter / longer solution with the GPU model. Every state was solved by both.}}{12}{table.caption.51}\protected@file@percent }
+\newlabel{tab:m4gpu}{{8}{12}{\Mfour on the same 20 random Squares per size, same CPU, $W{=}4096$: committed CPU-trained models against the GPU-trained ``large'' models. Last column: states with a shorter / longer solution with the GPU model. Every state was solved by both}{table.caption.51}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Reproducing KMCoders on the Santa 2023 cubes (mean QTM). \textsc  {KMC-published}\xspace  : their published solutions; \textsc  {KMC-one run}\xspace  : one run of their program (puzzles run in brackets); \textsc  {KMC-Repro}\xspace  : our reproduction from their write-up. Ratios to \textsc  {KMC-published}\xspace  .}}{12}{table.caption.53}\protected@file@percent }
+\newlabel{tab:repro-kmc}{{9}{12}{Reproducing KMCoders on the Santa 2023 cubes (mean QTM). \Bone : their published solutions; \Btwo : one run of their program (puzzles run in brackets); \Msix : our reproduction from their write-up. Ratios to \Bone }{table.caption.53}{}}
+\@writefile{toc}{\contentsline {paragraph}{Time.}{12}{section*.61}\protected@file@percent }
+\newlabel{sec:ci}{{7.3}{12}{Statistics with 20 states per size}{section*.63}{}}
+\@writefile{toc}{\contentsline {paragraph}{Statistics with 20 states per size.}{12}{section*.63}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces \textsc  {SymPort}\xspace  against every baseline and every other method, puzzle by puzzle, on the Santa 2023 cubes of $N=4$--9{} (mean QTM, the competition's score; bold: shortest). \textsc  {KMC-published}\xspace  : KMCoders' published best-of-many solutions; \textsc  {KMC-one run}\xspace  : one run of their program; \textsc  {dwalton76}\xspace  : dwalton76's solver. W/T/L: puzzles where \textsc  {SymPort}\xspace  is shorter than / equal to / longer than \textsc  {KMC-published}\xspace  ; last column: \textsc  {SymPort}\xspace  's saving over \textsc  {KMC-published}\xspace  . Last row: total QTM over all these puzzles, i.e.\ the Santa score restricted to them.}}{13}{table.caption.54}\protected@file@percent }
+\newlabel{tab:m7all}{{10}{13}{\Mseven against every baseline and every other method, puzzle by puzzle, on the Santa 2023 cubes of \MsevenAllSizes {} (mean QTM, the competition's score; bold: shortest). \Bone : KMCoders' published best-of-many solutions; \Btwo : one run of their program; \Bthree : dwalton76's solver. W/T/L: puzzles where \Mseven is shorter than / equal to / longer than \Bone ; last column: \Mseven 's saving over \Bone . Last row: total QTM over all these puzzles, i.e.\ the Santa score restricted to them}{table.caption.54}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces Why \textsc  {SymPort}\xspace  's lead shrinks with $N$ (Santa 2023 cubes, QTM; shorter of \textsc  {SymPort}\xspace  and \textsc  {KMC-published}\xspace  in bold). $k$: copies run per puzzle (median; a few copies at $N=5$ and 7 were lost to the memory limit); CPU-min: per copy (median); SD: standard deviation of the copies' lengths (mean over puzzles); gain: best copy against the median copy; gap: median copy against \textsc  {KMC-published}\xspace  ; \textsc  {SymPort}\xspace  : best of the $k$ copies (at $N=4$ without the 8 default-program copies of Table\nonbreakingspace \ref {tab:maincube}); last column: normal-model projection of the best of all 48 symmetric copies.}}{13}{table.caption.60}\protected@file@percent }
+\newlabel{tab:m7scale}{{11}{13}{Why \Mseven 's lead shrinks with $N$ (Santa 2023 cubes, QTM; shorter of \Mseven and \Bone in bold). $k$: copies run per puzzle (median; a few copies at $N=5$ and 7 were lost to the memory limit); CPU-min: per copy (median); SD: standard deviation of the copies' lengths (mean over puzzles); gain: best copy against the median copy; gap: median copy against \Bone ; \Mseven : best of the $k$ copies (at $N=4$ without the 8 default-program copies of Table~\ref {tab:maincube}); last column: normal-model projection of the best of all 48 symmetric copies}{table.caption.60}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces Mean wall time per Santa puzzle (seconds; shared 4-core machine, so indicative).}}{13}{table.caption.62}\protected@file@percent }
+\newlabel{tab:santatime}{{12}{13}{Mean wall time per Santa puzzle (seconds; shared 4-core machine, so indicative)}{table.caption.62}{}}
+\newlabel{sec:5cresults}{{7.3}{13}{Where \FiveC 's gain comes from}{section*.65}{}}
+\@writefile{toc}{\contentsline {paragraph}{Where \textsc  {NetGain}\xspace  's gain comes from.}{13}{section*.65}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {13}{\ignorespaces Cube, 20 random states per size: mean HTM $\pm $ 95\% confidence half-width, and the paired difference \textsc  {NetGain}\xspace  $-$\textsc  {Demaine}\xspace  on the same states ($^\ast $: interval excludes 0).}}{13}{table.caption.64}\protected@file@percent }
+\newlabel{tab:ci}{{13}{13}{Cube, 20 random states per size: mean HTM $\pm $ 95\% confidence half-width, and the paired difference \FiveC $-$\Mthree on the same states ($^\ast $: interval excludes 0)}{table.caption.64}{}}
+\newlabel{sec:generalisation}{{7.3}{13}{\FiveA : does one network generalise across sizes?}{section*.67}{}}
+\@writefile{toc}{\contentsline {paragraph}{\textsc  {OneNet}\xspace  : does one network generalise across sizes?}{13}{section*.67}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces \textsc  {SymPort}\xspace  on the first 10 Santa 4$\times $4$\times $4\xspace   puzzles: QTM of each of the 48 symmetric copies (dots), KMCoders' published solution (bar) and one run of their program on the unrotated puzzle (cross).}}{14}{figure.caption.57}\protected@file@percent }
+\newlabel{fig:m7copies}{{3}{14}{\Mseven on the first 10 Santa \Cu {4} puzzles: QTM of each of the 48 symmetric copies (dots), KMCoders' published solution (bar) and one run of their program on the unrotated puzzle (cross)}{figure.caption.57}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Best of $k$ symmetric copies, averaged over the 10 4$\times $4$\times $4\xspace   puzzles (and 200 random draws of the $k$ copies), against KMCoders' published mean (dashed).}}{14}{figure.caption.58}\protected@file@percent }
+\newlabel{fig:m7portfolio}{{4}{14}{Best of $k$ symmetric copies, averaged over the 10 \Cu {4} puzzles (and 200 random draws of the $k$ copies), against KMCoders' published mean (dashed)}{figure.caption.58}{}}
+\newlabel{sec:scaling}{{7.3}{14}{Scaling with $N$}{section*.69}{}}
 \@writefile{toc}{\contentsline {paragraph}{Scaling with $N$.}{14}{section*.69}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.4}How far from optimal?}{14}{subsection.8.4}\protected@file@percent }
-\newlabel{sec:exp-bound}{{8.4}{14}{How far from optimal?}{subsection.8.4}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {9}Limitations}{14}{section.9}\protected@file@percent }
-\newlabel{sec:limitations}{{9}{14}{Limitations}{section.9}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {14}{\ignorespaces \textsc  {NetGain}\xspace  components on the cube (mean HTM, same instances): \textsc  {Demaine}\xspace  's schedule; \textsc  {NetGain}\xspace  without lookahead; full \textsc  {NetGain}\xspace  (lookahead on, the default for $N\le 15$); \textsc  {NetGain}\xspace  with lookahead but without setup sharing. ``--'' = not run.}}{14}{table.caption.66}\protected@file@percent }
+\newlabel{tab:5cabl}{{14}{14}{\FiveC components on the cube (mean HTM, same instances): \Mthree 's schedule; \FiveC without lookahead; full \FiveC (lookahead on, the default for $N\le 15$); \FiveC with lookahead but without setup sharing. ``--'' = not run}{table.caption.66}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {15}{\ignorespaces \textsc  {OneNet}\xspace  , trained on Squares with $N\in \{4,\dots  ,8\}$ only: agreement of its distance estimate with the true random-walk depth on fresh walks ($^\ast $ = size never seen in training). RMSE is in units of $N^2/\ln N$.}}{14}{table.caption.68}\protected@file@percent }
+\newlabel{tab:gen}{{15}{14}{\FiveA , trained on Squares with $N\in \{4,\dots ,8\}$ only: agreement of its distance estimate with the true random-walk depth on fresh walks ($^\ast $ = size never seen in training). RMSE is in units of $N^2/\ln N$}{table.caption.68}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.4}How far from optimal?}{14}{subsection.7.4}\protected@file@percent }
+\newlabel{sec:exp-bound}{{7.4}{14}{How far from optimal?}{subsection.7.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Limitations}{14}{section.8}\protected@file@percent }
+\newlabel{sec:limitations}{{8}{14}{Limitations}{section.8}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Solution length divided by $N^2/\ln N$, the growth rate of the worst case, for the Square (a) and the cube (b), random states. A flat line would mean growth at the rate of the worst case. Means over solved states.}}{15}{figure.caption.70}\protected@file@percent }
+\newlabel{fig:scaling}{{5}{15}{Solution length divided by $N^2/\ln N$, the growth rate of the worst case, for the Square (a) and the cube (b), random states. A flat line would mean growth at the rate of the worst case. Means over solved states}{figure.caption.70}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Mean Santa 2023 length divided by the counting lower bound, against $N$ (log scale). Methods shown only where they ran on every puzzle of that size (\textsc  {SymPort}\xspace  at $N=4$--9).}}{15}{figure.caption.71}\protected@file@percent }
+\newlabel{fig:santaratio}{{6}{15}{Mean Santa 2023 length divided by the counting lower bound, against $N$ (log scale). Methods shown only where they ran on every puzzle of that size (\Mseven at $N=4$--9)}{figure.caption.71}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {9}Future Work}{15}{section.9}\protected@file@percent }
+\newlabel{sec:future}{{9}{15}{Future Work}{section.9}{}}
+\@writefile{toc}{\contentsline {paragraph}{\textsc  {SymPort}\xspace  at large $N$.}{15}{section*.72}\protected@file@percent }
 \bibstyle{ACM-Reference-Format}
 \bibdata{references}
 \bibcite{agostinelli2019deepcubea}{{1}{2019}{{Agostinelli et~al\mbox  {.}}}{{}}}
 \bibcite{agostinelli2024qstar}{{2}{2024}{{Agostinelli et~al\mbox  {.}}}{{}}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Solution length divided by $N^2/\ln N$, the growth rate of the worst case, for the Square (a) and the cube (b), random states. A flat line would mean growth at the rate of the worst case. Means over solved states.}}{15}{figure.caption.70}\protected@file@percent }
-\newlabel{fig:scaling}{{5}{15}{Solution length divided by $N^2/\ln N$, the growth rate of the worst case, for the Square (a) and the cube (b), random states. A flat line would mean growth at the rate of the worst case. Means over solved states}{figure.caption.70}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Mean Santa 2023 length divided by the counting lower bound, against $N$ (log scale). Methods shown only where they ran on every puzzle of that size, \textsc  {SymPort}\xspace  so far at the sizes of Table\nonbreakingspace \ref {tab:m7all}.}}{15}{figure.caption.71}\protected@file@percent }
-\newlabel{fig:santaratio}{{6}{15}{Mean Santa 2023 length divided by the counting lower bound, against $N$ (log scale). Methods shown only where they ran on every puzzle of that size, \Mseven so far at the sizes of Table~\ref {tab:m7all}}{figure.caption.71}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {10}Conclusion}{15}{section.10}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{Acknowledgments}{15}{section*.73}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{References}{15}{section*.75}\protected@file@percent }
 \bibcite{anand2025cubebench}{{3}{2025}{{Anand and Shareghi}}{{}}}
 \bibcite{gao2025cubebench}{{4}{2025}{{ang Gao et~al\mbox  {.}}}{{}}}
 \bibcite{chen2phase}{{5}{2026}{{Chen}}{{}}}
@@ -273,5 +273,9 @@
 \newlabel{tocindent1}{8.37pt}
 \newlabel{tocindent2}{10.34999pt}
 \newlabel{tocindent3}{0pt}
+\@writefile{toc}{\contentsline {paragraph}{Other directions.}{16}{section*.73}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {10}Conclusion}{16}{section.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{Acknowledgments}{16}{section*.75}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{References}{16}{section*.77}\protected@file@percent }
 \newlabel{TotPages}{{16}{16}{}{page.16}{}}
 \gdef \@abspage@last{16}

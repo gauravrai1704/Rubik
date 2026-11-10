@@ -3,13 +3,12 @@
 \label{sec:limitations}
 
 \begin{itemize}
-\item \emph{\Mseven wins on average, not on every puzzle, and its cost is high.} It is shorter than KMCoders' published solutions
-  in mean length at every Santa size, but on some puzzles the published solution is still shorter (W/T/L in
-  Table~\ref{tab:m7all}), and the Santa sizes have few puzzles (3--4 each from $N=6$ on), so the per-size margins are not
-  significant differences. Each puzzle costs $k$ runs of KMCoders' program (minutes of CPU at $N=4$, over an hour at $N=8$--10 on
-  four cores). We leave out the \Cu{19} and \Cu{33} Santa puzzles, where one copy takes hours. We have not yet compared it with an
-  equal-compute portfolio of random seeds of the same program; the seed also changes the answer, and symmetries are one
-  convenient, seed-free source of the same diversity.
+\item \emph{\Mseven wins up to $N=7$ only, on average, and at a high cost.} It is shorter than KMCoders' published solutions in
+  mean length at $N=4$--7 but longer at $N=8$ and 9, and we did not run it at $N=10$ (\S\ref{sec:m7scale}). Even where it wins, the
+  published solution is shorter on some puzzles (W/T/L in Table~\ref{tab:m7all}), and the Santa sizes have few puzzles (3--4 each
+  from $N=6$ on), so the per-size margins are not significant differences. Each puzzle costs $k$ runs of KMCoders' program (minutes
+  of CPU at $N=4$, \ScaleCpuEight--\ScaleCpuNine{} CPU-minutes per copy at $N=8$--9). We leave out the \Cu{19} and \Cu{33} Santa
+  puzzles, where one copy takes hours. We have not compared it with an equal-compute portfolio of random seeds of the same program.
 \item \emph{\Mseven builds on KMCoders' code.} Its contribution is the portfolio, the shortened stage and the optimal central
   stage around their solver; the algorithmic core is theirs (\S\ref{sec:m7}). Their repository carries no licence file, so we
   release only a wrapper and a two-line patch, not their code.
@@ -27,6 +26,26 @@
 \end{itemize}
 
 %% =====================================================================
+\section{Future Work}
+\label{sec:future}
+
+\paragraph{\Mseven at large $N$.} The analysis of \S\ref{sec:m7scale} suggests four directions, in order of expected payoff.
+(i) \emph{More diversity per copy.} The copies' lengths spread by about seven quarter turns at every size, so a portfolio needs
+sources of variation that grow with $N$: random seeds and tie-breaks inside KMCoders' later stages, different beam widths, and
+the 8-copy default-program portfolio that already helps at $N=4$. An equal-compute comparison of symmetries against seeds is the
+first experiment to run. (ii) \emph{Recombination instead of selection.} Every copy solves the same state through the same stages;
+taking the shortest stage from each copy (after mapping them to one frame) rather than the shortest whole solution would harvest
+the spread of every stage, not only of the total. (iii) \emph{Spending the budget adaptively.} A successive-halving schedule that
+runs the cheap early stages on all 48 copies and finishes only the most promising would bring the full symmetry group, which the
+model projects to win at $N=8$, within the cost of our 12 copies. (iv) \emph{A stronger base solver.} At $N=9$ even 48 copies are
+projected to fall short, so the per-copy solver itself must improve: a wider beam, or \FiveC's bulk commutators in the endgame,
+which also address the $\log N$ gap of \S\ref{sec:bound}. With these, the remaining Santa sizes ($N=10$, 19 and 33) are the
+natural test.
+
+\paragraph{Other directions.} Training cube networks at CayleyPy's scale for \Mfour and \FiveA; carrying \FiveC's bulk moves
+into the insertion method's final stage; and an exact uniform sampler for random states.
+
+%% =====================================================================
 \section{Conclusion}
 
 Decomposing Rubik's puzzles into clusters with $N$-invariant signatures lets one engine run eight solvers on the same instances,
@@ -34,8 +53,9 @@ from exact search to learned heuristics and a competition solver, for every size
 large $N$ is structural: Demaine's idea of fixing many clusters with one shared move sequence, scheduled by net gain rather than
 by unanimous need (\FiveC). On the Santa 2023 puzzles, the competition's own solver is far ahead of everything else, and the
 symmetries of the cube are enough to turn it into a portfolio that is shorter on average than its published best-of-many
-solutions at every Santa size up to $N=10$ (\Mseven). The
+solutions at every Santa size up to $N=7$ (\Mseven); beyond that, the copies vary too little relative to the solution length, and
+going further needs more diverse copies or a stronger base solver (\S\ref{sec:future}). The
 counting bound says where the remaining room is: little at $N=4$, and a factor that grows like $\log N$ at large $N$, because the
 final stage of every practical method still fixes a few pieces per 3-cycle. Carrying \FiveC's bulk moves into the endgame of the
-insertion method is the natural next step, and the place where the two lines of this work meet. Code, data and result files are
+insertion method is the natural next step for both lines of this work. Code, data and result files are
 at \url{https://github.com/gauravrai1704/Rubik}.
