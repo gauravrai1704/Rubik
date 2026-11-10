@@ -510,3 +510,25 @@ def build_m7_scaling(macro):
         macro("TenPartialK", len(got))
         macro("TenPartialBest", min(got))
         macro("TenPartialPub", pub["santa-cube10-0272"]["qtm"])
+
+
+def santa_scaling_panel(ax, scale, sizes=(4, 5, 6, 7, 8, 9)):
+    """Figure 5(c): Santa 2023 mean QTM / (N^2/ln N) for every system that ran on every puzzle of a size."""
+    series = [("KMC-published", pub, INK, "-", "D", 1.6), ("KMC-one run", one, INK2, "--", "o", 1.1),
+              ("dwalton76", meth["dwalton76"], INK3, ":", "s", 1.1), ("KMC-Repro", meth["M6"], INK2, "-.", "x", 1.0),
+              ("Reduction", meth["M2"], CM2, "-", "v", 1.2), ("Demaine", meth["M3"], CM3, "-", "P", 1.2),
+              ("NetGain", meth["5C"], C5C, "-", "*", 2.2), ("SymPort", M7BEST, CM7, "-", "o", 1.6)]
+    for label, src, col, ls, mk, lw in series:
+        xs, ys = [], []
+        for N in sizes:
+            ids = [i for i, r in pub.items() if r["N"] == N]
+            m, n = mean_on(src, ids)
+            if m and n == len(ids):
+                xs.append(N)
+                ys.append(m / scale(N))
+        if xs:
+            ax.plot(xs, ys, ls, marker=mk, color=col, lw=lw, ms=3.5 if label != "SymPort" else 4.5, label=label,
+                    zorder=5 if label == "SymPort" else 2)
+    ax.set_xticks(list(sizes))
+    ax.set_xlabel("Cube size $N$ (Santa 2023)")
+    ax.set_ylabel("QTM / ($N^2/\\ln N$)")

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.10.25)  10 NOV 2026 07:16
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.10.25)  10 NOV 2026 07:29
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1473,35 +1473,33 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 <figures/m4_width.pdf, id=537, 238.49101pt x 158.99399pt>
 File: figures/m4_width.pdf Graphic file (type pdf)
 <use figures/m4_width.pdf>
-Package pdftex.def Info: figures/m4_width.pdf  used on input line 106.
+Package pdftex.def Info: figures/m4_width.pdf  used on input line 105.
 (pdftex.def)             Requested size: 241.14749pt x 160.76703pt.
 
 
-Class acmart Warning: A possible image without description on input line 110.
+Class acmart Warning: A possible image without description on input line 109.
 
 (./generated/tab_m4_gpu_rows.tex) (./generated/tab_repro_kmc_rows.tex)
 (./generated/tab_m7_all_rows.tex) [10.10]
-Underfull \vbox (badness 1859) has occurred while \output is active []
-
 <figures/m7_copies.pdf, id=568, 245.718pt x 195.129pt>
 File: figures/m7_copies.pdf Graphic file (type pdf)
 <use figures/m7_copies.pdf>
-Package pdftex.def Info: figures/m7_copies.pdf  used on input line 190.
+Package pdftex.def Info: figures/m7_copies.pdf  used on input line 189.
 (pdftex.def)             Requested size: 241.14749pt x 191.50795pt.
 
 
-Class acmart Warning: A possible image without description on input line 194.
+Class acmart Warning: A possible image without description on input line 193.
 
 <figures/m7_portfolio.pdf, id=569, 245.718pt x 158.99399pt>
 File: figures/m7_portfolio.pdf Graphic file (type pdf)
 <use figures/m7_portfolio.pdf>
-Package pdftex.def Info: figures/m7_portfolio.pdf  used on input line 198.
+Package pdftex.def Info: figures/m7_portfolio.pdf  used on input line 197.
 (pdftex.def)             Requested size: 241.14749pt x 156.0435pt.
 
-Class acmart Warning: A possible image without description on input line 202.
+Class acmart Warning: A possible image without description on input line 201.
 
 
-Underfull \vbox (badness 6510) has occurred while \output is active []
+Underfull \vbox (badness 4366) has occurred while \output is active []
 
  [11.11]
 (./generated/tab_m7_scale_rows.tex) (./generated/tab_santa_time_rows.tex)
@@ -1516,30 +1514,34 @@ Overfull \hbox (3.08075pt too wide) in paragraph at lines 273--279
 
 [12.12 <./figures/m4_width.pdf>] (./generated/tab_5c_ablation.tex) [13.13]
 (./generated/tab_5a_gen.tex)
-<figures/scaling.pdf, id=619, 505.89pt x 187.902pt>
+<figures/scaling.pdf, id=619, 505.89pt x 209.58301pt>
 File: figures/scaling.pdf Graphic file (type pdf)
 <use figures/scaling.pdf>
 Package pdftex.def Info: figures/scaling.pdf  used on input line 331.
-(pdftex.def)             Requested size: 506.295pt x 188.05635pt.
+(pdftex.def)             Requested size: 506.295pt x 209.75517pt.
 
 
-Class acmart Warning: A possible image without description on input line 335.
+Class acmart Warning: A possible image without description on input line 337.
 
-<figures/santa_ratio.pdf, id=623, 245.718pt x 238.49101pt>
+<figures/santa_ratio.pdf, id=625, 245.718pt x 238.49101pt>
 File: figures/santa_ratio.pdf Graphic file (type pdf)
 <use figures/santa_ratio.pdf>
-Package pdftex.def Info: figures/santa_ratio.pdf  used on input line 352.
+Package pdftex.def Info: figures/santa_ratio.pdf  used on input line 354.
 (pdftex.def)             Requested size: 241.14749pt x 234.06529pt.
 
-Class acmart Warning: A possible image without description on input line 356.
+Class acmart Warning: A possible image without description on input line 358.
 
 ) (./sections/closing.tex [14.14 <./figures/m7_copies.pdf> <./figures/m7_portfo
-lio.pdf>] [15.15 <./figures/scaling.pdf> <./figures/santa_ratio.pdf>])
-Processing 'acks' comment.
+lio.pdf>]
+Underfull \vbox (badness 1360) has occurred while \output is active []
+
+ [15.15 <./figures/scaling.pdf> <./figures/santa_ratio.pdf>]) Processing 'acks'
+ comment.
 \openout3 = `comment.cut'.
 
- Comment 'acks' writing to comment.cut.
-Straight input of comment.cut. (./comment.cut) (./main.bbl
+
+Comment 'acks' writing to comment.cut. Straight input of comment.cut.
+(./comment.cut) (./main.bbl
 LaTeX Info: Redefining \tempurl on input line 176.
 
 Underfull \hbox (badness 6741) in paragraph at lines 182--189
@@ -1562,20 +1564,19 @@ om / 2011 / 07 / 17 / should -[] you -[] be -[] surprised -[]
  []
 
 LaTeX Info: Redefining \tempurl on input line 407.
-)
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [16.16])
 
 Class acmart Warning: Some images may lack descriptions.
-
-
-Package balance Warning: You have called \balance in second column
-(balance)                Columns might not be balanced.
 
 (/usr/share/texlive/texmf-dist/tex/generic/stringenc/se-pdfdoc.def
 File: se-pdfdoc.def 2019/11/29 v1.12 stringenc: PDFDocEncoding
 )
 (/usr/share/texlive/texmf-dist/tex/generic/stringenc/se-utf8.def
 File: se-utf8.def 2019/11/29 v1.12 stringenc: UTF-8
-) [16.16]
+) [17.17]
 (./main.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
@@ -1585,11 +1586,11 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 2E7CC77198B8AA5B3AA46109243C6E19;6125.
  ) 
 Here is how much of TeX's memory you used:
- 34358 strings out of 476106
- 624272 string characters out of 5793932
- 1984975 words of memory out of 5000000
+ 34359 strings out of 476106
+ 624288 string characters out of 5793932
+ 1983975 words of memory out of 5000000
  54281 multiletter control sequences out of 15000+600000
- 858462 words of font info for 747 fonts, out of 8000000 for 9000
+ 858443 words of font info for 747 fonts, out of 8000000 for 9000
  220 hyphenation exceptions out of 8191
  90i,19n,131p,1029b,848s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/inconsolata/Inconsolata-zi4
@@ -1609,10 +1610,10 @@ st/fonts/type1/public/newtx/txexs.pfb></usr/share/texlive/texmf-dist/fonts/type
 1/public/newtx/txmiaX.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/new
 tx/txsym.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/newtx/txsys.pfb>
 
-Output written on main.pdf (16 pages, 774789 bytes).
+Output written on main.pdf (17 pages, 781597 bytes).
 PDF statistics:
- 919 PDF objects out of 1000 (max. 8388607)
- 783 compressed objects within 8 object streams
- 289 named destinations out of 1000 (max. 500000)
+ 935 PDF objects out of 1000 (max. 8388607)
+ 787 compressed objects within 8 object streams
+ 290 named destinations out of 1000 (max. 500000)
  150798 words of extra memory for PDF output out of 154059 (max. 10000000)
 

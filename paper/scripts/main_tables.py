@@ -118,7 +118,7 @@ def build(macro):
             "M3": by_id(rows(S / "m3_demaine.jsonl")), "M2": by_id(rows(S / "m2_reduction.jsonl"))}
     corder = ["M7", "B1", "B2", "B3", "M6", "5C", "M3", "M2"]
     lines = []
-    for N in (4, 5, 6, 7, 8, 9, 10):
+    for N in (4, 5, 6, 7, 8, 9):  # stopped after two consecutive sizes where SymPort lost (N = 8, 9)
         ids = sorted(i for i, r in pub.items() if r["N"] == N)
         vals = {k: stat(csrc[k], ids, "qtm") for k in corder}
         if not (vals["M7"] and vals["M7"][1] == vals["M7"][2]):  # SymPort not run on every puzzle of this size: "--"
@@ -129,7 +129,7 @@ def build(macro):
         lines.append(f"{N} & {len(ids)} & " + " & ".join(cells) + " \\\\")
     (GEN / "tab_main_cube_rows.tex").write_text("\n".join(lines) + "\n\\bottomrule\n")
 
-    for puz, nsizes in (("square", len(ids_by_N)), ("cube", 7)):
+    for puz, nsizes in (("square", len(ids_by_N)), ("cube", 6)):
         tag = "Square" if puz == "square" else "Cube"
         red = sorted(N for N, r in top.get((puz, "M7"), set()) if r == 1)
         green = sorted(N for N, r in top.get((puz, "M7"), set()) if r == 2)

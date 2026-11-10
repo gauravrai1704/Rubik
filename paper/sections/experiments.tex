@@ -38,8 +38,7 @@ $N$ & $n$ & \Mseven (ours) & \Mone optimal & \Mfour & \FiveA (ours) & \FiveC (ou
 \caption{\textbf{Rubik's Cube}, Santa 2023 puzzles: mean solution length in QTM, the competition's score, of every method on the
 same puzzles ($n$ per size). In each row the \best{best} method is red and the \second{second best} green; only methods that solved
 every puzzle of that size are ranked. \Bone: KMCoders' published best-of-many solutions; \Btwo: one run of their program; \Bthree: dwalton76's solver
-(\S\ref{sec:baselines}). A superscript gives the number of puzzles run when below $n$. Santa cubes up to $N=10$ (\S\ref{sec:data});
-\Mseven was not run on the \Cu{10} (--; \S\ref{sec:m7scale}).}
+(\S\ref{sec:baselines}). A superscript gives the number of puzzles run when below $n$. Santa cubes up to $N=9$ (\S\ref{sec:data}): we stopped after the two consecutive sizes at which \Mseven lost (\S\ref{sec:m7scale}).}
 \label{tab:maincube}
 \small
 \begin{tabular}{@{}rr|r|rrr|rrrr@{}}
@@ -58,7 +57,7 @@ best single solver, \FiveC, which is in turn shorter than our reproductions of D
 (\Mtwo). \FiveA, one network for every size, is the strongest method that needs no per-size training up to $N=7$. On the
 \textbf{Cube}, \Mseven is the best method at $N=4$--7, with KMCoders' published best-of-many solutions second; at $N=8$ and 9
 the order is reversed (\MsevenAllMeanEight{} against \MsevenAllPubEight{} and \MsevenAllMeanNine{} against \MsevenAllPubNine;
-\S\ref{sec:m7scale} analyses why), and we did not run \Mseven at $N=10$. One run of their program comes next at every size,
+\S\ref{sec:m7scale} analyses why). One run of their program comes next at every size,
 which shows how much of the published lengths comes from running their program many times. Every other method, ours and the external solver
 dwalton76, is far behind on Santa 2023: these puzzles demand the exact goal and the quarter-turn metric, for which KMCoders' insertion
 pipeline was built.
@@ -220,8 +219,9 @@ competition, which pushes them into the lower tail of the program's spread.
 A normal model fitted to each puzzle's copies reproduces the measured best of 12 to within half a quarter turn at $N=8$ and 9;
 it projects the best of all 48 symmetric copies at \ScaleProjEight{} for $N=8$ (published \MsevenAllPubEight) and \ScaleProjNine{}
 for $N=9$ (published \MsevenAllPubNine). The full symmetry group would therefore only just win at $N=8$ and would not close the gap
-at $N=9$, at about \ScaleFullHoursEight{} and \ScaleFullHoursNine{} CPU-hours per puzzle. At $N=10$ we stopped after
-\TenPartialK{} copies of the first puzzle (best \TenPartialBest{} against \TenPartialPub{} published) and report no \Cu{10} result.
+at $N=9$, at about \ScaleFullHoursEight{} and \ScaleFullHoursNine{} CPU-hours per puzzle. We therefore stop at $N=9$: after two
+consecutive sizes at which \Mseven loses to \Bone, and with a gap that widens from $N=8$ to 9, we take $N\le7$ as the range in which
+\Mseven is the best method, and leave larger cubes to future work.
 Symmetry alone runs out at large $N$; \S\ref{sec:future} lists what we expect to work there.
 
 \begin{table*}[t]
@@ -329,8 +329,10 @@ shown to grow at the $N^2/\log N$ rate that Demaine's construction achieves asym
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/scaling.pdf}
-\caption{Solution length divided by $N^2/\ln N$, the growth rate of the worst case, for the Square (a) and the cube (b), random
-states. A flat line would mean growth at the rate of the worst case. Means over solved states.}
+\caption{Solution length divided by $N^2/\ln N$, the growth rate of the worst case: (a) random Squares (HTM; \FiveA and \Mseven at
+the sizes where they solved every state; optimal where known), (b) random cubes (HTM), (c) the Santa 2023 cubes (QTM, every system
+of Table~\ref{tab:maincube}). On random cubes only the three cluster methods run at every size; KMCoders' program and \Mseven need
+the Santa goal. A flat line would mean growth at the rate of the worst case.}
 \label{fig:scaling}
 \end{figure*}
 

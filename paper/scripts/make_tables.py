@@ -514,7 +514,7 @@ def style(ax):
 
 
 # Figure: normalised length vs N, both puzzles
-fig, axes = plt.subplots(1, 2, figsize=(7.0, 2.6))
+fig, axes = plt.subplots(1, 3, figsize=(7.0, 2.9))
 ax = axes[0]
 Ns = sorted(sq_by_N)
 for label, src, col, mk in (("CayleyPy (W=4096)", m4[4096], CM4, "s"),):
@@ -535,13 +535,23 @@ for label, src, col, mk in (("Reduction", base_sq["M2"], CM2, "v"), ("Demaine", 
     if xs:
         ax.plot(xs, [np.mean(pts[N]) / scale(N) for N in xs], "-" + mk, color=col, lw=2.2 if "5C" in label else 1.2,
                 ms=4.5 if "NetGain" in label else 3.5, label=label)
+for label, fname, col, mk in (("OneNet", "m5a_square_gpu_large.jsonl", C5A, "^"), ("SymPort", "m7_square.jsonl", santa_part.CM7, "o")):
+    pts, tot = defaultdict(list), defaultdict(int)
+    for r in rows(fname):
+        tot[r["N"]] += 1
+        if r["solved"]:
+            pts[r["N"]].append(r["htm"])
+    xs = sorted(N for N in pts if len(pts[N]) == tot[N])  # sizes where every state was solved
+    if xs:
+        ax.plot(xs, [np.mean(pts[N]) / scale(N) for N in xs], "-" + mk, color=col, lw=1.4, ms=3.5, label=label,
+                zorder=5 if label == "SymPort" else 3)
 if opt:
     xs = [int(N) for N in opt]
     ax.plot(xs, [opt[str(N)]["mean_random"] / scale(N) for N in xs], "D", color=COPT, ms=4.5, label="optimal")
 ax.set_xlabel("Square size $N$")
 ax.set_ylabel("HTM / ($N^2/\\ln N$)")
 ax.set_xticks([3, 5, 8, 10, 12, 15, 20])
-ax.set_title("(a) N×N×1 Rubik's Square", fontsize=8, loc="left", color=INK)
+ax.set_title("(a) Square, random states", fontsize=8, loc="left", color=INK)
 ax.set_ylim(bottom=0)
 style(ax)
 ax = axes[1]
@@ -559,7 +569,12 @@ for label, src, col, mk in (("Reduction", base_cu["M2"], CM2, "v"), ("Demaine", 
 ax.set_xlabel("Cube size $N$")
 ax.set_ylabel("HTM / ($N^2/\\ln N$)")
 ax.set_xticks([3, 5, 8, 10, 15, 20])
-ax.set_title("(b) N×N×N Rubik's Cube", fontsize=8, loc="left", color=INK)
+ax.set_title("(b) Cube, random states", fontsize=8, loc="left", color=INK)
+ax.set_ylim(bottom=0)
+style(ax)
+ax = axes[2]
+santa_part.santa_scaling_panel(ax, scale)
+ax.set_title("(c) Cube, Santa 2023 puzzles", fontsize=8, loc="left", color=INK)
 ax.set_ylim(bottom=0)
 style(ax)
 handles, labels = {}, []
@@ -568,9 +583,9 @@ for a_ in axes:
         if l_ not in handles:
             handles[l_] = h_
             labels.append(l_)
-fig.legend([handles[l_] for l_ in labels], labels, loc="lower center", ncol=len(labels), fontsize=7,
+fig.legend([handles[l_] for l_ in labels], labels, loc="lower center", ncol=(len(labels) + 1) // 2, fontsize=7,
            handlelength=2.2, columnspacing=1.4)
-fig.tight_layout(rect=(0, 0.1, 1, 1))
+fig.tight_layout(rect=(0, 0.17, 1, 1))
 fig.savefig(FIG / "scaling.pdf")
 plt.close(fig)
 
