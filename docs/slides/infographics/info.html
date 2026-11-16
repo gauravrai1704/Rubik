@@ -1,0 +1,292 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  :root{--navy:#14213D;--rust:#C2561A;--amber:#F2A65A;--card:#FFFDF8;--bg:#F7F5EF;--line:#E3DFD3;--grey:#6A7179;--ink2:#4A5568;
+        --blue:#3A78C9;--pink:#E07AA0;--green:#3F9E5A;--purple:#7B5CC4;--yellow:#F2C94C;}
+  body{margin:0;background:#ddd;font-family:Arial,Helvetica,sans-serif;color:var(--navy)}
+  .panel{width:1183px;height:505px;background:var(--bg);position:relative;overflow:hidden;margin-bottom:20px;box-sizing:border-box}
+  .card{position:absolute;background:var(--card);border:1px solid var(--line);border-radius:10px;box-sizing:border-box;padding:14px 16px}
+  h3{margin:0 0 6px 0;font-size:19px;color:var(--navy)}
+  .sub{font-size:13.5px;color:var(--ink2);line-height:1.35}
+  .chip{display:inline-block;background:#E6EAF2;color:var(--navy);border-radius:14px;padding:4px 10px;font-size:13px;margin:3px 4px 0 0}
+  .tag{font-size:12px;letter-spacing:1.5px;color:var(--rust);font-weight:bold;text-transform:uppercase}
+  .num{display:inline-flex;width:26px;height:26px;border-radius:13px;background:var(--rust);color:#fff;font-weight:bold;
+       align-items:center;justify-content:center;font-size:14px;margin-right:8px;flex:none}
+  .step{display:flex;align-items:flex-start;margin:0 0 9px 0;font-size:14px;line-height:1.3}
+  .step b{color:var(--navy)}
+  svg text{font-family:Arial,Helvetica,sans-serif}
+</style></head><body>
+
+<!-- ============ A: the two puzzles ============ -->
+<div class="panel" id="pA">
+  <div class="card" style="left:0;top:0;width:560px;height:505px">
+    <div class="tag">Rubik's Square · N×N×1</div>
+    <svg id="sqA" width="528" height="330" style="margin-top:6px"></svg>
+    <div class="sub">A flat grid, one cubie thick. Each cubie has a top and a bottom colour (border cubies also have side stickers).</div>
+    <div><span class="chip">2N moves</span><span class="chip">each flip undoes itself</span><span class="chip">row flips commute with row flips</span></div>
+  </div>
+  <div class="card" style="left:583px;top:0;width:600px;height:505px">
+    <div class="tag">Rubik's Cube · N×N×N</div>
+    <svg id="cuA" width="568" height="330" style="margin-top:6px"></svg>
+    <div class="sub">6 faces of N×N stickers. Any one of the 3N slices turns by 90°, 180° or 270°.</div>
+    <div><span class="chip">9N moves</span><span class="chip">a quarter turn needs 3 more to undo</span><span class="chip">same-axis slices commute</span></div>
+  </div>
+</div>
+
+<!-- ============ B: solving the Square ============ -->
+<div class="panel" id="pB">
+  <div class="card" style="left:0;top:0;width:1183px;height:235px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline">
+      <h3>The key tool: the commutator c r c r</h3>
+      <div class="sub">flip column c, row r, column c, row r &nbsp;→&nbsp; a 3-cycle of the crossing and its two mirror cells; everything else is restored</div>
+    </div>
+    <svg id="crcr" width="1150" height="180"></svg>
+  </div>
+  <div class="card" style="left:0;top:252px;width:1183px;height:253px">
+    <h3>The order: outside in</h3>
+    <svg id="stages" width="1150" height="200"></svg>
+  </div>
+</div>
+
+<!-- ============ C: solving the Cube ============ -->
+<div class="panel" id="pC">
+  <div class="card" style="left:0;top:0;width:430px;height:505px">
+    <h3>Clusters on a 5×5×5</h3>
+    <svg id="cuC" width="398" height="300"></svg>
+    <div id="legC" style="font-size:13px;line-height:1.55"></div>
+  </div>
+  <div class="card" style="left:447px;top:0;width:250px;height:505px">
+    <h3>Pure 3-cycle</h3>
+    <svg id="cyc" width="218" height="250"></svg>
+    <div class="sub">Moves exactly three pieces of one cluster and nothing else. Built from commutators such as [A, B C B′] plus setup moves:
+      all <b>4,048</b> per cluster are generated automatically.</div>
+  </div>
+  <div class="card" style="left:714px;top:0;width:469px;height:505px">
+    <h3>Reduction pipeline</h3>
+    <div class="sub" style="margin-bottom:10px">used by Reduction, Demaine and NetGain</div>
+    <div class="step"><span class="num">1</span><div><b>Orient.</b> For Santa, bring the fixed centers home: the goal is one exact orientation.</div></div>
+    <div class="step"><span class="num">2</span><div><b>Wing parity.</b> One inner-slice quarter turn per odd wing cluster: 3-cycles only make even permutations.</div></div>
+    <div class="step"><span class="num">3</span><div><b>Centers.</b> Pure 3-cycles until every center cluster is solved.</div></div>
+    <div class="step"><span class="num">4</span><div><b>3×3×3 core.</b> Corners, middle edges and fixed centers now act like a 3×3×3: Kociemba's two-phase solves them. Outer turns keep centers on their faces.</div></div>
+    <div class="step"><span class="num">5</span><div><b>Wings.</b> Pure 3-cycles; they touch nothing else.</div></div>
+    <div class="sub" style="margin-top:8px;padding:8px 10px;background:#FBEBDD;border-radius:8px;color:var(--navy)">
+      The methods differ in steps 3 and 5: <b>Reduction</b> fixes one cluster at a time, <b>Demaine</b> and <b>NetGain</b> fix many at once with one shared move sequence.</div>
+  </div>
+</div>
+
+<!-- ============ D: NetGain vs Demaine ============ -->
+<div class="panel" id="pD">
+  <div class="card" style="left:0;top:0;width:575px;height:395px">
+    <h3>Demaine: every cell must need it</h3>
+    <svg id="gD" width="543" height="260"></svg>
+    <div class="sub">Best unanimous block {1,3}×{0,2,5}: 6 clusters, 18 pieces for 2·2+2·3+4 = 14 moves → <b>1.3 pieces/move</b>.
+      Rows 4 and 6 are left out because one cell each does not need it; as clusters diverge, such blocks shrink to single cells.</div>
+  </div>
+  <div class="card" style="left:608px;top:0;width:575px;height:395px">
+    <h3>NetGain: apply the block when it pays</h3>
+    <svg id="gN" width="543" height="260"></svg>
+    <div class="sub">Block {1,3,4,6}×{0,2,5}: 10 helped, 1 neutral, 1 slightly hurt → 29 pieces for 2·4+2·3+4 = 18 moves → <b>1.6 pieces/move</b>,
+      better than the best single fix (λ).</div>
+  </div>
+  <div class="card" style="left:0;top:410px;width:1183px;height:95px;display:flex;align-items:center;gap:26px">
+    <div style="font-size:17px;white-space:nowrap"><b>choose X, Y to maximise</b> &nbsp;Σ<sub>(i,j)∈X×Y</sub> gain(i,j) − λ·(2|X| + 2|Y| + 4 + 2|setup|)</div>
+    <div class="sub">λ = pieces per move of the best single 3-cycle now. Measured on a random 20×20×20: Demaine's center rounds fix one cluster
+      in 244 of 292; NetGain's are bulk in 229 of 333; <b>4,925 vs 6,612 moves</b>.</div>
+  </div>
+</div>
+
+<!-- ============ E: SymPort ============ -->
+<div class="panel" id="pE">
+  <svg id="symE" width="1183" height="505"></svg>
+</div>
+
+<script>
+const NS="http://www.w3.org/2000/svg";
+function el(svg,tag,attrs,text){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(text!==undefined)e.textContent=text;svg.appendChild(e);return e;}
+function q(id){return document.getElementById(id)}
+const C={navy:"#14213D",rust:"#C2561A",amber:"#F2A65A",line:"#E3DFD3",grey:"#6A7179",blue:"#3A78C9",pink:"#E07AA0",green:"#3F9E5A",
+         purple:"#7B5CC4",yellow:"#F2C94C",white:"#FFFFFF",red:"#D9534F",orange:"#F08A3C",cubeblue:"#3A6FD8",cubegreen:"#43A35B",lb:"#9CC8F0",cream:"#FFFDF8"};
+function arrowDefs(svg){const d=el(svg,"defs",{});const m=el(d,"marker",{id:"ah"+svg.id,viewBox:"0 0 10 10",refX:"8",refY:"5",markerWidth:"7",markerHeight:"7",orient:"auto-start-reverse"});
+  el(m,"path",{d:"M0,0 L10,5 L0,10 z",fill:C.navy});}
+function arrow(svg,x1,y1,x2,y2,opt={}){const p=el(svg,"path",{d:opt.d||`M${x1},${y1} L${x2},${y2}`,stroke:opt.color||C.navy,"stroke-width":opt.w||2,fill:"none","marker-end":`url(#ah${svg.id})`});if(opt.dash)p.setAttribute("stroke-dasharray",opt.dash);return p;}
+function grid(svg,x,y,n,cell,colorFn,opt={}){for(let i=0;i<n;i++)for(let j=0;j<n;j++){el(svg,"rect",{x:x+j*cell,y:y+i*cell,width:cell,height:cell,fill:colorFn(i,j),stroke:opt.stroke||"#5b6270","stroke-width":opt.sw||1});}}
+// isometric cube: faces[top|left|right](i,j) -> colour
+function cube(svg,T0,T1,N,size,f,opt={}){const a=size/N,c=Math.cos(Math.PI/6)*a,s=Math.sin(Math.PI/6)*a;
+  const u=[c,s],v=[-c,s],w=[0,a];
+  const quad=(o,p1,p2,col)=>{const P=[o,[o[0]+p1[0],o[1]+p1[1]],[o[0]+p1[0]+p2[0],o[1]+p1[1]+p2[1]],[o[0]+p2[0],o[1]+p2[1]]];
+    el(svg,"polygon",{points:P.map(p=>p.join(",")).join(" "),fill:col,stroke:opt.stroke||"#1f2533","stroke-width":opt.sw||1.2,"stroke-linejoin":"round"});};
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++){quad([T0+i*u[0]+j*v[0],T1+i*u[1]+j*v[1]],u,v,f.top(i,j));}
+  const L=[T0+N*v[0],T1+N*v[1]];
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++){quad([L[0]+i*u[0]+j*w[0],L[1]+i*u[1]+j*w[1]],u,w,f.left(i,j));}
+  const R=[T0+N*u[0]+N*v[0],T1+N*u[1]+N*v[1]];
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++){quad([R[0]-i*v[0]+j*w[0],R[1]-i*v[1]+j*w[1]],[-v[0],-v[1]],w,f.right(i,j));}
+  return {u,v,w,L,R};}
+
+// ---------- A ----------
+(function(){const s=q("sqA");arrowDefs(s);
+  // top view 4x4
+  grid(s,20,20,4,44,(i,j)=>C.yellow);
+  el(s,"text",{x:108,y:212,"text-anchor":"middle","font-size":13,fill:C.grey},"top view (N = 4)");
+  // side view
+  for(let j=0;j<4;j++)el(s,"rect",{x:20+j*44,y:236,width:44,height:12,fill:C.white,stroke:"#5b6270"});
+  el(s,"text",{x:108,y:270,"text-anchor":"middle","font-size":13,fill:C.grey},"side view: one cubie thick");
+  // row flip
+  grid(s,260,20,4,26,(i,j)=>i==1?C.pink:C.yellow);
+  el(s,"text",{x:375,y:58,"font-size":14,fill:C.navy,"font-weight":"bold"},"row flip");
+  el(s,"text",{x:375,y:76,"font-size":13,fill:C.grey},"180°: top ↔ bottom");
+  arrow(s,370,48,370,104,{d:"M368,52 C352,62 352,94 368,104"});
+  grid(s,260,140,4,26,(i,j)=>j==2?C.lb:C.yellow);
+  el(s,"text",{x:375,y:178,"font-size":14,fill:C.navy,"font-weight":"bold"},"column flip");
+  el(s,"text",{x:375,y:196,"font-size":13,fill:C.grey},"180°: top ↔ bottom");
+  // flipped cubie
+  el(s,"text",{x:260,y:262,"font-size":13,fill:C.grey},"a flip turns each cubie of the row over:");
+  el(s,"rect",{x:260,y:272,width:34,height:34,fill:C.yellow,stroke:"#5b6270"});el(s,"text",{x:277,y:322,"text-anchor":"middle","font-size":11,fill:C.grey},"top");
+  arrow(s,302,289,340,289);
+  el(s,"rect",{x:348,y:272,width:34,height:34,fill:C.white,stroke:"#5b6270"});el(s,"text",{x:365,y:322,"text-anchor":"middle","font-size":11,fill:C.grey},"bottom");
+})();
+(function(){const s=q("cuA");arrowDefs(s);
+  const N=4,cols={top:()=>C.yellow,left:()=>C.cubeblue,right:()=>C.red};
+  cube(s,150,14,N,132,{top:cols.top,left:cols.left,right:cols.right});
+  el(s,"text",{x:150,y:322,"text-anchor":"middle","font-size":13,fill:C.grey},"solved 4×4×4");
+  // turned slice: second vertical slice of the left face highlighted
+  cube(s,415,14,N,132,{top:(i,j)=>i==1?C.purple:C.yellow,left:(i,j)=>i==1?C.purple:C.cubeblue,right:(i,j)=>C.red},{});
+  el(s,"text",{x:415,y:322,"text-anchor":"middle","font-size":13,fill:C.grey},"one inner slice (purple) turns");
+  arrow(s,0,0,0,0,{d:"M345,232 C372,268 420,272 455,254"});
+  el(s,"text",{x:462,y:262,"font-size":13,fill:C.navy,"font-weight":"bold"},"90°");
+})();
+
+// ---------- B ----------
+(function(){const s=q("crcr");arrowDefs(s);const n=5,cell=24,r=1,c=3;
+  const labels=[["c","flip column c"],["r","flip row r"],["c","flip column c"],["r","flip row r"]];
+  for(let k=0;k<4;k++){const x=20+k*235;
+    grid(s,x,30,n,cell,(i,j)=>{const inC=(k%2==0)&&j==c, inR=(k%2==1)&&i==r; if(i==r&&j==c)return C.purple; return inC?C.lb:(inR?C.pink:C.yellow);});
+    el(s,"text",{x:x+60,y:18,"text-anchor":"middle","font-size":15,"font-weight":"bold",fill:C.navy},labels[k][0]);
+    el(s,"text",{x:x+60,y:170,"text-anchor":"middle","font-size":12.5,fill:C.grey},`${k+1}. ${labels[k][1]}`);
+    if(k<3)arrow(s,x+132,90,x+200,90);}
+  // result
+  const x=960; arrow(s,20+3*235+132,90,x-12,90,{color:C.rust});
+  grid(s,x,30,n,cell,(i,j)=>((i==1&&j==3)||(i==1&&j==1)||(i==3&&j==3))?C.rust:C.yellow);
+  el(s,"text",{x:x+60,y:18,"text-anchor":"middle","font-size":15,"font-weight":"bold",fill:C.rust},"net effect");
+  el(s,"text",{x:x+60,y:170,"text-anchor":"middle","font-size":12.5,fill:C.grey},"3 cubies of one cluster cycle");
+})();
+(function(){const s=q("stages");arrowDefs(s);const n=7,cell=20;
+  const frame=(i,j)=>{const b=[0,3,6];return b.includes(i)&&b.includes(j)&&(i==3||j==3||(i!=3&&j!=3));};
+  const isFrame=(i,j)=>([0,6].includes(i)&&[0,6].includes(j))||(i==3&&j==3)||((i==3)&&[0,6].includes(j))||((j==3)&&[0,6].includes(i));
+  const border=(i,j)=>i==0||j==0||i==n-1||j==n-1;
+  const st=[
+    {t:"Frame",d:["corners, center and border","midpoints: at any N they act","like a 3×3×1, so they are","solved optimally by lookup"],f:(i,j)=>isFrame(i,j)?C.blue:"#F4F1E8"},
+    {t:"Edge clusters",d:["the rest of the border, a few","at a time, each solved exactly","on its own small sub-puzzle","(O(N) moves)"],f:(i,j)=>isFrame(i,j)?"#B9D3EE":(border(i,j)?C.pink:"#F4F1E8")},
+    {t:"Interior clusters",d:["every inside cluster with","c r c r commutators, at most","three each (Demaine's","Lemma 2)"],f:(i,j)=>border(i,j)?"#E9C6D5":C.purple}];
+  st.forEach((S,k)=>{const x=10+k*385;
+    el(s,"circle",{cx:x+13,cy:22,r:13,fill:C.rust});el(s,"text",{x:x+13,y:27,"text-anchor":"middle","font-size":14,"font-weight":"bold",fill:"#fff"},k+1);
+    el(s,"text",{x:x+34,y:28,"font-size":16,"font-weight":"bold",fill:C.navy},S.t);
+    grid(s,x,46,n,cell,S.f);
+    S.d.forEach((line,m)=>el(s,"text",{x:x+152,y:70+m*20,"font-size":13,fill:C.grey},line));
+    if(k<2)arrow(s,x+348,110,x+378,110);});
+})();
+
+// ---------- C ----------
+(function(){const s=q("cuC");const N=5;
+  const typ=(i,j)=>{const e=(a)=>a==0||a==N-1;const m=(N-1)/2;
+    if(e(i)&&e(j))return "corner";
+    if(e(i)||e(j)){const k=e(i)?j:i;return k==m?"middle":"wing";}
+    if(i==m&&j==m)return "fixed";
+    if(i==m||j==m)return "plus";
+    return "x";};
+  const col={corner:C.green,middle:C.pink,wing:C.lb,fixed:C.yellow,plus:C.amber,x:C.purple};
+  const f=(i,j)=>col[typ(i,j)];
+  cube(s,200,8,N,142,{top:f,left:f,right:f});
+  const items=[["corner","corners (1 cluster)"],["middle","middle edges (1, odd N)"],["wing","wing edges (N/2 − 1 clusters)"],
+               ["fixed","fixed centers (1, odd N)"],["plus","+ centers"],["x","× centers"]];
+  q("legC").innerHTML=items.map(([k,t])=>`<span style="display:inline-block;width:12px;height:12px;background:${col[k]};border:1px solid #333;margin:0 6px 0 2px;vertical-align:-1px"></span>${t}`).join("<br>")
+    +`<div style="color:#6A7179;margin-top:4px">A piece only ever moves within its own cluster.</div>`;
+})();
+(function(){const s=q("cyc");arrowDefs(s);
+  const P={A:[109,40],B:[185,170],C:[33,170]};const col={A:C.yellow,B:C.pink,C:C.lb};
+  for(const k in P){el(s,"rect",{x:P[k][0]-24,y:P[k][1]-24,width:48,height:48,rx:8,fill:col[k],stroke:C.navy,"stroke-width":1.5});
+    el(s,"text",{x:P[k][0],y:P[k][1]+8,"text-anchor":"middle","font-size":22,"font-weight":"bold",fill:C.navy},k);}
+  arrow(s,0,0,0,0,{d:"M136,52 Q175,90 182,138"});arrow(s,0,0,0,0,{d:"M155,188 Q109,215 64,188"});arrow(s,0,0,0,0,{d:"M36,138 Q44,90 82,52"});
+  el(s,"text",{x:109,y:238,"text-anchor":"middle","font-size":14,fill:C.navy},"A → B → C → A");
+})();
+
+// ---------- D ----------
+function helpGrid(id,block,mark){const s=q(id);const n=7,cell=30,x0=60,y0=22;
+  // gain map: + (helps), 0 (neutral), - (hurts)
+  const G=[
+   "+.+..+.",
+   "+.+..+.",
+   "..+...-",
+   "+.+..+.",
+   "+.0..+.",
+   ".-.....",
+   "+.+..-."];
+  const val=(i,j)=>G[i][j];
+  for(let i=0;i<n;i++)for(let j=0;j<n;j++){const v=val(i,j);
+    const col=v=="+"?"#9FD8AE":v=="-"?"#F1A9A0":v=="0"?"#D9D6CC":"#F4F1E8";
+    el(s,"rect",{x:x0+j*cell,y:y0+i*cell,width:cell,height:cell,fill:col,stroke:"#fff","stroke-width":2});
+    if(v=="+")el(s,"text",{x:x0+j*cell+cell/2,y:y0+i*cell+cell/2+5,"text-anchor":"middle","font-size":14,fill:"#1f6b35","font-weight":"bold"},"+");
+    if(v=="-")el(s,"text",{x:x0+j*cell+cell/2,y:y0+i*cell+cell/2+5,"text-anchor":"middle","font-size":14,fill:"#9b2c22","font-weight":"bold"},"−");
+    if(v=="0")el(s,"text",{x:x0+j*cell+cell/2,y:y0+i*cell+cell/2+5,"text-anchor":"middle","font-size":13,fill:"#555"},"0");}
+  for(let k=0;k<n;k++){el(s,"text",{x:x0-10,y:y0+k*cell+cell/2+5,"text-anchor":"end","font-size":12,fill:C.grey},k);
+    el(s,"text",{x:x0+k*cell+cell/2,y:y0-6,"text-anchor":"middle","font-size":12,fill:C.grey},k);}
+  el(s,"text",{x:14,y:y0+n*cell/2,"font-size":12,fill:C.grey,transform:`rotate(-90 14 ${y0+n*cell/2})`,"text-anchor":"middle"},"layer i (rows X)");
+  el(s,"text",{x:x0+n*cell/2,y:y0+n*cell+22,"text-anchor":"middle","font-size":12,fill:C.grey},"layer j (columns Y)");
+  for(const i of block[0])for(const j of block[1])el(s,"rect",{x:x0+j*cell+2,y:y0+i*cell+2,width:cell-4,height:cell-4,fill:"none",stroke:mark,"stroke-width":3,rx:3});
+  // legend
+  const lx=x0+n*cell+30;[["#9FD8AE","this 3-cycle helps (+3 pieces)"],["#D9D6CC","in the block, no effect (0)"],["#F1A9A0","in the block, slightly hurts (−1)"],["#F4F1E8","not chosen / no effect"]]
+   .forEach(([c,t],k)=>{el(s,"rect",{x:lx,y:y0+10+k*26,width:16,height:16,fill:c,stroke:"#999"});el(s,"text",{x:lx+24,y:y0+23+k*26,"font-size":12.5,fill:C.navy},t);});
+  el(s,"rect",{x:lx,y:y0+120,width:16,height:16,fill:"none",stroke:mark,"stroke-width":3,rx:3});
+  el(s,"text",{x:lx+24,y:y0+133,"font-size":12.5,fill:C.navy},"cells the bulk move acts on");
+  el(s,"text",{x:lx,y:y0+170,"font-size":12,fill:C.grey},"each cell (i, j) = one center cluster;");
+  el(s,"text",{x:lx,y:y0+186,"font-size":12,fill:C.grey},"one commutator over layer sets X, Y");
+  el(s,"text",{x:lx,y:y0+202,"font-size":12,fill:C.grey},"acts on every cluster in X × Y");}
+helpGrid("gD",[[1,3],[0,2,5]],C.navy);
+helpGrid("gN",[[1,3,4,6],[0,2,5]],C.rust);
+
+// ---------- E ----------
+(function(){const s=q("symE");arrowDefs(s);
+  el(s,"rect",{x:0,y:0,width:1183,height:505,fill:"#F7F5EF"});
+  // scramble cube
+  const pal=[C.yellow,C.red,C.cubeblue,C.cubegreen,C.white,C.orange];let seed=7;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};
+  const sc=()=>pal[Math.floor(rnd()*6)];const scr={top:sc,left:sc,right:sc};
+  cube(s,105,125,4,88,scr);
+  el(s,"text",{x:95,y:340,"text-anchor":"middle","font-size":14,"font-weight":"bold",fill:C.navy},"one scramble");
+  el(s,"text",{x:95,y:358,"text-anchor":"middle","font-size":12.5,fill:C.grey},"(Santa 4×4×4, puzzle 151)");
+  // copies fan
+  arrow(s,190,215,228,215);
+  const pos=[[275,70],[360,70],[275,178],[360,178],[275,286],[360,286]];
+  pos.forEach(([x,y],k)=>{seed=100+k*37;cube(s,x,y-28,4,40,{top:sc,left:sc,right:sc},{sw:0.7});});
+  el(s,"text",{x:315,y:385,"text-anchor":"middle","font-size":14,"font-weight":"bold",fill:C.navy},"48 symmetric copies");
+  el(s,"text",{x:315,y:403,"text-anchor":"middle","font-size":12.5,fill:C.grey},"24 rotations × mirror");
+  el(s,"text",{x:315,y:421,"text-anchor":"middle","font-size":12.5,fill:C.grey},"(colours relabelled)");
+  // solver box
+  arrow(s,410,215,445,215);
+  el(s,"rect",{x:450,y:160,width:150,height:110,rx:12,fill:"#14213D"});
+  el(s,"text",{x:525,y:200,"text-anchor":"middle","font-size":14,"font-weight":"bold",fill:"#fff"},"KMCoders'");
+  el(s,"text",{x:525,y:218,"text-anchor":"middle","font-size":14,"font-weight":"bold",fill:"#fff"},"program");
+  el(s,"text",{x:525,y:242,"text-anchor":"middle","font-size":12,fill:"#F2A65A"},"same solver,");
+  el(s,"text",{x:525,y:258,"text-anchor":"middle","font-size":12,fill:"#F2A65A"},"every copy");
+  el(s,"text",{x:525,y:300,"text-anchor":"middle","font-size":12.5,fill:C.grey},"deterministic: different");
+  el(s,"text",{x:525,y:316,"text-anchor":"middle","font-size":12.5,fill:C.grey},"inputs → different lengths");
+  arrow(s,605,215,640,215);
+  // strip of lengths
+  const L=[66,76,72,80,82,72,70,78,74,82,72,84,86,74,74,72,82,80,78,78,76,80,70,70,76,80,78,76,76,66,68,76,74,70,76,86,78,60,72,76,76,72,88,78,70,78,74,78];
+  const x0=660,x1=1150,lo=56,hi=92,X=v=>x0+(v-lo)/(hi-lo)*(x1-x0),yb=250;
+  el(s,"text",{x:x0,y:60,"font-size":15,"font-weight":"bold",fill:C.navy},"quarter turns of each copy, mapped back");
+  el(s,"line",{x1:x0,y1:yb,x2:x1,y2:yb,stroke:"#999"});
+  for(let v=60;v<=90;v+=5){el(s,"line",{x1:X(v),y1:yb,x2:X(v),y2:yb+5,stroke:"#999"});el(s,"text",{x:X(v),y:yb+20,"text-anchor":"middle","font-size":12,fill:C.grey},v);}
+  const cnt={};L.forEach(v=>{cnt[v]=(cnt[v]||0)+1;const k=cnt[v];el(s,"circle",{cx:X(v),cy:yb-8-(k-1)*12,r:5,fill:v==60?C.rust:"#8C96A8"});});
+  const vline=(v,col,lab,y,dash)=>{el(s,"line",{x1:X(v),y1:80,x2:X(v),y2:yb,stroke:col,"stroke-width":2,"stroke-dasharray":dash||""});
+    el(s,"text",{x:X(v)+5,y:y,"font-size":12.5,fill:col,"font-weight":"bold"},lab);};
+  vline(68,C.navy,"published 68",92,"5,4");el(s,"line",{x1:X(90),y1:80,x2:X(90),y2:yb,stroke:"#6A7179","stroke-width":2,"stroke-dasharray":"2,3"});el(s,"text",{x:X(90)-6,y:92,"text-anchor":"end","font-size":12.5,fill:"#6A7179","font-weight":"bold"},"one run 90");
+  el(s,"text",{x:X(60)-4,y:yb-22,"text-anchor":"end","font-size":13,fill:C.rust,"font-weight":"bold"},"60");
+  // map back + keep shortest
+  el(s,"rect",{x:660,y:300,width:490,height:150,rx:12,fill:"#FFFDF8",stroke:"#E3DFD3"});
+  el(s,"text",{x:680,y:330,"font-size":15,"font-weight":"bold",fill:C.navy},"Map back, verify, keep the shortest");
+  el(s,"text",{x:680,y:356,"font-size":13,fill:C.grey},"R ∘ q ∘ R⁻¹ = φ_R(q): a symmetry maps every slice turn to a slice");
+  el(s,"text",{x:680,y:374,"font-size":13,fill:C.grey},"turn of the same cost, so each copy's answer solves the original");
+  el(s,"text",{x:680,y:392,"font-size":13,fill:C.grey},"scramble in the same number of moves.");
+  el(s,"text",{x:680,y:430,"font-size":17,"font-weight":"bold",fill:C.rust},"Answer: 60 quarter turns (published 68, one run 90)");
+})();
+</script>
+</body></html>
