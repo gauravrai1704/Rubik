@@ -176,12 +176,13 @@ class Handler(SimpleHTTPRequestHandler):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=8000)
+    ap.add_argument("--host", default="127.0.0.1", help="0.0.0.0 to listen on all interfaces")
     ap.add_argument("--workers", type=int, default=3)
     a = ap.parse_args()
     Handler.pool = ProcessPoolExecutor(a.workers, initializer=_warm)
     for f in [Handler.pool.submit(_warm) for _ in range(a.workers)]:  # start the workers before the first click
         f.result()
-    srv = ThreadingHTTPServer(("127.0.0.1", a.port), Handler)
+    srv = ThreadingHTTPServer((a.host, a.port), Handler)
     print(f"demo running at http://localhost:{a.port}  (Ctrl+C to stop)")
     try:
         srv.serve_forever()

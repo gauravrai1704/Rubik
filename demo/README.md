@@ -9,6 +9,7 @@ before it is marked verified.
 ```bash
 pip install -e .                 # once, from the repo root (same environment as the paper's code)
 python demo/server.py            # wait for "demo running at http://localhost:8000", then open it
+# (--host 0.0.0.0 to reach it from another device on the network, e.g. a projector laptop)
 ```
 
 - Fallback without a browser: `python demo/cli_demo.py` (same three parts, in text, under 20 s).
