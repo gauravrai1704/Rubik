@@ -1,0 +1,4 @@
+# Santa 2023 puzzle states and KMCoders' published moves: not redistributed (rebuild with precompute_santa.py)
+data/
+video_tmp/
+__pycache__/

@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rubik Solvers Demo</title>
+<style>
+:root{--navy:#14213D;--rust:#C2561A;--amber:#F2A65A;--card:#FFFDF8;--bg:#F7F5EF;--line:#E3DFD3;--grey:#6A7179;--ok:#2E7D4F;--bad:#B3261E}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--navy);font-family:Arial,Helvetica,sans-serif}
+header{display:flex;align-items:center;gap:24px;padding:14px 24px;background:var(--navy);color:#fff}
+header h1{font-size:19px;margin:0;font-weight:bold}
+header .tabs button{background:none;border:0;color:#cfd6e4;font-size:15px;padding:8px 14px;border-radius:6px;cursor:pointer}
+header .tabs button.on{background:#25365e;color:#fff;font-weight:bold}
+main{padding:18px 24px;display:none}
+main.on{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(360px,1fr);gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.card h2{font-size:16px;margin:0 0 10px 0}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+label{font-size:14px}
+select,input[type=number]{font-size:14px;padding:5px 6px;border:1px solid var(--line);border-radius:6px;background:#fff}
+button.b{font-size:14px;padding:7px 12px;border-radius:7px;border:1px solid var(--navy);background:#fff;color:var(--navy);cursor:pointer}
+button.b.primary{background:var(--rust);border-color:var(--rust);color:#fff;font-weight:bold}
+button.b:disabled{opacity:.45;cursor:default}
+.seg button{border-radius:0;margin:0}.seg button:first-child{border-radius:7px 0 0 7px}.seg button:last-child{border-radius:0 7px 7px 0}
+.seg button.on{background:var(--navy);color:#fff}
+#view,#sview{width:100%;height:auto;display:block}
+.status{font-size:14px;color:var(--grey);min-height:20px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right}
+th:first-child,td:first-child{text-align:left}
+tr.best td{font-weight:bold;color:var(--rust)}
+.ok{color:var(--ok);font-weight:bold}.bad{color:var(--bad);font-weight:bold}
+.pill{display:inline-block;padding:2px 8px;border-radius:10px;background:#E6EAF2;font-size:12px}
+.legend span{display:inline-flex;align-items:center;gap:5px;margin:2px 10px 2px 0;font-size:12.5px}
+.legend i{width:12px;height:12px;border:1px solid #333;display:inline-block}
+.big{font-size:30px;font-weight:bold}
+.note{font-size:13px;color:var(--grey);line-height:1.4}
+.solvers label{display:inline-flex;align-items:center;gap:4px;margin-right:10px;font-size:14px}
+#movebar{font-family:monospace;font-size:14px;min-height:20px}
+</style></head><body>
+<header><h1>Short solutions for large Rubik's Cubes and Squares</h1>
+  <div class="tabs"><button id="t1" class="on">1 · Live: scramble &amp; solve</button><button id="t2">2 · SymPort on Santa 2023</button></div></header>
+
+<!-- ================= LIVE ================= -->
+<main id="live" class="on">
+  <div class="card">
+    <div class="row">
+      <span class="seg"><button class="b on" id="kSq">Square N×N×1</button><button class="b" id="kCu">Cube N×N×N</button></span>
+      <label>N <select id="N"></select></label>
+      <label>seed <input type="number" id="seed" value="1" style="width:70px"></label>
+      <button class="b primary" id="scr">Scramble</button>
+      <button class="b" id="rst">Reset to solved</button>
+      <label><input type="checkbox" id="clu"> show clusters</label>
+    </div>
+    <svg id="view" viewBox="0 0 800 520"></svg>
+    <div class="legend" id="leg"></div>
+    <div id="movebar"></div>
+    <div class="status" id="vstat"></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:18px">
+    <div class="card">
+      <h2>Solve this state</h2>
+      <div class="solvers" id="solvers"></div>
+      <div class="row" style="margin-top:8px"><button class="b primary" id="solve">Solve with selected</button>
+        <span class="note">every solution is re-applied by the engine before it is shown</span></div>
+      <table id="res"><thead><tr><th>method</th><th>moves (HTM)</th><th>QTM</th><th>time</th><th>verified</th><th></th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="card">
+      <h2>Replay</h2>
+      <div class="row"><button class="b" id="play" disabled>▶ play</button><button class="b" id="step" disabled>step</button>
+        <button class="b" id="back" disabled>back</button>
+        <label>speed <input type="range" id="speed" min="1" max="40" value="12"></label></div>
+      <div class="status" id="rstat">Scramble, solve, then replay a solution here.</div>
+    </div>
+    <div class="card note" id="about"></div>
+  </div>
+</main>
+
+<!-- ================= SANTA ================= -->
+<main id="santa">
+  <div class="card">
+    <div class="row"><label>Santa 2023 puzzle <select id="pz"></select></label>
+      <button class="b primary" id="rsym">Replay SymPort</button><button class="b" id="rpub">Replay KMCoders' published</button>
+      <button class="b" id="ver">Verify (exact goal)</button></div>
+    <svg id="sview" viewBox="0 0 800 520"></svg>
+    <div id="smovebar" style="font-family:monospace;font-size:14px;min-height:20px"></div>
+    <div class="status" id="sstat"></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:18px">
+    <div class="card"><h2>Every symmetric copy, mapped back</h2>
+      <svg id="dots" viewBox="0 0 460 230" style="width:100%"></svg>
+      <div class="row" style="justify-content:space-between;margin-top:6px">
+        <div><div class="note">SymPort (best copy)</div><div class="big" id="kS" style="color:var(--rust)"></div></div>
+        <div><div class="note">KMC-published</div><div class="big" id="kP"></div></div>
+        <div><div class="note">KMC one run</div><div class="big" id="kO" style="color:var(--grey)"></div></div></div>
+      <div class="note" id="sdesc"></div></div>
+    <div class="card"><h2>Table 2: mean quarter turns on every Santa puzzle of each size</h2>
+      <table id="t2tab"><thead><tr><th>N</th><th>puzzles</th><th>SymPort</th><th>KMC-published</th><th>KMC one run</th></tr></thead><tbody></tbody></table>
+      <div class="note" style="margin-top:8px">SymPort is best for N = 4–7 and second at N = 8–9, where we stopped.</div></div>
+  </div>
+</main>
+
+<script>
+const NSV="http://www.w3.org/2000/svg";
+const $=id=>document.getElementById(id);
+const COL={U:"#F4F4F0",D:"#F2C94C",F:"#43A35B",B:"#3A6FD8",L:"#F08A3C",R:"#D9534F",
+           top:"#F2C94C",bottom:"#F4F4F0",north:"#43A35B",south:"#3A6FD8",east:"#D9534F",west:"#F08A3C"};
+const CLU={corner:"#3F9E5A",midge:"#E07AA0",wing:"#9CC8F0",center_fixed:"#F2C94C",center_plus:"#F2A65A",center_x:"#7B5CC4",
+           center_oblique:"#2BB3A3",sq_corner:"#3F9E5A",sq_edge:"#9CC8F0",sq_edge_cross:"#E07AA0",sq_interior:"#7B5CC4",
+           sq_cross:"#F2A65A",sq_center:"#F2C94C"};
+const cluCol=k=>CLU[k]||"#bbb";
+function api(path,body){return fetch(path,body?{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}:{}).then(r=>r.json());}
+function el(svg,tag,a,t){const e=document.createElementNS(NSV,tag);for(const k in a)e.setAttribute(k,a[k]);if(t!==undefined)e.textContent=t;svg.appendChild(e);return e;}
+
+// ---------- drawing a state ----------
+function draw(svg,G,state,opt={}){
+  svg.innerHTML="";const N=G.N,W=800,H=520;
+  const faceOf=v=>G.colour_face[v];
+  const hl=opt.hl||new Set();
+  let place;
+  if(G.kind==="cube"){const s=Math.min(W/4.1,(H-24)/3.1)/N;const pos={U:[1,0],L:[0,1],F:[1,1],R:[2,1],B:[3,1],D:[1,2]};
+    const ox=(W-4*N*s)/2,oy=(H-3*N*s)/2+10;
+    place=(f,r,c)=>[ox+(pos[f][0]*N+c)*s,oy+(pos[f][1]*N+r)*s,s,s];
+    for(const f in pos)el(svg,"text",{x:ox+pos[f][0]*N*s+4,y:oy+pos[f][1]*N*s-4,"font-size":12,fill:"#6A7179"},f);
+  }else{const gap=70,s=Math.min((W-gap-60)/(2*N),(H-90)/N),t=Math.max(6,s*0.28);
+    const ox=(W-(2*N*s+gap))/2,oy=(H-N*s)/2;
+    place=(f,r,c)=>{if(f==="top")return[ox+c*s,oy+r*s,s,s];if(f==="bottom")return[ox+N*s+gap+c*s,oy+r*s,s,s];
+      if(f==="north")return[ox+c*s,oy-t-3,s,t];if(f==="south")return[ox+c*s,oy+N*s+3,s,t];
+      if(f==="west")return[ox-t-3,oy+c*s,t,s];return[ox+N*s+3,oy+c*s,t,s];};
+    el(svg,"text",{x:ox,y:oy-t-10,"font-size":13,fill:"#6A7179"},"top (side stickers around it)");
+    el(svg,"text",{x:ox+N*s+gap,y:oy-t-10,"font-size":13,fill:"#6A7179"},"bottom (seen through the top)");}
+  G.stickers.forEach(([f,r,c],i)=>{const [x,y,w,h]=place(f,r,c);
+    const fill=opt.clusters?cluCol(G.cluster[i]):COL[faceOf(state[i])];
+    el(svg,"rect",{x:x+0.6,y:y+0.6,width:w-1.2,height:h-1.2,rx:Math.min(3,w/6),fill,stroke:hl.has(i)?"#C2561A":"#1f2533","stroke-width":hl.has(i)?3:0.8});});
+}
+function applyId(G,state,id){const p=G.perms[id];return p.map(j=>state[j]);}
+function moved(G,id){const p=G.perms[id],s=new Set();p.forEach((j,i)=>{if(j!==i)s.add(i);});return s;}
+
+// ---------- LIVE ----------
+let kind="square",G=null,cur=null,start=null,results={},replay=null;
+const SIZES={square:[3,4,5,6,7,8,10,12,14,16,20],cube:[3,4,5,6,7,8]};
+function fillN(){const sel=$("N");sel.innerHTML=SIZES[kind].map(n=>`<option ${n==(kind=="square"?6:6)?"selected":""}>${n}</option>`).join("");}
+async function load(){const N=+$("N").value;$("vstat").textContent="loading…";
+  G=await api(`/api/geometry?kind=${kind}&N=${N}`);cur=G.solved.slice();start=null;results={};stopReplay();
+  $("res").tBodies[0].innerHTML="";$("movebar").textContent="";
+  $("solvers").innerHTML=G.solvers.map(s=>`<label><input type="checkbox" value="${s}" ${s==="OneNet"?"":"checked"}> ${s}${s==="OneNet"?" <span class=\"pill\">slow: 20–40 s</span>":""}</label>`).join("");
+  $("rstat").textContent="Scramble, solve, then replay a solution here.";legend();redraw();$("vstat").textContent=`${kind==="cube"?"Cube":"Square"} ${N}: ${G.stickers.length} stickers, ${G.perms.length} moves.`;
+  $("about").innerHTML=kind==="square"
+   ?"<b>Square:</b> each move flips one row or column over (180°). Solvers: optimal IDA* (N ≤ 4), Reduction, Demaine, NetGain, the learned CayleyPy and OneNet (N ≤ 8), and SymPort over the 8 symmetric copies."
+   :"<b>Cube:</b> each move turns one slice. Live solvers: Reduction, Demaine and NetGain (up to N = 8). SymPort on the cube runs KMCoders' program on up to 48 copies for minutes to hours per puzzle, so it is shown on real Santa puzzles in tab 2.";}
+function legend(){if(!$("clu").checked){$("leg").innerHTML="";return;}
+  const kinds=[...new Set(G.cluster)];$("leg").innerHTML=kinds.map(k=>`<span><i style="background:${cluCol(k)}"></i>${k.replace("sq_","").replace("_"," ")}</span>`).join("")+"<span>· a piece only ever moves within its own cluster</span>";}
+function redraw(hl){draw($("view"),G,cur,{clusters:$("clu").checked,hl});}
+$("kSq").onclick=()=>{kind="square";$("kSq").classList.add("on");$("kCu").classList.remove("on");fillN();load();};
+$("kCu").onclick=()=>{kind="cube";$("kCu").classList.add("on");$("kSq").classList.remove("on");fillN();load();};
+$("N").onchange=load;$("clu").onchange=()=>{legend();redraw();};
+$("rst").onclick=()=>{stopReplay();$("rstat").textContent="Scramble, solve, then replay a solution here.";cur=G.solved.slice();start=null;redraw();$("vstat").textContent="solved state";};
+$("scr").onclick=async()=>{stopReplay();const r=await api("/api/scramble",{kind,N:G.N,seed:+$("seed").value});
+  cur=r.state;start=r.state.slice();results={};$("res").tBodies[0].innerHTML="";redraw();
+  $("vstat").textContent=`random state, seed ${$("seed").value} (end of a long random walk from solved)`;};
+$("solve").onclick=async()=>{if(!start){$("vstat").textContent="scramble first";return;}
+  const names=[...$("solvers").querySelectorAll("input:checked")].map(i=>i.value);const tb=$("res").tBodies[0];tb.innerHTML="";results={};
+  names.forEach(n=>{const tr=document.createElement("tr");tr.id="r_"+n.replace(/\W/g,"");tr.innerHTML=`<td>${n}</td><td colspan="5" class="note">running…</td>`;tb.appendChild(tr);});
+  await Promise.all(names.map(async n=>{const r=await api("/api/solve",{kind,N:G.N,state:start,solver:n});results[n]=r;
+    const tr=$("r_"+n.replace(/\W/g,""));
+    tr.innerHTML=r.ok?`<td>${n}</td><td>${r.htm}</td><td>${r.qtm}</td><td>${r.time_s}s</td><td class="ok">✓</td><td><button class="b">replay</button></td>`
+      :`<td>${n}</td><td colspan="3">${r.error?"failed":"not solved"}</td><td class="bad">✗</td><td></td>`;
+    if(r.ok)tr.querySelector("button").onclick=()=>startReplay(n);markBest();}));};
+function markBest(){const ok=Object.values(results).filter(r=>r.ok);if(!ok.length)return;const m=Math.min(...ok.map(r=>r.htm));
+  for(const n in results){const tr=$("r_"+n.replace(/\W/g,""));if(tr)tr.classList.toggle("best",results[n].ok&&results[n].htm===m);}}
+function startReplay(n){stopReplay();cur=start.slice();replay={ids:results[n].ids,i:0,name:n};redraw();upd();
+  ["play","step","back"].forEach(b=>$(b).disabled=false);}
+function upd(){const r=replay;$("rstat").innerHTML=`${r.name}: move ${r.i} of ${r.ids.length}`+(r.i===r.ids.length?' · <span class="ok">solved ✓</span>':"");
+  $("movebar").textContent=r.i?`last move: ${G.labels[r.ids[r.i-1]]}`:"";}
+function stepF(){const r=replay;if(!r||r.i>=r.ids.length)return false;const id=r.ids[r.i];cur=applyId(G,cur,id);r.i++;redraw(moved(G,id));upd();return true;}
+$("step").onclick=()=>{pause();stepF();};
+$("back").onclick=()=>{pause();const r=replay;if(!r||!r.i)return;r.i--;cur=start.slice();for(let k=0;k<r.i;k++)cur=applyId(G,cur,r.ids[k]);redraw();upd();};
+let timer=null;function pause(){if(timer){clearInterval(timer);timer=null;$("play").textContent="▶ play";}}
+function stopReplay(){pause();replay=null;["play","step","back"].forEach(b=>$(b)&&($(b).disabled=true));}
+$("play").onclick=()=>{if(timer){pause();return;}$("play").textContent="❚❚ pause";timer=setInterval(()=>{if(!stepF())pause();},1000/+$("speed").value);};
+
+// ---------- SANTA ----------
+let SD=null,SG=null,scur=null,sp=null,stimer=null;
+async function loadSanta(){SD=await api("/api/santa");
+  $("pz").innerHTML=SD.puzzles.map((p,k)=>{const d=p.symport.qtm-p.published.qtm;return `<option value="${k}">${p.N}×${p.N}×${p.N} · puzzle ${p.pid} · SymPort ${p.symport.qtm} vs published ${p.published.qtm} (${d<0?"wins by "+(-d):d>0?"loses by "+d:"tie"})</option>`}).join("");
+  $("t2tab").tBodies[0].innerHTML=SD.table.map(t=>{const w=t.symport<t.published;return `<tr><td>${t.N}</td><td>${t.n}</td><td class="${w?"ok":""}">${t.symport.toFixed(1)}</td><td class="${w?"":"ok"}">${t.published.toFixed(1)}</td><td>${t.one_run.toFixed(1)}</td></tr>`}).join("");
+  await pickSanta();}
+async function pickSanta(){spause();const p=SD.puzzles[+$("pz").value];SG=await api(`/api/geometry?kind=cube&N=${p.N}`);scur=p.state.slice();sp=null;
+  draw($("sview"),SG,scur);$("smovebar").textContent="";$("sstat").textContent=`Santa 2023 start state; the goal is one exact state (fixed orientation).`;
+  $("kS").textContent=p.symport.qtm;$("kP").textContent=p.published.qtm;$("kO").textContent=p.one_run??"–";
+  dots(p);
+  $("sdesc").textContent=`${p.copies.length} symmetric copies of this ${p.N}×${p.N}×${p.N} were each solved by KMCoders' program and mapped back to the original; every dot is one copy's length in quarter turns. SymPort keeps the shortest.`;}
+function dots(p){const s=$("dots");s.innerHTML="";const L=p.copies.map(c=>c.qtm);
+  const lo=Math.min(...L,p.published.qtm,p.one_run||1e9)-3,hi=Math.max(...L,p.published.qtm,p.one_run||0)+3,x0=30,x1=440,yb=180;
+  const X=v=>x0+(v-lo)/(hi-lo)*(x1-x0);el(s,"line",{x1:x0,y1:yb,x2:x1,y2:yb,stroke:"#999"});
+  const step=hi-lo>60?20:hi-lo>25?10:5;for(let v=Math.ceil(lo/step)*step;v<=hi;v+=step){el(s,"text",{x:X(v),y:yb+16,"text-anchor":"middle","font-size":11,fill:"#6A7179"},v);}
+  const cnt={},r=Math.max(2.5,Math.min(5,90/L.length+1.5));
+  L.forEach(v=>{cnt[v]=(cnt[v]||0)+1;el(s,"circle",{cx:X(v),cy:yb-6-(cnt[v]-1)*(2*r+1),r,fill:v===p.symport.qtm?"#C2561A":"#8C96A8"});});
+  const vl=(v,c,t,y,d)=>{el(s,"line",{x1:X(v),y1:20,x2:X(v),y2:yb,stroke:c,"stroke-width":1.6,"stroke-dasharray":d});el(s,"text",{x:X(v)+(v>(lo+hi)/2?-4:4),y,"text-anchor":v>(lo+hi)/2?"end":"start","font-size":11.5,fill:c,"font-weight":"bold"},t);};
+  vl(p.published.qtm,"#14213D","published "+p.published.qtm,30,"5,3");if(p.one_run)vl(p.one_run,"#6A7179","one run "+p.one_run,46,"2,3");}
+function sreplay(which){spause();const p=SD.puzzles[+$("pz").value];scur=p.state.slice();sp={ids:p[which].ids,i:0,name:which==="symport"?"SymPort":"KMC-published"};
+  draw($("sview"),SG,scur);stimer=setInterval(()=>{if(sp.i>=sp.ids.length){spause();$("sstat").innerHTML=`${sp.name}: ${sp.ids.length} quarter turns · <span class="ok">exact goal reached ✓</span>`;return;}
+    const id=sp.ids[sp.i];scur=applyId(SG,scur,id);sp.i++;draw($("sview"),SG,scur,{hl:moved(SG,id)});
+    $("smovebar").textContent=`move ${sp.i}/${sp.ids.length}: ${SG.labels[id]}`;},90);}
+function spause(){if(stimer){clearInterval(stimer);stimer=null;}}
+$("pz").onchange=pickSanta;$("rsym").onclick=()=>sreplay("symport");$("rpub").onclick=()=>sreplay("published");
+$("ver").onclick=async()=>{const p=SD.puzzles[+$("pz").value];const [a,b]=await Promise.all([api("/api/verify",{kind:"cube",N:p.N,state:p.state,ids:p.symport.ids}),api("/api/verify",{kind:"cube",N:p.N,state:p.state,ids:p.published.ids})]);
+  $("sstat").innerHTML=`Engine check — SymPort: ${a.moves} moves, exact goal <span class="${a.exact_goal?"ok":"bad"}">${a.exact_goal?"✓":"✗"}</span> · published: ${b.moves} moves, exact goal <span class="${b.exact_goal?"ok":"bad"}">${b.exact_goal?"✓":"✗"}</span>`;};
+
+// ---------- tabs ----------
+$("t1").onclick=()=>{$("t1").classList.add("on");$("t2").classList.remove("on");$("live").classList.add("on");$("santa").classList.remove("on");};
+$("t2").onclick=()=>{$("t2").classList.add("on");$("t1").classList.remove("on");$("santa").classList.add("on");$("live").classList.remove("on");if(!SD)loadSanta();};
+fillN();load();
+</script></body></html>
