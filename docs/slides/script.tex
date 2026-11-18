@@ -1,0 +1,400 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2cm]{geometry}
+\usepackage{enumitem}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{mdframed}
+\hypersetup{colorlinks=true,linkcolor=NavyBlue}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlist{itemsep=1pt,topsep=2pt}
+\titleformat{\section}{\Large\bfseries\color{NavyBlue}}{}{0em}{}
+\newcounter{slide}
+\newcommand{\slide}[2]{\par\bigskip\stepcounter{slide}%
+  {\color{NavyBlue}\rule{\linewidth}{0.4pt}}\par
+  \textbf{\large Slide \arabic{slide}: #1}\hfill{\small\color{gray}#2}\par}
+\newcommand{\act}[1]{\par{\small\color{OliveGreen}\textit{[#1]}}\par}
+\newmdenv[linecolor=BrickRed,linewidth=0.8pt,backgroundcolor=BrickRed!4,innertopmargin=4pt,innerbottommargin=4pt]{warnbox}
+\newmdenv[linecolor=NavyBlue,linewidth=0.8pt,backgroundcolor=NavyBlue!4,innertopmargin=4pt,innerbottommargin=4pt]{keybox}
+
+\title{\textbf{Presentation script}\\[2pt]\large Short Solutions for Large Rubik's Cubes and Squares}
+\author{Slide-by-slide spoken script for \texttt{Rubik\_Short\_Solutions.pptx} (35 slides)}
+\date{18 November 2026}
+
+\begin{document}
+\maketitle
+
+\begin{keybox}
+\textbf{How to use this.} Plain text is what you say, in simple words. \textcolor{OliveGreen}{\textit{[Green brackets]}} are
+what to do or point at. Times are a guide: read in full, the script runs about \textbf{30 minutes}. For a 15--20 minute slot, skip the slides
+marked \textbf{(optional)} and say only the \emph{first paragraph} on each slide; the main points are always there. Speak slowly; pause after every big number.
+\end{keybox}
+
+\textbf{Suggested split for six speakers} (change as you like):
+\begin{itemize}
+\item Speaker 1: slides 1--5 (problem and questions)
+\item Speaker 2: slides 6--11 (how the puzzles work, the engine, the cast of solvers)
+\item Speaker 3: slides 12--16 (the reproductions and OneNet)
+\item Speaker 4: slides 17--22 (NetGain, SymPort, the bound)
+\item Speaker 5: slides 23--31 (results)
+\item Speaker 6: slides 32--35 (discussion, limits, future work, close)
+\end{itemize}
+Hand-over line: ``Now [name] will explain \ldots''
+
+\begin{warnbox}
+\textbf{Three slide numbers that disagree with the paper. Say the paper's number.}
+\begin{itemize}
+\item Slide 16 shows ``$r\ge0.70$''. The paper's numbers are \textbf{0.66, 0.65 and 0.53} at sizes 10, 14 and 20. The script below
+uses the paper's numbers. Better still, fix the slide.
+\item Slides 24 and 32 say one run of KMCoders' program is ``1.07--1.18$\times$'' / ``7--18\% longer''. The data say
+\textbf{1.05--1.18$\times$} (5--18\%).
+\item If asked about ``21\% at $N=10$'' (abstract): that is from 2 random cubes; the 20-cube test gives \textbf{17\%}.
+\end{itemize}
+\end{warnbox}
+
+\newpage
+%% ====================================================================
+\section{Part 1: The problem}
+
+\slide{Title}{30 s}
+Good morning. We are [names]. Our project is about solving big Rubik's cubes, and their flat cousin, the Rubik's Square, in
+as few moves as possible.
+
+In one sentence: we built one engine that handles cubes and squares of every size, ran eight different solvers on exactly the
+same puzzles, and our main method, \textbf{SymPort}, beats the best published competition solutions on average for cubes from
+4 by 4 up to 7 by 7. We will also show honestly where and why it stops winning.
+
+\slide{Problem statement}{1 min}
+The task is simple to say: you get a scrambled cube of any size; give back a short list of moves that solves it.
+
+It is hard for three reasons. \act{point at the three boxes, left to right}
+First, the number of possible states explodes as the cube gets bigger. A 20 by 20 by 20 cube has 2,400 stickers.
+
+Second, finding the \emph{shortest} solution is NP-complete. That means no one knows a fast method that is guaranteed to
+find the best answer, and most experts think none exists. Finding \emph{some} solution is easy; finding the \emph{shortest}
+one is the hard part.
+
+Third, ``God's number'', the worst-case number of moves you would ever need, is only known exactly for the normal 3 by 3
+cube: 20 moves.
+
+Learned, AI-based solvers so far stop at 5 by 5. The best solutions for big cubes came from a Kaggle competition called
+Santa 2023, which we use as our benchmark.
+
+\slide{What we ask}{40 s}
+Our talk answers four questions. \act{read the four, briefly}
+One: what does it take to handle every size? Two: which method is shortest at each size? Three: can anyone beat the competition
+winners? Four: how far is everyone from the true best answer?
+
+The important word is \emph{fair}: every method gets the same puzzles, and every answer is checked by the same code.
+
+\slide{Our contributions}{50 s}
+We bring five things.
+\textbf{SymPort}, our main method: it looks at one scramble from 48 different angles and keeps the shortest answer.
+\textbf{NetGain}: a smarter way to fix many parts of a big cube at once. It is the best single solver on large random cubes.
+\textbf{OneNet}: one neural network that works for every size, even sizes it never saw in training.
+A \textbf{counting bound}: a way to say how far from perfect everyone is.
+And the \textbf{open engine} that all of this runs on.
+On top of that, we rebuilt five known methods and ran three outside programs through the same system.
+
+\slide{Background: clusters}{1 min}
+Two puzzles. The cube you know: each move turns one slice. The Rubik's Square is a flat, one-layer version: each move flips a
+whole row or column upside down.
+
+The key idea behind almost everything today is the \textbf{cluster}. \act{point at ``Clusters''}
+A piece can only ever move among positions of its own kind: corners stay with corners, a given ring of edge pieces stays in
+that ring. So the puzzle splits into many small groups that never mix. Solving the puzzle simply means solving every group.
+
+Two ways to count moves: HTM, where any turn counts as one; and QTM, where a half turn counts as two. QTM is exactly the
+competition's score.
+
+%% ====================================================================
+\section{Part 2: How the puzzles are solved, and our engine}
+
+\slide{The two puzzles (picture)}{50 s}
+\act{left picture} The Square is one cubie thick. A move flips a whole row or column over, so the top and bottom colours swap.
+Doing the same flip twice undoes it.
+\act{right picture} The cube: any of its slices can turn a quarter, half or three-quarter turn.
+The point of this slide: they look different, but inside they have the \emph{same} cluster structure. That is why one engine
+and the same ideas work for both, and why we use the small Square as a test lab where we can compute perfect answers.
+
+\slide{Solving the Square}{1 min}
+The main tool is a short move pattern: flip a column, a row, the same column, the same row. We call it ``c r c r''.
+\act{point at the panel showing the net effect}
+Almost everything goes back to where it was. Only three cells change places: the crossing point and its two mirror cells.
+So with four moves we can make a tiny, controlled change. Tools like this are called \textbf{commutators}.
+
+We solve from the outside in: first the outer frame, which at any size behaves like a small 3 by 3 Square and is solved
+perfectly by lookup; then the edges; then each inner group with these four-move tools.
+
+\slide{Solving the cube}{1 min}
+The cube works the same way, one level up.
+\act{left} These are the cluster types on a 5 by 5 cube: corners, edges, centers.
+\act{middle} A \textbf{3-cycle} swaps three pieces of one cluster and touches nothing else. Our engine generates all 4,048 of them
+for each cluster, automatically.
+\act{right} The standard recipe, called reduction: first fix a parity problem; then solve the centers; then the cube behaves like
+a normal 3 by 3, which we solve with Kociemba's well-known algorithm; finally fix the edge pieces.
+
+\slide{Related work (optional)}{30 s}
+We build on four lines of work: perfect solvers for the 3 by 3 (Korf, Kociemba, Rokicki); methods for big cubes (reduction, and
+Demaine's theory method); learned solvers (DeepCubeA and CayleyPy, which stop at 5 by 5); and the Santa 2023 winners, team
+KMCoders. The gap: learned solvers need one network per size, Demaine's method is theory, and the competition answers are the
+best of many runs of a heavily tuned program.
+
+\slide{The engine}{1 min}
+This slide is about trust. \act{point across the six boxes}
+The same code builds both puzzles at any size: a move is just a rotation of one slab of stickers.
+It finds the clusters automatically, in an order that does not depend on size; that is what later lets one network work at
+every size.
+It generates the 3-cycles, simplifies move lists, and checks that a scramble is valid.
+
+Most important: the \textbf{harness}. No solver is trusted. Every answer, including answers from other people's programs,
+is replayed by our engine, and the engine decides whether the puzzle is really solved. A crash or a timeout counts as a failure.
+
+\slide{Eight solvers and three baselines}{40 s}
+Here is the whole cast. Five are our own re-implementations of published methods. Three are new: OneNet, NetGain and SymPort,
+highlighted. Three are baselines run unchanged: the competition winners' published answers, one run of their program, and an
+open-source solver called dwalton76. All of them go through the same harness.
+
+%% ====================================================================
+\section{Part 3: The methods}
+
+\slide{IDA*-PDB}{1 min}
+The first method finds the \emph{perfect} answer, but only for small puzzles.
+It searches move sequences step by step, and uses a ``guess of how many moves are left'' to cut off hopeless paths early.
+The guess comes from lookup tables, called pattern databases: for example, the exact number of moves needed to fix just the 8
+corners, for every possible corner arrangement, which is 88 million entries. The guess never overestimates, so the first
+answer found is guaranteed to be the shortest.
+
+Results: perfect answers on every random Square up to 5 by 5, in about 13 seconds each. By searching every state, it also
+gave us the exact God's numbers for Squares: 6, 10 and 12 moves for sizes 3, 4 and 5. Beyond that, the search time explodes.
+
+\slide{Reduction}{40 s}
+This is how people solve big cubes by hand. Fix parity, solve the centers, solve the cube as a 3 by 3, then fix the edges.
+Each step uses 3-cycles that do not disturb what is already done.
+The weakness: each 3-cycle fixes only about one piece, so the number of moves grows with the square of the size. It is
+the longest of our cluster methods: 1,885 moves on a 10 by 10 cube.
+
+\slide{Demaine}{1 min}
+Demaine and colleagues had a clever idea: instead of fixing one cluster at a time, use \emph{one} move sequence that fixes the
+same thing in \emph{many} clusters at once. Turn several columns together and several rows together, and one commutator acts on
+a whole block of clusters. In theory this is the best possible growth rate.
+
+On real cubes we had to adapt it: we batch identical 3-cycles across a block of clusters. But there is a rule: the block is used
+only if \emph{every} cluster in it needs that fix. As solving goes on, clusters become different from each other, and the blocks
+shrink to single clusters. On the 20 by 20 cube, 244 of 292 rounds fixed just one cluster. That problem is what NetGain solves.
+
+\slide{CayleyPy}{1 min}
+Now the learned methods. CayleyPy trains a neural network to guess how far a state is from solved.
+Training data is free: start from the solved puzzle, make random moves, and label each state with the number of moves made.
+To solve, it uses \textbf{beam search}: keep the best few thousand states according to the network, try every move from each,
+keep the best again, and repeat until one is solved.
+
+On the Square it is excellent: perfect answers at sizes 3 and 4, and wider beams help, just as the original paper reports.
+The catch: every size needs its own network, and cubes need billions of training examples. So we use it on Squares only.
+
+\slide{OneNet (new)}{1 min}
+OneNet fixes that catch. Instead of feeding the network every sticker, we give it one \textbf{token per cluster}.
+Because our engine lists each cluster's stickers in the same order at every size, a token means the same thing on a 5 by 5 as
+on a 14 by 14. A bigger puzzle is just more tokens.
+
+The network is a transformer without position order, because clusters are a set, not a sequence. Each token predicts its own
+cost, and we add them up.
+
+We trained it only on sizes 4 to 8, and it solves sizes it never saw, up to 14 by 14. Its distance predictions still correlate
+well at unseen sizes: \textbf{0.66, 0.65 and 0.53} at sizes 10, 14 and 20. \act{if the slide still says 0.70, say these numbers}
+
+\slide{NetGain (new)}{1 min}
+Back to Demaine's problem: blocks needed \emph{every} cluster to agree. NetGain changes one rule.
+We ask: does the block \emph{as a whole} pay? Add up the pieces it fixes across all clusters, and compare with the best you could
+do with a single 3-cycle for the same number of moves. If the block wins, use it, even if one or two clusters gain nothing or
+even lose a little.
+
+Everything else is exactly Demaine's code, so any difference in results comes from this one rule. On the same 20 by 20 cube,
+229 of 333 rounds are now bulk moves, instead of nearly all being single fixes.
+
+\slide{NetGain in one picture}{50 s}
+\act{point at the grid} Each cell is one cluster. Green cells (+) gain from this move, grey cells have no effect, and red ($-$) lose a little.
+Demaine's rule only allows blocks where every cell is green; the best one here fixes 1.3 pieces per move.
+NetGain allows this bigger block, with one neutral and one slightly bad cell, because overall it fixes 1.6 pieces per move.
+More pieces per move means a shorter solution.
+
+\slide{KMC-Repro}{1 min}
+This is the competition winners' method, rebuilt only from their written description, before we looked at their code.
+Their key trick: if you store the effect of every ending part of the move list, you can test inserting a new move sequence at
+\emph{any} point with a single lookup, without replaying everything. That makes millions of edits cheap to test.
+The pipeline: solve the special pieces, then use simulated annealing to improve the move list, then insert short commutators,
+then finish with 3-cycles.
+
+Our rebuild is 1.6 to 1.7 times longer than their published answers, while their real program is only 5 to 18 percent longer. The
+gap shows what the write-up leaves out.
+
+\slide{SymPort (main method)}{1.5 min}
+Now our main method. \act{follow the numbers 1 to 4}
+A cube has 48 symmetries: 24 ways to rotate it, times a mirror image. Take the scramble and look at it from each of the 48
+views. Each view is a different-looking puzzle, but it is really the same problem.
+Run the same strong solver, the winners' own program, on every view. Each gives a slightly different answer, because solvers are
+sensitive to small differences in their input.
+Translate each answer back to the original cube. Check every one, and keep the shortest.
+
+Why are the lengths exactly the same after translating? \act{point at the formula}
+A rotation or mirror always turns a slice move into another slice move of the same size. So a 60-move answer for a rotated
+copy becomes a 60-move answer for the original. Nothing is lost.
+
+On the cube, the inner solver is KMCoders' program with three settings: their beam version, a shorter annealing run, and a
+perfect solver for the central 3 by 3 when the size is odd.
+
+\slide{SymPort in one picture}{50 s}
+A real example: Santa 4 by 4 puzzle 151. \act{point at the dots}
+Each dot is one of the 48 views, solved and translated back. The lengths range from 60 to 88 moves. One normal run of their
+program gave 90. Their published best, from many runs, was 68. SymPort simply keeps the 60.
+
+\slide{Counting lower bound}{1 min}
+Question four: how far from perfect is everyone?
+The idea is counting. There are only so many different move sequences of length 10, or 20, or 100. Every state must be reached
+by at least one of them. So if the number of short sequences is smaller than the number of states, some states must need more
+moves. That gives a minimum, a lower bound, for any size.
+
+We checked it on Squares where we know the truth. \act{point at the table}
+The true worst case is 1.5 to 1.7 times this bound. And the exact values for the 4 by 4 and 5 by 5 Squares are new; we have not
+seen them published before.
+
+%% ====================================================================
+\section{Part 4: Results}
+
+\slide{Results: Rubik's Square}{1 min}
+On Squares, SymPort is the best at all 18 sizes, from 3 to 20.
+\act{point at the top rows}
+At small sizes, up to 5, it reaches the perfect answer, as CayleyPy's networks do.
+\act{point at the bottom rows}
+At 9 and above no per-size network exists, and SymPort beats NetGain, the best single solver, by up to about 7 percent.
+NetGain in turn beats Demaine and Reduction.
+
+\slide{Reproductions vs originals (optional)}{40 s}
+Before comparing, we checked that our rebuilt methods behave like the originals.
+CayleyPy: wider beams help, as in its paper. IDA*: our table sizes match Korf's exactly, and the 3 by 3 Square's worst case
+matches the published value. KMCoders: one run of their program is 5 to 18 percent longer than their published answers. Our
+rebuild from the write-up is 1.6 to 1.7 times longer.
+
+\slide{Results: Santa 2023 cubes}{1.5 min}
+This is the main result. Lengths are in quarter turns, the competition's score; lower is better.
+\act{point at the SymPort and KMC published columns}
+For sizes 4, 5, 6 and 7, SymPort is shorter on average than the published winners' answers. For example, at 4 by 4: 64.1 against
+66.7.
+At 8 and 9 the published answers win, and SymPort is second, still ahead of one run of their program.
+After two losses in a row, we stopped at 9. Every other method is far behind: our cluster methods are about three times longer
+on these puzzles.
+
+\slide{SymPort puzzle by puzzle}{50 s}
+Over all 78 puzzles from 4 to 9, SymPort uses 8,302 moves in total against 8,452 published, 1.8 percent fewer: 43 wins, 14 ties,
+21 losses.
+For sizes 4 to 7 alone, 72 puzzles, it saves 2.8 percent.
+At 8 and 9 it is 1 to 2 percent longer, winning one puzzle of three at each size.
+
+\slide{Why the portfolio works}{50 s}
+\act{left chart} Each column is one 4 by 4 puzzle; each dot is one of the 48 views. The answers spread over 18 to 28 moves. The bar
+is the published best: it sits low, but the best dot often goes below it.
+\act{right chart} If we take the best of more and more views, the average keeps falling, and it has not flattened even at 48. So
+the variety between views is what wins.
+
+\slide{Where SymPort stops winning}{1.5 min}
+Why does it stop at size 8? Think of two numbers.
+The \textbf{gap}: how far a typical view is behind the published answer.
+The \textbf{gain}: how much picking the best view saves over a typical view.
+SymPort wins only when the gain is bigger than the gap.
+
+Up to 7 by 7, it is. At 8 and 9, the gain is 3.3 percent, but the gap is about 5 percent. Three reasons:
+First, the views do not get more different as the cube grows. They differ by about 7 moves at every size, while the solutions grow
+much longer, so in percent the variety shrinks from 6 percent to 2 percent.
+Second, each view gets expensive: 31 to 47 minutes of computing at sizes 8 and 9, so we could afford only 12 views.
+Third, the published answer is itself the best of many runs.
+Even with all 48 views, our model predicts a tiny win at 8 and still a loss at 9. So symmetry alone runs out; it needs more
+varied inputs or a stronger base solver.
+
+\slide{NetGain on random cubes}{50 s}
+Now random cubes. This chart shows how many fewer moves NetGain needs compared with Demaine. We tested 20 cubes per size and
+measured the difference on the same cubes, with 95 percent confidence intervals.
+From size 5 on, NetGain is clearly shorter, and the lead grows with size: about 17 percent at size 10. On the 20 by 20 cube: 4,925
+moves against 6,612.
+
+\slide{Scaling with N}{50 s}
+Here every method's length is divided by the theoretical best growth rate. A flat line would mean a method grows at the ideal
+rate.
+Every line still rises, so no method reaches the ideal in practice. On random cubes NetGain bends over the most, so it comes
+closest. On the Santa puzzles, SymPort and the published answers are the lowest.
+
+\slide{How far from optimal}{50 s}
+Compared with our lower bound, the published answers are 1.81 times the bound at size 4, 1.99 at 7, and 2.22 at 10.
+At size 4 that is close to optimal; remember, on Squares even the perfect answer is 1.5 to 1.7 times the bound.
+But the gap grows with size. The reason: the last stage of the competition method fixes only a few pieces per move. Fixing many
+clusters at once, as NetGain does, is how to close it.
+
+%% ====================================================================
+\section{Part 5: Lessons, limits, next steps}
+
+\slide{Discussion}{1 min}
+Four lessons.
+One: write-ups leave things out. Our rebuild from their description was far behind their real code.
+Two: the published answers are already locally tight. Polishing them removed no moves; running the whole solver on different
+inputs is what finds shorter ones.
+Three: on big random cubes, structure wins: fixing many clusters with one move sequence.
+Four: learning helps at small sizes. Per-size networks are perfect up to 5; OneNet generalises, but above 7 the hand-designed
+methods are shorter.
+
+\slide{Limitations}{50 s}
+We want to be upfront.
+SymPort wins only up to 7 by 7, and we stopped at 9. From size 6 on we had only 3 or 4 puzzles per size, too few to call the
+wins significant.
+We have not yet tested whether 48 random seeds of the same program would give the same variety as 48 symmetries. That is the most
+important open test.
+SymPort's core solver is KMCoders' program; we release only our wrapper.
+Our bound is only a lower bound: it cannot prove any single answer is near-perfect.
+And our learned solvers are for Squares only.
+
+\slide{Future work}{40 s}
+What we would try next, following the analysis:
+more varied copies, and first a fair test of symmetries against random seeds;
+combining the best \emph{stage} from each copy instead of only picking one whole answer;
+spending the computing budget adaptively, finishing only the most promising copies;
+a stronger base solver, for example NetGain's bulk moves in the final stage;
+then the remaining Santa sizes and learned solvers for cubes.
+
+\slide{Conclusion}{40 s}
+One engine, eight solvers, three answers.
+On random cubes, the winner at large sizes is structural: batch moves when the block pays, not only when everyone agrees.
+On the competition puzzles, the cube's 48 symmetries turn the winners' own solver into a portfolio that beats their published
+best up to 7 by 7.
+And on optimality: little room left at size 4, but a gap that grows with size.
+All our code and results are open, at the link on the slide. Thank you; we are happy to take questions.
+
+%% ====================================================================
+\newpage
+\section{Quick answers to the most likely questions}
+\textbf{``Isn't SymPort just running someone else's solver many times?''}
+Yes, the inner solver is theirs, and we say so clearly. What is ours: the idea that symmetries are a free, seed-free source of
+variety; the proof that answers translate back with exactly the same length; the configuration; and the measurement of where and
+why it stops working.
+
+\textbf{``Why the Rubik's Square at all?''}
+It has the same structure as the cube but is small enough to solve perfectly up to 5 by 5. So it is where we can check against
+true optimal answers and train networks cheaply.
+
+\textbf{``How do you know the answers are correct?''}
+Our engine replays every answer, including other people's, and decides itself whether the puzzle is solved.
+
+\textbf{``Why did you stop at size 9?''}
+Two losses in a row with a growing gap, and our model says even 48 copies would not win at 9. Each extra puzzle costs many
+CPU-hours.
+
+\textbf{``You reran some copies: isn't that cherry-picking?''}
+Only copies that the computer killed for running out of memory were rerun. Every copy that finished was kept, good or bad. Size 8
+did not improve at all.
+
+\textbf{``Is SymPort optimal?''}
+No, and we never say that. It is the best method we know of up to 7 by 7. Every method is still about twice the lower bound.
+
+\textbf{``What is NP-complete / God's number?''}
+God's number is the worst case: the fewest moves that solve every possible state; 20 for the 3 by 3. NP-complete means checking a
+proposed answer is fast, but no fast method is known for finding the shortest one; finding \emph{some} answer is easy.
+
+\end{document}
