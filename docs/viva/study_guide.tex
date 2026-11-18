@@ -1,0 +1,247 @@
+\documentclass[10.5pt,a4paper]{article}
+\usepackage[margin=2cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,array,tabularx}
+\usepackage{enumitem}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{mdframed}
+\hypersetup{colorlinks=true,linkcolor=NavyBlue,urlcolor=NavyBlue}
+\setlist{itemsep=1pt,topsep=3pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\titleformat{\section}{\Large\bfseries\color{NavyBlue}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{0.6em}{}
+\newcommand{\Cu}[1]{#1$\times$#1$\times$#1}
+\newcommand{\Sq}[1]{#1$\times$#1$\times$1}
+\newcommand{\M}[1]{\textsc{#1}}
+\newmdenv[linecolor=NavyBlue,linewidth=0.8pt,backgroundcolor=NavyBlue!4,innertopmargin=4pt,innerbottommargin=4pt]{keybox}
+\newmdenv[linecolor=BrickRed,linewidth=0.8pt,backgroundcolor=BrickRed!4,innertopmargin=4pt,innerbottommargin=4pt]{warnbox}
+\newcommand{\sub}[1]{\par\smallskip\textbf{#1}\quad}
+
+\title{\textbf{Study guide: how every method works}\\[2pt]\large Short Solutions for Large Rubik's Cubes and Squares}
+\author{Companion to \texttt{notes.pdf} (full detail and question bank)}
+\date{18 November 2026}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{The story in 30 seconds}
+\begin{keybox}
+``Finding the shortest solution of a big Rubik's cube is NP-complete, so in practice people use fast solvers that find
+\emph{short} solutions. We built one engine for cubes and Squares of any size, and ran 8 solvers plus 3 outside baselines on
+the same puzzles. Our main method, \M{SymPort}, beats the best published Kaggle Santa 2023 solutions on average for cubes
+$N=4$--7. \M{NetGain} is the best single solver on large random cubes. A counting lower bound shows everyone is still about
+$2\times$ above optimal, and that gap grows like $\log N$.''
+\end{keybox}
+Four research questions: covering every size; which method is shortest at each size; can anyone beat the published
+solutions; how far is everyone from optimal.
+
+\textbf{God's number} = the worst case: the fewest moves that solve \emph{every} state (the diameter of the state graph).
+\Cu{3}: 20 face turns (Rokicki et al.\ 2010), 26 quarter turns (2014). \Cu{N}: grows as $\Theta(N^2/\log N)$ (Demaine et
+al.\ 2011). Our exact Square values: 6, 10, 12 for $N=3,4,5$.
+
+\textbf{NP-complete} (Demaine, Eisenstat, Rudoy 2018): ``can this state be solved in at most $k$ moves?'' is NP-complete
+for the \Cu{N}. Any solution is easy to find (reduction does it in polynomial time); only the \emph{shortest} is hard.
+So beyond small sizes we build fast solvers and measure them against bounds.
+
+\section{Building blocks}
+\subsection{The two puzzles}
+\begin{itemize}
+\item \textbf{Cube} \Cu{N}: $6N^2$ stickers, $3N$ slices, each turned $90^\circ$, $180^\circ$ or $270^\circ$: $9N$ moves.
+\item \textbf{Square} \Sq{N}: a flat grid; a move flips a whole row or column $180^\circ$: $2N$ moves, each its own inverse.
+\item \textbf{Why the Square:} same internal structure as the cube, but exactly solvable up to $N=5$. It is our laboratory for
+optimality and for training networks cheaply.
+\end{itemize}
+
+\subsection{Clusters (behind almost every method)}
+A piece only ever moves among positions of its own kind; each closed group is a \textbf{cluster}. Solving the puzzle = solving
+every cluster. Cube: 1 corner cluster, $\lfloor N/2\rfloor-1$ wing clusters, $\approx(N-2)^2/4$ center clusters of 24 stickers
+(the \Cu{20}: 9 wing, 81 center). The count grows like $N^2$, but each cluster is a small fixed-size problem.
+
+\textbf{Implementation} (\texttt{engine/orbits.py}): union-find over the move permutations gives the orbits; stickers in a
+cluster are sorted in an order that does \emph{not} depend on $N$. A center cluster on a \Cu{5} looks identical in code to one
+on a \Cu{9}. That is what lets one network (\M{OneNet}) work at every size.
+
+\subsection{Commutators and 3-cycles}
+A commutator is $[A,B]=A\,B\,A^{-1}B^{-1}$. If $A$ and $B$ barely overlap, most of $A$ is undone by $A^{-1}$; only pieces at the
+overlap move. Chosen well, exactly \textbf{3 pieces of one cluster} rotate and nothing else moves: a \emph{pure 3-cycle}, the
+smallest even permutation, enough to solve any cluster.
+\begin{itemize}
+\item Cube: forms like $[A,\,B\,C\,B^{-1}]$ (inner slice, outer face, inner slice).
+\item Any target cycle: conjugate a base one by a setup, $s\cdot\text{cycle}\cdot s^{-1}$ (still pure). BFS over setups of up to
+4 moves reaches all $24\cdot23\cdot22/3=4{,}048$ 3-cycles of a 24-sticker cluster.
+\item Square: $c\,r\,c\,r$ changes only the cell at the crossing and its two mirror cells (Demaine's Lemma 2). Checked in the
+engine: on a \Sq{5}, column 3 with row 1 moves cells (1,3), (1,1), (3,3).
+\end{itemize}
+
+\subsection{Metrics and goals}
+\textbf{HTM}: any turn of a slice = 1 (random states). \textbf{QTM}: a half turn = 2 (\textbf{the Santa score is exactly
+QTM}). \textbf{Canonical form}: same-axis moves commute, so they are merged and sorted; it prunes searches and defines the
+counting bound. Goals: random benchmark = solved in any orientation (24 for the cube); Santa = one \emph{exact} state.
+
+\subsection{The harness: why every number is trustworthy}
+Every solver returns a move list; \textbf{our engine re-applies it and decides ``solved'' itself}. Crash or timeout = failure,
+kept in the denominator. Each result row stores seed, hardware and git commit; every table and figure is regenerated by
+\texttt{paper/scripts/make\_tables.py}.
+
+\section{The methods}
+Three families: \textbf{exact search} (\M{IDA*-PDB}); \textbf{cluster schedules} (\M{Reduction}, \M{Demaine}, \M{NetGain});
+\textbf{learned and portfolio} (\M{CayleyPy}, \M{OneNet}, \M{KMC-Repro}, \M{SymPort}).
+
+\subsection{\M{IDA*-PDB} (m1): optimal, small puzzles only}
+\sub{Idea.} Depth-first search with an increasing limit; prune when moves so far + lower-bound estimate of moves left exceed it.
+If the estimate never overestimates (admissible), the first solution found is optimal.
+\sub{Estimate.} Pattern databases: exact distances of sub-problems, e.g.\ the 8 corners (88 million entries) and two sets of 6
+edges; $h=\max$ of the lookups. A sub-problem never needs more moves than the whole puzzle, so $h$ is admissible. Square: max
+over clusters of each cluster's exact distance.
+\sub{Implementation.} Tables by BFS at 4 bits/entry; Numba search, parallel over the first move, $\approx1.2\cdot10^7$ nodes/s;
+canonical pruning. BFS from solved gave the exact Square God's numbers 6, 10, 12.
+\sub{Result.} Optimal on every random Square $N\le5$ (\Sq{5} $\approx$13\,s); none at $N=6$. \Cu{3}: 91/100 twelve-move scrambles.
+\sub{Why it stops.} Cost $\approx b^{\,d-h}$, $b\approx13$: exponential. Korf's 1997 runs used days per instance; we capped at
+30 minutes. Our PDB sizes match his: a budget limit, not a bug.
+
+\subsection{\M{Reduction} (m2): how humans solve big cubes}
+\sub{Order.} Wing parity (one slice turn per odd wing cluster, since 3-cycles are even) $\to$ centers by greedy 3-cycles (most
+pieces fixed per move) $\to$ corners and middle edges as a \Cu{3} by Kociemba's two-phase $\to$ wings by 3-cycles. Outer turns
+keep centers on their faces and pure 3-cycles touch nothing else, so stages never break each other.
+\sub{Square.} Frame solved exactly on its projection; each interior cluster with $c\,r\,c\,r$, at most 3 per cluster.
+\sub{Weakness.} Each 3-cycle fixes $O(1)$ pieces: $\Theta(N^2)$ moves (1,885 HTM on a random \Cu{10}).
+
+\subsection{\M{Demaine} (m3): the optimal growth rate}
+\sub{Idea.} Do the \emph{same} fix to many clusters with one shared sequence: turning column set $X$ and row set $Y$ as
+$C_X R_Y C_X R_Y$ applies the commutator to every cluster in $X\times Y$ for only $2|X|+2|Y|$ moves. This gives
+$\Theta(N^2/\log N)$.
+\sub{Square.} Faithful: each cluster's optimal commutator word from its table; round $t$ applies everyone's $t$-th commutator in
+batched blocks.
+\sub{Cube (adapted).} Demaine batches clusters in identical states, which essentially never occur at practical sizes. We batch
+\textbf{3-cycle types} instead: one template $[A_i,\,B\,C_j\,B^{-1}]$ applied to a block $I\times J$ for $2|I|+2|J|+4$ moves,
+used only if it \textbf{helps every cluster in it and harms none}.
+\sub{Weakness.} Unanimous blocks shrink to single cells: on the \Cu{20}, 244 of 292 center rounds fixed only one cluster.
+
+\subsection{\M{NetGain} (m5c, new): the ``block as a whole pays'' rule}
+\sub{Idea.} Drop unanimity; apply a block when its total gain beats the best single fix per move:
+\[(X^\ast,Y^\ast)=\arg\max\sum_{(i,j)\in X\times Y} g(i,j)\;-\;\lambda\,(\text{block cost}),\]
+$\lambda$ = best pieces/move of any single-cluster 3-cycle now. Some cells may gain 0 or even lose.
+\sub{Implementation.} Alternating maximisation (rows given columns, columns given rows) from the 3 best rows; each candidate
+scored exactly by applying it; setup sharing (a repeated setup's undo and redo cancel, charged once); one-step lookahead for
+$N\le15$. Everything else is copied from \M{Demaine}, so the difference is the schedule alone: a clean experiment.
+\sub{Result.} \Cu{20}: 229 of 333 rounds bulk; \textbf{4,925 vs 6,612 HTM}. 20 random cubes per size, paired 95\% CIs: shorter
+from $N=5$, \textbf{$-17.2\%$ at $N=10$}. Best single solver on large Squares.
+\sub{Limits.} No proved growth bound; weak on Santa (exact goal, QTM): 2.8--3.3$\times$ published.
+
+\subsection{\M{CayleyPy} (m4): learned distance + beam search}
+\sub{Training.} Random walks from solved that never undo the last move; each state labelled with its step $k$ as a proxy for
+distance; fresh data every epoch. ResMLP on one-hot stickers, MSE on $k$, Adam $10^{-3}$, batch 1024. Square models 0.25--0.45M
+parameters, 1--4 CPU-minutes each; a larger GPU model (Colab T4) at $N=8$.
+\sub{Search.} Beam: keep the $W$ best states by network score, expand every move, dedup by 64-bit hash, repeat.
+\sub{Result.} Optimal on all \Sq{3}, \Sq{4}; at the optimum at $N=5$; best (with \M{SymPort}) up to $N=8$. Wider beams help
+(\Sq{8}: 3/10 at $W=16$, all from $W=1024$).
+\sub{No cubes.} One network per size, billions of examples ($\approx$8B for their \Cu{3}): beyond our compute.
+
+\subsection{\M{OneNet} (m5a, new): one network for every size}
+\sub{Idea.} One \textbf{token per cluster}. Cluster order is $N$-invariant, so a token means the same at every size; a bigger
+cube is just more tokens.
+\sub{Model.} Token = cluster colours + cluster-kind embedding + position features (depth$/(N-1)$, $N/20$). Transformer with
+\textbf{no positional encoding} (clusters are a set). \textbf{Additive head}: each token predicts its cost and they are summed:
+extends to any token count and gives per-cluster costs for staged search.
+\sub{Training.} Walks on $N=4$--8; loss normalised by $N^2/\ln N$; AdamW, OneCycle. Main model $d=192$, 4 layers, 1.56M
+parameters on a T4.
+\sub{Search.} $N\le7$: full beam. $N\ge8$: staged outside-in (frame, edges, interiors), each stage an exact goal so later stages
+cannot undo earlier ones; $c\,r\,c\,r$ macros; small stages solved exactly by BFS.
+\sub{Result.} Solves unseen sizes (up to \Sq{14}); $r=0.66/0.65/0.53$ at unseen $N=10/14/20$; second only to per-size networks
+up to $N=7$. Honest: at large $N$ the stage structure carries much of the load.
+
+\subsection{\M{KMC-Repro} (m6): the winners, rebuilt from their write-up}
+\sub{Insertion identity.} Store the permutation of every suffix of the solution; inserting $B$ before move $t$ changes the final
+state by $C=\mathrm{inv}_t\circ B\circ\mathrm{suf}_t$: one lookup, no replay, so millions of edits are cheap to score.
+\sub{Pipeline.} Special parts (corners as an optimal \Cu{2}, or the central \Cu{3}) $\to$ wing parity $\to$ simulated annealing
+(QTM $+\,2.5\times$ wrong stickers) $\to$ greedy 4-move commutator insertion $\to$ optimal 3-cycles.
+\sub{Result.} 1.61--1.71$\times$ published; one run of their real program is 1.05--1.18$\times$. The gap measures what the write-up
+leaves out (bulk commutators, exact 3-cycle counting, big beam, optimal central stage). Built from the write-up only, before
+reading their code.
+
+\subsection{\M{SymPort} (m7, new): the main method}
+\sub{Idea.} The cube has 48 symmetries (24 rotations $\times$ mirror). A rotated/mirrored and recoloured scramble is a different
+but equivalent puzzle. Solve $k$ copies with KMCoders' program, map each answer back, \textbf{keep the shortest}. Seed-free
+diversity. The Square has 8 symmetries.
+
+\begin{keybox}
+\textbf{Proof (board-ready).} A rotation or reflection $R$ maps every slab onto a slab, so $R\,q\,R^{-1}$ is a turn
+$\phi_R(q)$ of another slab by the same angle: the \textbf{same cost}. If $q_1\ldots q_L$ solves the copy, then
+$\phi_R(q_1)\ldots\phi_R(q_L)$ solves the original: substitute $q_i=R^{-1}\phi_R(q_i)R$ and the inner $R^{-1}R$ pairs
+telescope. Same length in QTM, HTM and STM. The harness re-verifies every mapped-back solution anyway.
+\end{keybox}
+
+\sub{Configuration.} KMCoders' beam variant; 1M annealing iterations instead of 20M (no measurable loss); odd $N$: optimal
+central \Cu{3} from Rokicki's nxopt. $k=48$ at $N=4$, 24 at 5--7, 12 at 8--9.
+\sub{Results (mean QTM).}
+\begin{center}\small
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+$N$ & 4 & 5 & 6 & 7 & 8 & 9 \\
+\midrule
+\M{SymPort} & \textbf{64.1} & \textbf{95.0} & \textbf{158.3} & \textbf{205.2} & 294.7 & 361.3 \\
+Published & 66.7 & 97.1 & 161.0 & 208.8 & \textbf{291.3} & \textbf{354.7} \\
+\bottomrule
+\end{tabular}
+\end{center}
+$N=4$--7: 6,334 vs 6,514 ($-2.8\%$), W/T/L 41/14/17. Best at all 18 Square sizes.
+
+\sub{Why it loses at $N=8$, 9 (own this).} \textbf{gain} = (median copy $-$ best copy)/median; \textbf{gap} = (median copy $-$
+published)/published. \M{SymPort} wins exactly where gain $>$ gap.
+\begin{enumerate}
+\item \textbf{The spread does not grow:} copy SD stays $\approx$4.5--7.4 QTM while lengths grow like $N^2$; relative spread
+falls 6\% $\to$ 2\%. Copies differ early; the long late stages come out alike.
+\item \textbf{Fewer copies:} 31--47 CPU-min each, so only 12.
+\item \textbf{Published is itself a portfolio:} best of many runs over the competition.
+\end{enumerate}
+Projection (normal model, matches the measured best-of-12): 48 copies give 290.2 vs 291.3 at $N=8$ (just wins), 357.3 vs 354.7
+at $N=9$ (still loses). Two consecutive losses with a widening gap, plus this projection, are why we stopped at $N=9$.
+
+\begin{warnbox}
+\textbf{Be honest about:} the seed-control experiment was \textbf{not run} (cannot claim symmetries beat 48 random seeds);
+3--4 puzzles per size at $N\ge6$ (margins not significant); copies killed by the OS for lack of memory were rerun, every
+finished copy was kept (not cherry-picking).
+\end{warnbox}
+
+\section{The counting lower bound}
+\sub{Argument.} Every state at distance $d$ is reached by at least one canonical word of length $d$. If short words are fewer
+than states, some state is far: the smallest $L$ with $\sum_{d\le L}\text{words}(d)\ge|G|$ is a lower bound on God's number.
+\sub{Counting.} Cube: per layer $(1+x)^2$, block $f(x)=(1+x)^{2N}-1$, axes alternate, growth
+$b=\bigl((3/2)^{1/(2N)}-1\bigr)^{-1}$. Square: $b=1/(2^{1/N}-1)$.
+\sub{Why $N^2/\log N$.} $\ln|G|\sim N^2$ (number of clusters), $\ln b\sim\log N$.
+\sub{Calibration.} Square bound / true God's number: 4/6, 6/10, 8/12 (ratio 1.5--1.7).
+\sub{Finding.} Published Santa lengths are 1.81$\times$ the bound at $N=4$, 2.22$\times$ at $N=10$, a gap growing like $\log N$.
+Their final stage fixes $O(1)$ pieces per 3-cycle ($N^2$ growth); Demaine-style batching in the endgame (what \M{NetGain} does)
+is the way to close it.
+
+\section{Suggested talk flow (12--15 min)}
+\begin{enumerate}
+\item Problem: puzzles, sizes, NP-complete, God's number (infographic slides 6--8).
+\item Engine: clusters, commutators, harness re-verification (the ``trust'' slide).
+\item Methods by family: exact $\to$ cluster schedules (\M{Reduction} $\to$ \M{Demaine} $\to$ \M{NetGain} as a progression) $\to$
+learned (\M{CayleyPy} $\to$ \M{OneNet}).
+\item \M{SymPort}: idea, proof, Table 2.
+\item Why it stops at $N=8$: gain vs gap. Examiners like an honest limit.
+\item Bound: everyone is $\approx2\times$ optimal and the gap grows.
+\item Future work: seed control, recombining the best stages across copies, adaptive budget, stronger base solver.
+\item Demo (\texttt{demo/README.md} run-through).
+\end{enumerate}
+
+\section{Five traps to pre-empt}
+\begin{warnbox}
+\begin{itemize}
+\item \textbf{21\% vs 17.2\% at $N=10$:} abstract's 21\% is from the 2-state table; the 20-state CI table says 17.2\%. Name the
+source of each.
+\item \textbf{Slide 13 says OneNet $r\ge0.70$:} the paper says 0.66 / 0.65 / 0.53. Fix the slide or correct it aloud.
+\item \textbf{``Isn't \M{SymPort} just running their solver 48 times?''} The inner solver is theirs, and we say so. The
+contributions are the symmetry-diversity idea with its exact-length proof, the configuration, and the measured limits.
+\item \textbf{Never say ``optimal'':} say ``best up to $N=7$''; everyone is $\approx2\times$ the bound.
+\item \textbf{\texttt{m5b\_stages}} in the code: a dropped staged variant, not in the paper.
+\end{itemize}
+\end{warnbox}
+
+\end{document}
