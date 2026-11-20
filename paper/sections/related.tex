@@ -57,7 +57,7 @@ scrambles from the goal. Q* search~\cite{agostinelli2024qstar} scores all childr
 pass and handles large action spaces. CayleyPy~\cite{chervov2025cayleypy} trains a residual MLP to predict the
 length of a random walk from the solved state and searches with very wide beams; it reports over 98\%
 optimal \Cu{3} solutions and the first learned \Cu{4} and \Cu{5} solvers. All of these models are trained per
-puzzle size on the full sticker array. \Mfour is our reproduction of CayleyPy; \FiveA instead
+puzzle size on the full sticker array. \Mfour is our reproduction of the CayleyPy project~\cite{chervov2025cayleypy}; \FiveA instead
 decompose the puzzle into clusters whose networks are shared by all sizes.
 
 \paragraph{Search techniques we build on.}

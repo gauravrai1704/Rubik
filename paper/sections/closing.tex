@@ -22,7 +22,7 @@
   length $\Theta(N^2)$ is divided by a bound of order $N^2/\log N$, and the bound's own slack may grow with $N$: we can calibrate it
   only on Squares with $N\le5$.
 \item \emph{Exact search on the \Cu{3}} solves 12-move scrambles but no random state in 30 minutes on four cores. We did not
-  train cube networks at CayleyPy's scale, so \Mfour and \FiveA are evaluated on the Square only.
+  train cube networks at the CayleyPy project's scale, so \Mfour and \FiveA are evaluated on the Square only.
 \item \emph{Checker and sampling.} The checker enforces necessary conditions only, and random states come from long random walks
   rather than an exact uniform sampler.
 \end{itemize}
@@ -47,7 +47,7 @@ pieces the inverse depends on which permutation is chosen to represent the state
 choices add further diversity. With these, the remaining Santa sizes ($N=10$, 19 and 33) are the
 natural test.
 
-\paragraph{Other directions.} Training cube networks at CayleyPy's scale for \Mfour and \FiveA; carrying \FiveC's bulk moves
+\paragraph{Other directions.} Training cube networks at the CayleyPy project's scale for \Mfour and \FiveA; carrying \FiveC's bulk moves
 into the insertion method's final stage; and an exact uniform sampler for random states.
 
 %% =====================================================================
