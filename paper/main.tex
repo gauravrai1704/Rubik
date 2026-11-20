@@ -40,41 +40,18 @@
 \begin{document}
 
 \title{Short Solutions for Large Rubik's Cubes and Squares}
-\subtitle{Eight Solvers on One Open Engine: Symmetry Portfolios that Beat the Santa 2023 Record Lengths, Net-Gain Bulk Commutators, and How Far from Optimal They Are}
-
-%% TODO(authors): add family names, e-mail addresses and the supervising faculty member.
-\author{Gaurav}
-\affiliation{%
-  \institution{Shiv Nadar University}
-  \city{Greater Noida}
-  \country{India}}
-\author{Shree}
-\affiliation{%
-  \institution{Shiv Nadar University}
-  \city{Greater Noida}
-  \country{India}}
-\author{Sunaina}
-\affiliation{%
-  \institution{Shiv Nadar University}
-  \city{Greater Noida}
-  \country{India}}
-\author{Kashvi}
-\affiliation{%
-  \institution{Shiv Nadar University}
-  \city{Greater Noida}
-  \country{India}}
-\author{Shaurya}
-\affiliation{%
-  \institution{Shiv Nadar University}
-  \city{Greater Noida}
-  \country{India}}
-\author{Sharanya}
-\affiliation{%
-  \institution{Shiv Nadar University}
-  \city{Greater Noida}
-  \country{India}}
-
-\renewcommand{\shortauthors}{Gaurav et al.}
+\author{Gaurav Rai}
+\affiliation{\institution{2410110133}\country{}}
+\author{Kashvi Tak}
+\affiliation{\institution{2410110165}\country{}}
+\author{Sharanya Gupta}
+\affiliation{\institution{2410110315}\country{}}
+\author{Shaurya Sharma}
+\affiliation{\institution{2410110317}\country{}}
+\author{Shree Gattani}
+\affiliation{\institution{2410110323}\country{}}
+\author{Sunaina Goel}
+\affiliation{\institution{2410110346}\country{}}
 
 \begin{abstract}
 Short solutions of large Rubik's puzzles are known mostly from small cubes and from programming competitions, and the methods
@@ -85,13 +62,15 @@ solver on symmetric copies of a scramble (up to 48 for the cube, 8 for the Squar
 to a solution of the original state with the same length. Wrapped around KMCoders' own program with an optimal central
 3$\times$3$\times$3 stage, it is shorter on average than their published best-of-many solutions at every Santa 2023 cube size
 from $N=4$ to 7, and second to them at $N=8$ and 9; over all \MsevenAllPuzzles{} puzzles with $N=4$--9 it totals
-\MsevenAllTotal{} against \MsevenAllPubTotal{} quarter turns. Its gain shrinks with $N$: the copies' lengths spread by about
+\MsevenAllTotal{} against \MsevenAllPubTotal{} quarter turns, shorter on \MsevenAllWins{} puzzles and longer on
+\MsevenAllLosses{} (two-sided sign test, $p=\MsevenAllSignP$). Its gain shrinks with $N$: the copies' lengths spread by about
 seven quarter turns at every size while solutions grow as $N^2$, and each copy costs more, so fewer fit the budget. \FiveC
-schedules Demaine et al.'s bulk commutators by net gain rather than unanimous need. On random cubes it is \FiveCGainTen\% shorter
-than Demaine's algorithm at $N=10$, a lead that grows with $N$. \FiveA, a cluster-token transformer trained on small Squares
+schedules Demaine et al.'s bulk commutators by net gain rather than unanimous need. On 20 random cubes per size it is \FiveCCiGainTen\%
+shorter than our 3-cycle-batching adaptation of Demaine et al.'s algorithm at $N=10$, significantly so from $N=5$, a lead that
+grows with $N$. \FiveA, a cluster-token transformer trained on small Squares
 only, solves Squares of sizes it never saw. Finally, a counting lower bound, calibrated on Squares whose exact God's numbers we
 compute (\GodSquareThree, \GodSquareFour{} and \GodSquareFive{} for $N=3$, 4 and 5), puts the published Santa solutions at
-\PubOverBoundFour{}$\times$ the bound at $N=4$ and \PubOverBoundTen{}$\times$ at $N=10$, a gap that grows like $\log N$. We
+\PubOverBoundFour{}$\times$ the bound at $N=4$ and \PubOverBoundTen{}$\times$ at $N=10$, a gap consistent with growth like $\log N$. We
 release the engine, the benchmarks, every solver and every result file.
 \end{abstract}
 
@@ -128,9 +107,6 @@ pattern databases, macro-operators, size generalization, Cayley graphs}
 \input{sections/experiments.tex}
 \input{sections/closing.tex}
 
-\begin{acks}
-This work was carried out as a course project at Shiv Nadar University.
-\end{acks}
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{references}

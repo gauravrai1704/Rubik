@@ -38,7 +38,7 @@ Warning--empty address in vinyals2015pointer
 Warning--page numbers missing in both pages and numpages fields in vinyals2015pointer
 You've used 36 entries,
             5981 wiz_defined-function locations,
-            1668 strings with 24584 characters,
+            1668 strings with 24619 characters,
 and the built_in function-call counts, 36777 in all, are:
 = -- 4390
 > -- 1335

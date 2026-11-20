@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "nxn-rubiks"
 version = "0.1.0"
-description = "Six solvers for the N×N×1 Rubik's Square and N×N×N Rubik's Cube (3 <= N <= 20) on one shared engine"
+description = "Short solutions for N×N×N Rubik's Cubes and N×N×1 Rubik's Squares: eight solvers on one shared engine"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = ["numpy>=1.24", "torch>=2.1", "numba>=0.58", "kociemba>=1.2"]

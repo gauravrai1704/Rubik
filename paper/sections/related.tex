@@ -70,7 +70,13 @@ heavy-tailed over random seeds, so restarts and portfolios of independent runs p
 huberman1997portfolio,gomes2001portfolios}. The cube's symmetries are usually used to \emph{reduce} search,
 by storing one representative per symmetry class in pattern databases and coset tables~\cite{rokicki2014diameter,
 rokicki2018nxopt}; \Mseven uses them the other way round, as a source of diverse but equivalent inputs to a
-solver whose own randomness is fixed.
+solver whose own randomness is fixed. That idea has a precedent on the \Cu{3}: implementations of the two-phase
+algorithm such as min2phase search the scramble in three orientations and its inverse and keep the shortest solution
+found~\cite{kociemba2phase,chen2phase}, and \texttt{nxopt} uses symmetry and the inverse state, which has the same
+distance~\cite{rokicki2018nxopt}. \Mseven carries it to large cubes: around a complete, far-from-optimal competition
+pipeline rather than a near-optimal search, with all 48 symmetries and a proof that slice-move solutions map back with the
+same length in every metric (\S\ref{sec:m7}), and with an analysis of why the gain decays with $N$
+(\S\ref{sec:m7scale}).
 
 \paragraph{Size generalisation and other uses of the cube.}
 Networks that read a problem as a set or sequence of parts, such as pointer

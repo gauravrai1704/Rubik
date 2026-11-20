@@ -18,7 +18,9 @@
   most slowly; KMCoders' lengths grow as $\approx4.4N^2$. None is shown to reach the $\Theta(N^2/\log N)$ rate in practice.
 \item \emph{The counting bound is a lower bound.} It is valid for the radius around the goal, and we use it as an estimate of
   typical optimal distances; the Square calibration suggests the truth is 1.5--1.7$\times$ the bound in the worst case. It cannot
-  certify that any single solution is near-optimal.
+  certify that any single solution is near-optimal. The growth of the gap like $\log N$ is partly by construction, since a method of
+  length $\Theta(N^2)$ is divided by a bound of order $N^2/\log N$, and the bound's own slack may grow with $N$: we can calibrate it
+  only on Squares with $N\le5$.
 \item \emph{Exact search on the \Cu{3}} solves 12-move scrambles but no random state in 30 minutes on four cores. We did not
   train cube networks at CayleyPy's scale, so \Mfour and \FiveA are evaluated on the Square only.
 \item \emph{Checker and sampling.} The checker enforces necessary conditions only, and random states come from long random walks
@@ -29,7 +31,7 @@
 \section{Future Work}
 \label{sec:future}
 
-\paragraph{\Mseven at large $N$.} The analysis of \S\ref{sec:m7scale} suggests four directions, in order of expected payoff.
+\paragraph{\Mseven at large $N$.} The analysis of \S\ref{sec:m7scale} suggests five directions, the first four in order of expected payoff.
 (i) \emph{More diversity per copy.} The copies' lengths spread by about seven quarter turns at every size, so a portfolio needs
 sources of variation that grow with $N$: random seeds and tie-breaks inside KMCoders' later stages, different beam widths, and
 the 8-copy default-program portfolio that already helps at $N=4$. An equal-compute comparison of symmetries against seeds is the
@@ -39,7 +41,10 @@ the spread of every stage, not only of the total. (iii) \emph{Spending the budge
 runs the cheap early stages on all 48 copies and finishes only the most promising would bring the full symmetry group, which the
 model projects to win at $N=8$, within the cost of our 12 copies. (iv) \emph{A stronger base solver.} At $N=9$ even 48 copies are
 projected to fall short, so the per-copy solver itself must improve: a wider beam, or \FiveC's bulk commutators in the endgame,
-which also address the $\log N$ gap of \S\ref{sec:bound}. With these, the remaining Santa sizes ($N=10$, 19 and 33) are the
+which also address the $\log N$ gap of \S\ref{sec:bound}. (v) \emph{Inverse copies.} Solving the inverse of each
+copy's state and inverting the answer doubles the candidates to 96 at no extra design cost. With identically coloured center
+pieces the inverse depends on which permutation is chosen to represent the state; any valid choice works, and different
+choices add further diversity. With these, the remaining Santa sizes ($N=10$, 19 and 33) are the
 natural test.
 
 \paragraph{Other directions.} Training cube networks at CayleyPy's scale for \Mfour and \FiveA; carrying \FiveC's bulk moves
@@ -55,7 +60,7 @@ by unanimous need (\FiveC). On the Santa 2023 puzzles, the competition's own sol
 symmetries of the cube are enough to turn it into a portfolio that is shorter on average than its published best-of-many
 solutions at every Santa size up to $N=7$ (\Mseven); beyond that, the copies vary too little relative to the solution length, and
 going further needs more diverse copies or a stronger base solver (\S\ref{sec:future}). The
-counting bound says where the remaining room is: little at $N=4$, and a factor that grows like $\log N$ at large $N$, because the
+counting bound says where the remaining room is: little at $N=4$, and a factor consistent with growth like $\log N$ at large $N$, because the
 final stage of every practical method still fixes a few pieces per 3-cycle. Carrying \FiveC's bulk moves into the endgame of the
 insertion method is the natural next step for both lines of this work. Code, data and result files are
 at \url{https://github.com/gauravrai1704/Rubik}.

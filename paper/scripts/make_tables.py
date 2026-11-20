@@ -407,6 +407,8 @@ for N in (6, 7, 8, 10, 15, 20):
     if N == 20 and withla and nola:
         macro("FiveCLookaheadTwenty", f"{withla:,.0f}")
         macro("FiveCNoLookaheadTwenty", f"{nola:,.0f}")
+        if m3:
+            macro("FiveCLookaheadGainTwenty", f"{100 * (1 - withla / m3):.1f}")
 (GEN / "tab_5c_ablation.tex").write_text("\n".join(abl5) + "\n\\bottomrule\n")
 
 

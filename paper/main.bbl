@@ -188,18 +188,6 @@
 \newblock
 
 
-\bibitem[Gaurav et~al\mbox{.}(2026)]%
-        {rubikrepo}
-\bibfield{author}{\bibinfo{person}{Gaurav}, \bibinfo{person}{Shree},
-  \bibinfo{person}{Sunaina}, \bibinfo{person}{Kashvi},
-  \bibinfo{person}{Shaurya}, {and} \bibinfo{person}{Sharanya}.}
-  \bibinfo{year}{2026}\natexlab{}.
-\newblock \bibinfo{title}{{Rubik}: Nine Solvers for {N$\times$N$\times$1} and
-  {N$\times$N$\times$N} {Rubik's} Puzzles on One Engine}.
-\newblock \bibinfo{howpublished}{\url{https://github.com/gauravrai1704/Rubik}}.
-\newblock
-
-
 \bibitem[Gomes and Selman(2001)]%
         {gomes2001portfolios}
 \bibfield{author}{\bibinfo{person}{Carla~P. Gomes} {and} \bibinfo{person}{Bart
@@ -370,6 +358,18 @@
 \newblock
 \newblock
 \showeprint[arxiv]{1910.07113}
+
+
+\bibitem[Rai et~al\mbox{.}(2026)]%
+        {rubikrepo}
+\bibfield{author}{\bibinfo{person}{Gaurav Rai}, \bibinfo{person}{Kashvi Tak},
+  \bibinfo{person}{Sharanya Gupta}, \bibinfo{person}{Shaurya Sharma},
+  \bibinfo{person}{Shree Gattani}, {and} \bibinfo{person}{Sunaina Goel}.}
+  \bibinfo{year}{2026}\natexlab{}.
+\newblock \bibinfo{title}{{Rubik}: Eight Solvers for {N$\times$N$\times$1} and
+  {N$\times$N$\times$N} {Rubik's} Puzzles on One Engine}.
+\newblock \bibinfo{howpublished}{\url{https://github.com/gauravrai1704/Rubik}}.
+\newblock
 
 
 \bibitem[Rokicki(2026)]%

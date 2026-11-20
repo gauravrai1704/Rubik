@@ -249,6 +249,9 @@ def build(macro):
             rel = 100 * m / np.mean([vals["M3"][i]["htm"] for i in common])
             sig = "$^\\ast$" if m + h < 0 or m - h > 0 else ""
             cells.append(f"{m:+.1f} $\\pm$ {h:.1f} ({rel:+.1f}\\%){sig}")
+            if N == 10:  # the 20-state number quoted in the abstract
+                macro("FiveCCiGainTen", f"{-rel:.0f}")
+                macro("FiveCCiGainTenExact", f"{-rel:.1f}")
         else:
             cells.append("--")
         cells.append(str(len(common)))
@@ -256,10 +259,21 @@ def build(macro):
     (GEN / "tab_ci_rows.tex").write_text("\n".join(ci) + "\n\\bottomrule\n")
 
 
+def sign_test_p(wins: int, losses: int) -> float:
+    """Two-sided exact sign test (ties dropped): P(at least this lopsided | each non-tie is a fair coin)."""
+    n, k = wins + losses, min(wins, losses)
+    return min(1.0, 2 * sum(math.comb(n, i) for i in range(k + 1)) / 2**n) if n else 1.0
+
+
+def fmt_p(p: float) -> str:
+    return f"{p:.3f}" if p >= 0.001 else "<0.001"
+
+
 def build_m7_all(macro):
     lines = []
     tot = {"M7": 0, "B1": 0}
     allw = [0, 0, 0]
+    win7 = [0, 0, 0]  # N <= 7, the sizes where SymPort leads on average
     sizes_done = []
     for N in NS:
         ids = sorted(i for i in M7BEST if M7BEST[i]["N"] == N)
@@ -276,6 +290,8 @@ def build_m7_all(macro):
         t = sum(M7BEST[i]["qtm"] == pub[i]["qtm"] for i in ids)
         l = len(ids) - w - t
         allw = [allw[0] + w, allw[1] + t, allw[2] + l]
+        if N <= 7:
+            win7 = [win7[0] + w, win7[1] + t, win7[2] + l]
         tot["M7"] += sum(M7BEST[i]["qtm"] for i in ids)
         tot["B1"] += sum(pub[i]["qtm"] for i in ids)
         lo = min(v for v in vals.values() if v is not None)
@@ -303,6 +319,11 @@ def build_m7_all(macro):
         macro("MsevenAllWins", allw[0])
         macro("MsevenAllTies", allw[1])
         macro("MsevenAllLosses", allw[2])
+        macro("MsevenAllSignP", fmt_p(sign_test_p(allw[0], allw[2])))
+        if sum(win7):
+            macro("MsevenSevenPuzzles", sum(win7))
+            macro("MsevenSevenWTL", f"{win7[0]}/{win7[1]}/{win7[2]}")
+            macro("MsevenSevenSignP", fmt_p(sign_test_p(win7[0], win7[2])))
     (GEN / "tab_m7_all_rows.tex").write_text("\n".join(lines) + "\n\\bottomrule\n")
 
 

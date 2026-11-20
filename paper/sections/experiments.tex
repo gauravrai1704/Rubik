@@ -51,10 +51,12 @@ $N$ & $n$ & \Hd{\Mseven\\(ours)} & \BoneH & \BtwoH & \Bthree & \MsixH & \Hd{\Fiv
 
 Tables~\ref{tab:mainsq} and~\ref{tab:maincube} are the paper's main results. On the \textbf{Square}, \Mseven, the symmetry
 portfolio over the 8 rotations and reflections of each state with the strongest solvers we have as inner solvers (\Mfour and \FiveC
-for $N\le8$, \FiveC and \Mthree above), is the best method at \MsevenRedSquare{} of the \SizesSquare{} sizes. Where the optimum is
-known ($N\le5$) it reaches it, like \Mfour's per-size networks; above $N=8$, where no per-size network exists, it improves on the
-best single solver, \FiveC, which is in turn shorter than our reproductions of Demaine's algorithm (\Mthree) and of reduction
-(\Mtwo). \FiveA, one network for every size, is the strongest method that needs no per-size training up to $N=7$. On the
+for $N\le8$, \FiveC and \Mthree above), is the best method or tied for best at all \SizesSquare{} sizes. Up to $N=8$ it ties \Mfour, one of its own inner
+solvers; where the optimum is known ($N\le5$) both reach it. Above $N=8$, where no per-size network exists, it is strictly shortest
+and improves on the best single solver, \FiveC, which is in turn shorter than our reproductions of Demaine's algorithm (\Mthree)
+and of reduction (\Mtwo). Its mean length more than triples from $N=8$ to $N=9$: that is where its inner solvers change from a
+trained network to the cluster methods, and it shows how far those remain from optimal; at $N=8$ the cluster methods are already
+almost three times longer than \Mfour. \FiveA, one network for every size, is the strongest method that needs no per-size training up to $N=7$. On the
 \textbf{Cube}, \Mseven is the best method at $N=4$--7, with KMCoders' published best-of-many solutions second; at $N=8$ and 9
 the order is reversed (\MsevenAllMeanEight{} against \MsevenAllPubEight{} and \MsevenAllMeanNine{} against \MsevenAllPubNine;
 \S\ref{sec:m7scale} analyses why). One run of their program comes next at every size,
@@ -158,7 +160,8 @@ $N$ & \BoneH & \BtwoH & \Hd{ratio to\\\textsc{published}} & \MsixH & \Hd{ratio t
 \caption{\Mseven against every baseline and every other method, puzzle by puzzle, on the Santa 2023 cubes of \MsevenAllSizes{} (mean QTM,
 the competition's score; bold: shortest). \Bone: KMCoders' published best-of-many solutions; \Btwo: one run of their program; \Bthree: dwalton76's solver.
 W/T/L: puzzles where \Mseven is shorter than / equal to / longer than \Bone; last column: \Mseven's saving over \Bone. Last row: total QTM over
-all these puzzles, i.e.\ the Santa score restricted to them.}
+all these puzzles, i.e.\ the Santa score restricted to them. Two-sided sign test on W/T/L (ties dropped): $p=\MsevenAllSignP$ over all
+\MsevenAllPuzzles{} puzzles, $p=\MsevenSevenSignP$ over the \MsevenSevenPuzzles{} puzzles of $N=4$--7 (\MsevenSevenWTL).}
 \label{tab:m7all}
 \small
 \begin{tabular}{@{}lr|r|rrr|rrrr|rr@{}}
@@ -173,7 +176,10 @@ all these puzzles, i.e.\ the Santa score restricted to them.}
 Table~\ref{tab:m7all} compares \Mseven with every baseline and every other method on the same puzzles, for the sizes where we
 report per-puzzle results (\MsevenAllSizes). It is the shortest method at $N=4$--7 and second to \Bone at $N=8$ and 9; over all \MsevenAllPuzzles{} puzzles, its total is \MsevenAllTotal{} quarter turns against \MsevenAllPubTotal{} for
 KMCoders' published solutions (\MsevenAllTotalGain\% fewer), shorter on \MsevenAllWins{}, equal on \MsevenAllTies{} and longer on
-\MsevenAllLosses{}; one run of their program, dwalton76 and all our other methods are further behind.
+\MsevenAllLosses{}; one run of their program, dwalton76 and all our other methods are further behind. A two-sided sign test on
+these outcomes (ties dropped) gives $p=\MsevenAllSignP$; over $N=4$--7 alone (\MsevenSevenPuzzles{} puzzles, W/T/L
+\MsevenSevenWTL) it gives $p=\MsevenSevenSignP$. The per-size margins from $N=6$ on, with 3--6 puzzles each, are not significant on
+their own.
 
 \paragraph{Why the portfolio works.}
 Figure~\ref{fig:m7copies} shows the 48 copies of each of the first ten \Cu{4} puzzles: they spread over
@@ -281,11 +287,13 @@ $N$ & \Mtwo & \Mthree & \FiveC & \FiveC$-$\Mthree & $n$ \\
 \paragraph{Where \FiveC's gain comes from.}
 \label{sec:5cresults}
 \FiveC's advantage over \Mthree grows with $N$: \FiveCGainSix\% at the \Cu{6}, \FiveCGainTen\% at the \Cu{10}, \FiveCGainFifteen\% at
-the \Cu{15} and \FiveCGainTwenty\% at the \Cu{20}. The gain is in the centers, which are \FiveCCenterShareTwenty\% of \FiveC's moves on
+the \Cu{15} and \FiveCGainTwenty\% at the \Cu{20} (main table: two states per size up to $N=10$, one at 15 and 20; with 20 states
+per size, Table~\ref{tab:ci} gives \FiveCCiGainTenExact\% at the \Cu{10}). The gain is in the centers, which are \FiveCCenterShareTwenty\% of \FiveC's moves on
 the \Cu{20}: there, \FiveCBulkRoundsTwenty{} of its \FiveCRoundsTwenty{} center rounds were bulk moves, against \Mthree, where
 \MthreeSingleRoundsTwenty{} of \MthreeRoundsTwenty{} rounds fixed a single cluster. Table~\ref{tab:5cabl} removes the lookahead and the
 setup sharing. Net-gain blocks alone already give most of the gain (on the \Cu{20}, \FiveCNoLookaheadTwenty{} moves against \Mthree's
-\CuTwentyHTMMthree{}). One step of lookahead shortens solutions by a further 2--8\% (\FiveCLookaheadTwenty{} moves on the \Cu{20}).
+\CuTwentyHTMMthree{}). One step of lookahead shortens solutions by a further 2--8\% (\FiveCLookaheadTwenty{} moves on the \Cu{20},
+\FiveCLookaheadGainTwenty\% fewer than \Mthree).
 Setup sharing matters least.
 
 \begin{table}[t]

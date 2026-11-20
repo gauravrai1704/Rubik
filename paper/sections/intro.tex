@@ -24,11 +24,15 @@ by script from the result files.
 \begin{itemize}
 \item \textbf{\Mseven, a symmetry portfolio} (\S\ref{sec:m7}), our main method. Around KMCoders' program it is the best
   method at every Santa 2023 cube size from $N=4$ to 7, ahead of their published best-of-many solutions on average,
-  and second to them at $N=8$ and 9 (Table~\ref{tab:maincube}); we show why its gain shrinks with $N$ (\S\ref{sec:m7scale}).
-  Around our strongest Square solvers it is the best method at \MsevenRedSquare{} of the \SizesSquare{} Square sizes
+  and second to them at $N=8$ and 9 (Table~\ref{tab:maincube}); over all \MsevenAllPuzzles{} puzzles it is shorter on
+  \MsevenAllWins{} and longer on \MsevenAllLosses{} (sign test $p=\MsevenAllSignP$). We show why its gain shrinks with $N$
+  (\S\ref{sec:m7scale}). Around our strongest Square solvers it is the best method or tied for best at all \SizesSquare{}
+  Square sizes: strictly shortest from $N=9$, and tied with \Mfour, one of its inner solvers, up to $N=8$
   (Table~\ref{tab:mainsq}).
 \item \textbf{\FiveC, net-gain scheduling of bulk commutators} (\S\ref{sec:5c}): the strongest single solver on large
-  Squares, and \FiveCGainTwenty\% shorter than Demaine's algorithm on the random \Cu{20}.
+  Squares, and shorter than our 3-cycle-batching adaptation of Demaine's algorithm on random cubes: \FiveCCiGainTen\% at $N=10$
+  over 20 states, and \FiveCGainTwenty\% on the random \Cu{20} (its default there, without lookahead;
+  \FiveCLookaheadGainTwenty\% with lookahead).
 \item \textbf{\FiveA, one network for every size} (\S\ref{sec:5a}): a cluster-token transformer that solves Square
   sizes it never saw in training.
 \item \textbf{How far from optimal} (\S\ref{sec:bound}): a counting lower bound for every \Cu{N}, calibrated on the
